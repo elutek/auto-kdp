@@ -149,8 +149,8 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
 
 async function main() {
   program
-    .requiredOption('-f, --books <file>', 'CSV file that contains info for all books')
-    .requiredOption('-c, --config <file>', 'Books config file')
+    .requiredOption('-f, --books <file>', 'CSV file that contains info for all books', 'books.csv')
+    .requiredOption('-c, --config <file>', 'Books config file', 'books.conf')
     .requiredOption('-d, --content-dir <file>', 'Books content directory', '.')
     .requiredOption('-u, --user-data <dir>', 'User data dir to store cookies, etc', './user_data')
     .option('-k, --keep-open', false)
