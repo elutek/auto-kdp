@@ -53,5 +53,8 @@
   },
   "browser": {
     "child_process": false
+  },
+  "bin": {
+    "auto-kdp": "./index.js"
   }
 }
