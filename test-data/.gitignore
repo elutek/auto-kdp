@@ -1,0 +1,4 @@
+*.aux
+*.log
+user-data
+books.csv.new

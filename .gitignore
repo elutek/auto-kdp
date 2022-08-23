@@ -1,0 +1,5 @@
+node_modules
+user_data
+coverage
+Makefile
+dist
