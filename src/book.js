@@ -34,7 +34,7 @@ export class Book {
       mergedDataMap.set(key, val);
     }
     let unresolvedKeys = new Set();
-    let resolvedDataMap = resolveAllValues(mergedDataMap, unresolvedKeys);
+    let resolvedDataMap = resolveAllValues(mergedDataMap, unresolvedKeys, allDataMaps);
 
     // Check if everything was resolved
     if (unresolvedKeys.size > 0) {
