@@ -29,8 +29,7 @@ export class BookFile {
     return new Promise((resolve, reject) => {
       lockfile.lock(this.lockFilePath)
         .then((release) => {
-          let bookList = new BookList();
-          let errors = [];
+          let dataMaps = [];
           fs.createReadStream(this.bookFilePath)
             .pipe(CsvParser({
               mapHeaders: ({ header, index }) => {
@@ -44,15 +43,19 @@ export class BookFile {
               skipComments: true
             }))
             .on('data', (data) => {
-              try {
-                let dataMap = new Map(Object.entries(data));
-                let book = new Book(dataMap, this.bookConfig, this.contentDir);
-                this.addBook(book, bookList)
-              } catch (e) {
-                errors.push(e);
-              }
+              dataMaps.push(new Map(Object.entries(data)));
             })
             .on('end', () => {
+              let bookList = new BookList();
+              let errors = [];
+              for (const dataMap of dataMaps) {
+                try {
+                  let book = new Book(dataMap, this.bookConfig, this.contentDir, dataMaps);
+                  this.addBook(book, bookList);
+                } catch (e) {
+                  errors.push(e);
+                }
+              }
               if (errors.length > 0) {
                 reject(errors);
               } else {

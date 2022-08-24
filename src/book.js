@@ -17,7 +17,7 @@ const _KEYS_WITH_NO_DEFAULT = [
 
 export class Book {
 
-  constructor(data, defaults, contentDir) {
+  constructor(data, defaults, contentDir, allDataMaps) {
     // Check for illegal defaults.
     for (const k of _KEYS_WITH_NO_DEFAULT) {
       if (defaults.has(k)) {
