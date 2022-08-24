@@ -44,11 +44,8 @@ export class BookFile {
               skipComments: true
             }))
             .on('data', (data) => {
-              let dataMap = new Map();
-              for (const k in data) {
-                dataMap.set(k, data[k]);
-              }
               try {
+                let dataMap = new Map(Object.entries(data));
                 let book = new Book(dataMap, this.bookConfig, this.contentDir);
                 this.addBook(book, bookList)
               } catch (e) {
