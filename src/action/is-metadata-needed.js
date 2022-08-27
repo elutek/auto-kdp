@@ -68,8 +68,8 @@ export async function isMetadataUpdateNeeded(book, params) {
   // Description.
   await page.click('#cke_18'); // Click button 'source'
   const description = await page.$eval('#cke_1_contents > textarea', x => x.value);
-  const gotDescription = book.replaceAll(description, null);
-  const expDescription = book.replaceAll(book.description, null);
+  const gotDescription = description;
+  const expDescription = book.description;
   const descriptionNeedsUpdate = gotDescription != expDescription;
   needsUpdate ||= descriptionNeedsUpdate;
   debug(verbose, 'Checking description: ' + (descriptionNeedsUpdate ?
