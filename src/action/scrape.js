@@ -1,3 +1,4 @@
+import { Book } from '../book.js';
 import { Timeouts, Urls, debug } from './utils.js';
 
 export async function scrape(book, params) {
@@ -13,7 +14,7 @@ export async function scrape(book, params) {
 
   if (book.id == '') {
     debug(verbose, 'NOT scraping - need book id for that');
-    return;
+    return false;
   }
 
   const page = await params.browser.newPage();
