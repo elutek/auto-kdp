@@ -8,6 +8,8 @@ This software does _not_ bypass any checks in KDP, or solves any problems that K
 
 If you publish few books, you do _not_ need this - but if you publish, say, 100, you absolutely do, unless you want to spend nights on clicking through the KDP site.
 
+If this was useful, drop me a line. It took me quite some time to separate and generalize this code out of my personal use case. If someone finds this useful, it would make my day. Thanks!
+
 ### Caveats
 
 - Please note auto-kdp does not handle _everything_ - I created it for my own needs. For example does not currently support subtitle, or kindle books. I wrote it as cleanly as possible so new fields can be added by pattern matching. 
@@ -75,9 +77,7 @@ or refer to a field in another book:
 ```bash
 asinGiraffe = $varbookref ${animal} == Giraffe !! asin
 ```
-The keywords **$vareq**, **$varif** and **$varbookref** have special meaning (this is not any proper language, just a trivial hack to express conditionals and book references).
-
-
+The keywords ```$vareq```, ```$varif``` and ```$varbookref``` have special meaning (this is not any proper language, just a trivial hack to express conditionals and book references).
 
 # Actions
 
@@ -94,7 +94,7 @@ Individual actions are:
 * ```content``` - upload cover and manuscript PDFs and get them approved. This cannot be changed after the book is published. If there is an error (KDP shows it during review), e.g. manuscript is wrong size, or there is text in the margins, this action will repeatedly fail, until you resolve the issues with the manuscript.
 * ```pricing``` update pricing, set for example in ```priceEur```, ```priceUsd```, etc. This action does not publish, only saves the new prices.
 * ```publish``` clicks publish
-* ```scrape``` scrapes status (```pubStatus```, ```pubStatusDetail```, ```pubDate```). This ation won't be "consumed" from the ```action``` field until the book is fully LIVE and no updates are pending.
+* ```scrape``` scrapes status (```pubStatus```, ```pubStatusDetail```, ```pubDate```). This action won't be "consumed" from the ```action``` field until the book is fully LIVE and no updates are pending.
 * ```scrapeAmazonCoverImageUrl``` gets you the link to an image with a cover used by Amazon. This is optional, but can be useful when you publish elsewhere a link to your book - this cover will be definitely correct, and is hosted conveniently by amazon, 
 
 Code links: 
@@ -102,14 +102,21 @@ Code links:
 * shortcuts here in [book.js](https://github.com/elutek/auto-kdp/blob/main/src/book.js#L102). 
 
 
+## Running for the first time
+
+Please use ```--verbose --dry-run --headless=no``` options when you're getting started. These let you see what is going on, and the "dry run" prevents actual modifications in KDP. When you think you are fine,  "dry run" but keep keep headless off.
 
 # Troubleshooting
 
 Common issues
-- if Kdp determines a book has errors during content upload, content upload will continueously fail
-- content upload does not work with headless borwser for unknown reason
-- cotent upload does not work with browser window that is too small - make it big
-- trim sizing is non-trivial: read https://kdp.amazon.com/en_US/help/topic/GVBQ3CMEQW3W2VL6 to figure out. Or upload whatever, and the error displayed on the review page will tell you the expected trim.
+* If KDP finds error in content (pretty common for new manuscript), it blocks publishing and the ```content``` action will fail repeatedly. You must manually visit the book content page, go through the pages, and see what the errors are. It might be wrong covers size, or text in margins. Trim sizing in particular is non-trivial: read [guide on trim](https://kdp.amazon.com/en_US/help/topic/GVBQ3CMEQW3W2VL6) or upload whatever, and the error will tell you expected size.
+- Content upload may not work with headless browser - for unknown reason. If any book has ```content``` action, auto-kdp will run in non-headless mode, i.e. you will see the browser. 
+- For debugging there are useful options
+  - ```--verbose``` Prints a lot of messages, so you can see where exactly it stops. Personally, I just always use this.
+  - ```--keep-open```Does not close open tabs in puppeteer. Watch for your RAM if you have many books - you should do this only for debugging.
+  - ```--headless=no``` Forces out of the headless mode, i.e. you will see what's happening in the browser. Very useful.
+- A quirk in KDP is that content upload does not work with browser window is too small - make it big, or just fullscreen. 
+
 
 # Development
 
@@ -119,3 +126,17 @@ Common issues
 2. Then add to book.js in the constructor
 3. Make all tests pass, which typically update book.js, test-utils.js and some random locations
 4. Use the new fields in some actions update desired src/action/...
+
+## Tests
+
+Tests are written in jest.
+
+```npm run test```
+
+All actions and puppeteer messiness is in  ```src/action``` - this is not tested. Everything else is tested with 100% coverage.
+
+
+
+## What is needed
+
+- Some fields missing, e.g. subtitle.
