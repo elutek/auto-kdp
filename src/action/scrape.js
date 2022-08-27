@@ -6,7 +6,7 @@ export async function scrape(book, params) {
 
   if (params.dryRun) {
     debug(verbose, 'Scraping (dry run)');
-    return true;
+    return { success: true, nextActions: '' };
   }
 
   const url = Urls.BOOKSHELF_URL;
@@ -14,7 +14,7 @@ export async function scrape(book, params) {
 
   if (book.id == '') {
     debug(verbose, 'NOT scraping - need book id for that');
-    return false;
+    return { success: false, nextActions: '' };
   }
 
   const page = await params.browser.newPage();
@@ -79,7 +79,7 @@ export async function scrape(book, params) {
     await page.close();
   }
 
-  return true;
+  return { success: true, nextActions: book.isFullyLive() ? '' : 'scrape' };
 }
 
 function _formatDate(str) {

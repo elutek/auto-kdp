@@ -5,10 +5,7 @@ export async function isMetadataUpdateNeeded(book, params) {
 
   if (params.dryRun) {
     debug(verbose, 'Checking if metadata needs update (dry run)');
-    return {
-      consumeAction: true,
-      nextActions: ''
-    };
+    return { success: true, nextActions: '' };
   }
 
   const url = Urls.EDIT_PAPERBACK_DETAILS.replace('$id', book.id);
@@ -138,10 +135,7 @@ export async function isMetadataUpdateNeeded(book, params) {
     await page.close();
   }
 
-  return {
-    consumeAction: true,
-    nextActions: needsUpdate ? 'book-metadata:pricing:publish:scrape' : ''
-  };
+  return { success: true, nextActions: needsUpdate ? 'book-metadata:pricing:publish:scrape' : '' };
 }
 
 function _normalize(str) {

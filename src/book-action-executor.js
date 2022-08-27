@@ -5,10 +5,9 @@ async function _executeBookAction(action, book, actionCallback, params) {
         try {
             console.log(`Book action ${action} #${attempt} start`);
             let callbackResult = await actionCallback(action, book, params);
-            let result = (typeof callbackResult == 'boolean') ? { consumeAction: callbackResult, nextActions: ''} : callbackResult;
-            let success = result.consumeAction;
-            console.log(`Book action ${action} #${attempt} done: ` + (success ? 'success' : 'failure'));
-            if (success) {
+            let result = (typeof callbackResult == 'boolean') ? { success: callbackResult, nextActions: ''} : callbackResult;
+            console.log(`Book action ${action} #${attempt} done: ` + (result.success ? 'success' : 'failure'));
+            if (result.success) {
                 return result;
             }
         } catch (e) {
@@ -16,7 +15,7 @@ async function _executeBookAction(action, book, actionCallback, params) {
         }
     }
     return {
-        consumeAction: false,
+        success: false,
         nextActions: ''
     };
 }
@@ -31,11 +30,13 @@ export async function ExecuteBookActions(book, actionCallback, params) {
     while (book.hasAction()) {
         let currAction = book.getFirstAction();
         let result = await _executeBookAction(currAction, book, actionCallback, params);
-        if (result.consumeAction) {
+        if (result.success) {
             ++numSuccesses;
             book.popFirstAction();
             if (result.nextActions != '') {
                 book.action = result.nextActions + (result.nextActions != '' && book.action != '' ? ':' : '') + book.action;
+                break;
+                // When we have more actions to execute, we stop now to avoid infinite loop, and to let the user review the new actions.
             }
         } else {
             // Processing failed at this action, we are not popping it, so it will be retried.

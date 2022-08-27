@@ -29,27 +29,24 @@ async function executeBookActionCallback(action, book, params) {
 
   if (action == 'updateMetadataIfNeeded') {
     return await isMetadataUpdateNeeded(book, params);
+  } else if (action == 'scrape') {
+    return await scrape(book, params);
   }
 
-  let consumeAction = false;
+  let success = false;
   switch (action) {
-    case 'book-metadata': consumeAction = await updateBookMetadata(book, params); break;
-    case 'content-metadata': consumeAction = await updateContentMetadata(book, params); break;
-    case 'scrapeIsbn': consumeAction = await scrapeIsbn(book, params); break;
-    case 'produceManuscript': consumeAction = await produceManuscript(book, params); break;
-    case 'content': consumeAction = await updateContent(book, params); break;
-    case 'pricing': consumeAction = await updatePricing(book, params); break;
-    case 'publish': consumeAction = await publish(book, params); break;
-    case 'scrape': consumeAction = (await scrape(book, params)) && book.isFullyLive(); break;
-    case 'scrapeAmazonCoverImageUrl': consumeAction = await scrapeAmazonCoverImageUrl(book, params); break;
+    case 'book-metadata': success = await updateBookMetadata(book, params); break;
+    case 'content-metadata': success = await updateContentMetadata(book, params); break;
+    case 'scrapeIsbn': success = await scrapeIsbn(book, params); break;
+    case 'produceManuscript': success = await produceManuscript(book, params); break;
+    case 'content': success = await updateContent(book, params); break;
+    case 'pricing': success = await updatePricing(book, params); break;
+    case 'publish': success = await publish(book, params); break;
+    case 'scrapeAmazonCoverImageUrl': success = await scrapeAmazonCoverImageUrl(book, params); break;
     default:
       throw new Error('Unknown action: ' + action);
   }
-
-  return {
-    consumeAction: consumeAction,
-    nextActions: ''
-  };
+  return { success: success, nextActions: '' };
 }
 
 async function _doProcessOneBook(bookFile, bookList, book, params) {
