@@ -6,7 +6,7 @@ export async function isMetadataUpdateNeeded(book, params) {
   if (params.dryRun) {
     debug(verbose, 'Checking if metadata needs update (dry run)');
     return {
-      consumeAction: false,
+      consumeAction: true,
       nextActions: ''
     };
   }
