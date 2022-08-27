@@ -141,25 +141,33 @@ function _isResolved(value) {
 }
 
 function _getBookField(allData, searchKeys, fieldToExtract) {
+    let matchedData = null;
     for (let data of allData) {
         if (_dataMatchesKeys(data, searchKeys)) {
-            if (!data.has(fieldToExtract)) {
-                throw new Error("No such key: " + fieldToExtract);
+            if (matchedData  == null) {
+                matchedData = data;
+            } else {
+                throw new Error('Matched more than one record for key: ' + searchKeys);
             }
-            return data.get(fieldToExtract);
         }
     }
-    throw new Error('No such book: ' + searchKeys);
+    if (matchedData == null) {
+        throw new Error('No such book: ' + searchKeys);
+    }
+    if (!matchedData.has(fieldToExtract)) {
+        throw new Error("No such key: " + fieldToExtract);
+    }
+    return matchedData.get(fieldToExtract);
 }
 
 function _dataMatchesKeys(data, searchKeys) {
-    for (const keyVal of searchKeys.split(",")) {
-        let v = keyVal.trim().split(" ");
+    for (const keyVal of searchKeys.split("&&")) {
+        let v = keyVal.trim().split("==");
         if (v.length != 2) {
             throw new Error("Incorrect syntax of search key: " + v)
         }
-        let keyName = v[0];
-        let keyValue = v[1];
+        let keyName = v[0].trim();
+        let keyValue = v[1].trim();
         if (!data.has(keyName)) {
             throw new Error('No such key: ' + keyName);
         }

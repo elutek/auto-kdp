@@ -80,16 +80,25 @@ test('resolve_varif bad syntax', () => {
 });
 
 test('resolve_varbookref', () => {
-  let data1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '$varbookref name Bob !! secret');
+  let data1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '$varbookref name == Bob !! secret');
   let data2 = makeMap('name', 'Bob', 'secret', 'blah');
   let allData = [data1, data2];
   let expct = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', 'blah');
   expect(resolveAllValues(data1, null, allData)).toEqual(expct);
 });
 
+test('resolve_varbookref2', () => {
+  let data1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '$varbookref name == Bob && lastname == Y !! secret');
+  let data2 = makeMap('name', 'Bob', 'lastname', 'X', 'secret', 'blahX');
+  let data3 = makeMap('name', 'Bob', 'lastname', 'Y', 'secret', 'blahY');
+  let allData = [data1, data2, data3];
+  let expct = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', 'blahY');
+  expect(resolveAllValues(data1, null, allData)).toEqual(expct);
+});
+
 test('resolve_varbookref_circular', () => {
-  let data1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '$varbookref name Bob !! secret');
-  let data2 = makeMap('name', 'Bob', 'secret', 'bob_secret', 'otherSecret', '$varbookref name Alice !! secret');
+  let data1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '$varbookref name == Bob !! secret');
+  let data2 = makeMap('name', 'Bob', 'secret', 'bob_secret', 'otherSecret', '$varbookref name == Alice !! secret');
   let allData = [data1, data2];
   let expc1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', 'bob_secret');
   let expc2 = makeMap('name', 'Bob', 'secret', 'bob_secret', 'otherSecret', 'alice_secret');
@@ -98,15 +107,23 @@ test('resolve_varbookref_circular', () => {
 });
 
 test('resolve_no_such_book', () => {
-  let data1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '$varbookref name NONEXISTENT !! secret');
+  let data1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '$varbookref name == NONEXISTENT !! secret');
   let data2 = makeMap('name', 'Bob', 'secret', 'blah');
   let allData = [data1, data2];
   let expct = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', 'blah');
   expect(() => resolveAllValues(data1, null, allData)).toThrow(/No such book.*name.*NONEXISTENT/);
 });
 
+test('resolve_varbookref_two_matches', () => {
+  let data1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '$varbookref name == Bob !! secret');
+  let data2 = makeMap('name', 'Bob', 'lastname', 'X', 'secret', 'blahX');
+  let data3 = makeMap('name', 'Bob', 'lastname', 'Y', 'secret', 'blahY');
+  let allData = [data1, data2, data3];
+  expect(() => resolveAllValues(data1, null, allData)).toThrow(/Matched more than one record/);
+});
+
 test('resolve_varbookref_no_such_field_in_search_key', () => {
-  let data1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '$varbookref NONEXISTENT Bob !! secret');
+  let data1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '$varbookref NONEXISTENT_KEY == Bob !! secret');
   let data2 = makeMap('name', 'Bob', 'secret', 'blah');
   let allData = [data1, data2];
   let expct = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', 'blah');
@@ -114,7 +131,7 @@ test('resolve_varbookref_no_such_field_in_search_key', () => {
 });
 
 test('resolve_varbookref_no_such_field_in_return_object', () => {
-  let data1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '$varbookref name Bob !! NONEXISTENT');
+  let data1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '$varbookref name == Bob !! NONEXISTENT');
   let data2 = makeMap('name', 'Bob', 'secret', 'blah');
   let allData = [data1, data2];
   let expct = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', 'blah');
@@ -122,7 +139,7 @@ test('resolve_varbookref_no_such_field_in_return_object', () => {
 });
 
 test('resolve_varbookref_bad_key_syntax', () => {
-  let data1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '$varbookref name Bob, xyz !! secret');
+  let data1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '$varbookref xyz !! secret');
   let data2 = makeMap('name', 'Bob', 'secret', 'blah');
   let allData = [data1, data2];
   let expct = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', 'blah');
