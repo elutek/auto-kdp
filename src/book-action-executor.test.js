@@ -12,6 +12,16 @@ test('one action succeeds', async () => {
     expect(result.result).toBe.truthy;
 });
 
+test('one action succeeds / boolean callback', async () => {
+    let book = makeOkTestBook();
+    book.action = 'action1';
+    let cb = async (a, b, p) => true;
+    let result = await ExecuteBookActions(book, cb, {});
+    expect(result.numSuccesses).toBe(1);
+    expect(result.result).toBe.truthy;
+});
+
+
 test('one action fails', async () => {
     let book = makeOkTestBook();
     book.action = 'action1';
