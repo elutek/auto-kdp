@@ -145,5 +145,5 @@ export async function isMetadataUpdateNeeded(book, params) {
 }
 
 function _normalize(str) {
-  return str.replaceAll('\n', ' ').replaceAll(/\s+/g, ' ').replaceAll('> <', '><')
+  return str.replaceAll('\n', ' ').replaceAll(/\s+/g, ' ').replaceAll('> <', '><').replaceAll('. </', '.<')
 }
