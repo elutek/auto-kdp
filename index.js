@@ -174,7 +174,7 @@ async function main() {
     throw error;
   });
 
-  await mainWithOptions(opts.books, opts.config, opts.contentDir, opts.userDataDir, opts.keepOpen, headlessOverride, opts.dryRun, verbose);
+  await mainWithOptions(opts.books, opts.config, opts.contentDir, opts.userData, opts.keepOpen, headlessOverride, opts.dryRun, verbose);
 }
 
 function _debug(verbose, ...message) {
