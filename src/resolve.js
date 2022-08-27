@@ -127,7 +127,9 @@ function _getResolvedValue(value, allData) {
             let j = value.indexOf('!!');
             let searchKeys = value.slice(0, j).trim();
             let fieldToExtract = value.slice(j + 2).trim();
-            return _getBookField(allData, searchKeys, fieldToExtract);
+            let matchedBookField = _getBookField(allData, searchKeys, fieldToExtract);
+            // If no match, return empty string
+            return matchedBookField != null  ? matchedBookField : '';
         } else {
             throw new Error('Unknown key starting with a special prefix $var. Expected are $vareq, $varif and $varbookref')
         }
@@ -152,7 +154,7 @@ function _getBookField(allData, searchKeys, fieldToExtract) {
         }
     }
     if (matchedData == null) {
-        throw new Error('No such book: ' + searchKeys);
+        return null; // No match
     }
     if (!matchedData.has(fieldToExtract)) {
         throw new Error("No such key: " + fieldToExtract);

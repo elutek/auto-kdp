@@ -110,8 +110,8 @@ test('resolve_no_such_book', () => {
   let data1 = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '$varbookref name == NONEXISTENT !! secret');
   let data2 = makeMap('name', 'Bob', 'secret', 'blah');
   let allData = [data1, data2];
-  let expct = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', 'blah');
-  expect(() => resolveAllValues(data1, null, allData)).toThrow(/No such book.*name.*NONEXISTENT/);
+  let expct = makeMap('name', 'Alice', 'secret', 'alice_secret', 'otherSecret', '');
+  expect(resolveAllValues(data1, null, allData)).toEqual(expct);
 });
 
 test('resolve_varbookref_two_matches', () => {
