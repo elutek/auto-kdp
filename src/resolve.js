@@ -164,7 +164,7 @@ function _dataMatchesKeys(data, searchKeys) {
     for (const keyVal of searchKeys.split("&&")) {
         let v = keyVal.trim().split("==");
         if (v.length != 2) {
-            throw new Error("Incorrect syntax of search key: " + v)
+            throw new Error("Incorrect syntax of search key: " + keyVal);
         }
         let keyName = v[0].trim();
         let keyValue = v[1].trim();
