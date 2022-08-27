@@ -140,10 +140,10 @@ export async function isMetadataUpdateNeeded(book, params) {
 
   return {
     consumeAction: true,
-    nextActions: needsUpdate ? 'book-metadata:publish:scrape' : ''
+    nextActions: needsUpdate ? 'book-metadata:pricing:publish:scrape' : ''
   };
 }
 
 function _normalize(str) {
-  return str.replaceAll('\n', ' ').replaceAll(/\s+/, ' ').replaceAll('> <', '><')
+  return str.replaceAll('\n', ' ').replaceAll(/\s+/g, ' ').replaceAll('> <', '><')
 }
