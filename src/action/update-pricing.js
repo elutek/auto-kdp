@@ -74,7 +74,7 @@ export async function updatePricing(book, params) {
     await page.type(id, '' + book.priceEur);
     await page.waitForTimeout(Timeouts.SEC_2);
 
-    debug(verbose, 'Updating price NL/EUR: ' + book.priceNl);
+    debug(verbose, 'Updating price NL/EUR: ' + book.priceEur);
     id = '#data-pricing-print-nl-price-input input';
     await page.waitForSelector(id, { visible: true });
     await clearTextField(page, id);
