@@ -5,7 +5,10 @@ export async function isMetadataUpdateNeeded(book, params) {
 
   if (params.dryRun) {
     debug(verbose, 'Checking if metadata needs update (dry run)');
-    return false;
+    return {
+      consumeAction: false,
+      nextActions: ''
+    };
   }
 
   const url = Urls.EDIT_PAPERBACK_DETAILS.replace('$id', book.id);
