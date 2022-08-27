@@ -1,10 +1,11 @@
 // If successful returns next actions; if failed, returns null.
-async function ExecuteBookAction(action, book, actionCallback, params) {
+async function _executeBookAction(action, book, actionCallback, params) {
     let err = null;
     for (let attempt = 1; attempt <= 3; ++attempt) {
         try {
             console.log(`Book action ${action} #${attempt} start`);
-            let result = await actionCallback(action, book, params);
+            let callbackResult = await actionCallback(action, book, params);
+            let result = (typeof callbackResult == 'boolean') ? { consumeAction: callbackResult, nextActions: ''} : callbackResult;
             let success = result.consumeAction;
             console.log(`Book action ${action} #${attempt} done: ` + (success ? 'success' : 'failure'));
             if (success) {
@@ -29,8 +30,7 @@ export async function ExecuteBookActions(book, actionCallback, params) {
     let numSuccesses = 0;
     while (book.hasAction()) {
         let currAction = book.getFirstAction();
-        console.log("\n\n-------------------\nExecuting action: " + currAction);
-        let result = await ExecuteBookAction(currAction, book, actionCallback, params);
+        let result = await _executeBookAction(currAction, book, actionCallback, params);
         if (result.consumeAction) {
             ++numSuccesses;
             book.popFirstAction();

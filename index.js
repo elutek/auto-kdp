@@ -161,11 +161,7 @@ async function main() {
   program.parse();
 
   const opts = program.opts();
-
   const verbose = opts.verbose;
-  _debug(verbose, 'Options: ', opts);
-  _debug(verbose, 'Remaining arguments: ', program.args);
-
   let headlessStr = opts.headless != null ? opts.headless : '';
   let headlessOverride = headlessStr == 'yes' || headlessStr == 'true' ? true : (headlessStr == 'no' || headlessStr == 'false' ? false : null);
 
