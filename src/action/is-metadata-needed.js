@@ -68,8 +68,8 @@ export async function isMetadataUpdateNeeded(book, params) {
   // Description.
   await page.click('#cke_18'); // Click button 'source'
   const description = await page.$eval('#cke_1_contents > textarea', x => x.value);
-  const gotDescription = description;
-  const expDescription = book.description;
+  const gotDescription = _normalize(description);
+  const expDescription = _normalize(book.description);
   const descriptionNeedsUpdate = gotDescription != expDescription;
   needsUpdate ||= descriptionNeedsUpdate;
   debug(verbose, 'Checking description: ' + (descriptionNeedsUpdate ?
@@ -143,3 +143,8 @@ export async function isMetadataUpdateNeeded(book, params) {
     nextActions: needsUpdate ? 'book-metadata:publish:scrape' : ''
   };
 }
+
+function _formalize(str) {
+  return str.replaceAll('\n', ' ').replaceAll(/\s+/, ' ').replaceAll('> <', '><')
+}
+
