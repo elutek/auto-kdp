@@ -13,7 +13,7 @@ import { ExecuteBookActions } from './src/book-action-executor.js';
 // Action
 import { scrapeAmazonCoverImageUrl } from './src/action/scrape-amazon-cover-image-url.js';
 import { scrapeIsbn } from './src/action/scrape-isbn.js';
-import { isMetadataUpdateNeeded } from './src/action/is-metadata-needed.js';
+import { isMetadataUpdateNeeded } from './src/action/is-metadata-update-needed.js';
 import { scrape } from './src/action/scrape.js';
 import { produceManuscript } from './src/action/produce-manuscript.js';
 import { ensureLoggedIn } from './src/action/ensure-logged-in.js';

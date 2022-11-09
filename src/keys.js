@@ -20,6 +20,7 @@ export let Keys = {
     KEYWORD5: 'keyword5',
     KEYWORD6: 'keyword6',
     LANGUAGE: 'language',
+    SERIES_TITLE: 'seriesTitle',
     TITLE: 'title',
     PRICE_AU: 'priceAu',
     PRICE_CA: 'priceCa',

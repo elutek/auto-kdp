@@ -46,6 +46,7 @@ test('create book without defaults', () => {
             Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',
             Keys.SIGNATURE, 'test_signature',
             Keys.TITLE, 'test_title',
+            Keys.SERIES_TITLE, 'test_series_title',
             Keys.WAS_EVER_PUBLISHED, 'false',
         ),
         makeMap(),
@@ -91,6 +92,7 @@ test('create book without defaults', () => {
     expect(book.pubStatus).toBe('test_pub_status');
     expect(book.pubStatusDetail).toBe('test_pub_status_detail');
     expect(book.title).toBe('test_title');
+    expect(book.seriesTitle).toBe('test_series_title');
     expect(book.wasEverPublished).toBe(false);
     expect(book.signature).toBe('test_signature');
 });
@@ -144,6 +146,7 @@ test('create book with defaults', () => {
             Keys.PRICE_USD, '8.1',
             Keys.SIGNATURE, 'test_signature',
             Keys.TITLE, 'test_title',
+            Keys.SERIES_TITLE, 'test_series_title',
         ),
         'content/dir');
 
@@ -187,6 +190,7 @@ test('create book with defaults', () => {
     expect(book.pubStatus).toBe('test_pub_status');
     expect(book.pubStatusDetail).toBe('test_pub_status_detail');
     expect(book.title).toBe('test_title');
+    expect(book.seriesTitle).toBe('test_series_title');
     expect(book.wasEverPublished).toBe(false);
     expect(book.signature).toBe('test_signature');
 });
@@ -236,6 +240,7 @@ test('detects missing key', () => {
                 Keys.PRICE_USD, '8.1',
                 Keys.SIGNATURE, 'test_signature',
                 Keys.TITLE, 'test_title',
+                Keys.SERIES_TITLE, 'test_series_title',
             ),
             'content/dir');
     expect(() => createBookWithMissingAuthor()).toThrow(/not found.*author/);
@@ -290,6 +295,7 @@ test('create book with resolution', () => {
             Keys.PRICE_USD, '${price}',
             Keys.SIGNATURE, '${prefix}signature',
             Keys.TITLE, '${prefix}title',
+            Keys.SERIES_TITLE, '${prefix}series_title',
         ),
         'content/dir');
 
@@ -333,6 +339,7 @@ test('create book with resolution', () => {
     expect(book.pubStatus).toBe('test_pub_status');
     expect(book.pubStatusDetail).toBe('test_pub_status_detail');
     expect(book.title).toBe('test_title');
+    expect(book.seriesTitle).toBe('test_series_title');
     expect(book.wasEverPublished).toBe(false);
     expect(book.signature).toBe('test_signature');
 });

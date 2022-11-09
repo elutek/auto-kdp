@@ -90,6 +90,7 @@ export class Book {
     this.pubDate = getValue(Keys.PUB_DATE);
     this.pubStatus = getValue(Keys.PUB_STATUS);
     this.pubStatusDetail = getValue(Keys.PUB_STATUS_DETAIL);
+    this.seriesTitle = getValue(Keys.SERIES_TITLE);
     this.title = getValue(Keys.TITLE);
     this.wasEverPublished = getValue(Keys.WAS_EVER_PUBLISHED) == 'true';
     this.signature = getValue(Keys.SIGNATURE);

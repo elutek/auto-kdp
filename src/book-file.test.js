@@ -5,7 +5,6 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 import { BookFile } from './book-file';
-import { BookList } from './book-list';
 
 const BOOKS_CONF = `
 authorFirstName = test_author_first_name
@@ -40,6 +39,7 @@ paperCoverFinish = test_paper_cover_finish
 paperColor = test_paper_color
 paperTrim = test_paper_trim
 signature = \${name}
+seriesTitle = My Series
 title = Book for \${name}
 `
 
@@ -143,6 +143,7 @@ paperColor =
 paperTrim =
 signature =
 title =
+seriesTitle =
 `
     mock({
         'books.csv': empty_books_csv,

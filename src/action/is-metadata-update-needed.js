@@ -26,6 +26,16 @@ export async function isMetadataUpdateNeeded(book, params) {
       "NEEDS UPDATE: got '" + title + "' but expecting '" + book.title + "'" : "OK"));
   }
 
+  // Series
+  const seriesTitle = (await page.$eval('#series_title', x => x.value)) || '';
+  const seriesTitleNeedsUpdate = seriesTitle != book.seriesTitle;
+  needsUpdate ||= seriesTitleNeedsUpdate;
+
+  if (params.verbose) {
+    debug(verbose, 'Checking series title: ' + (seriesTitleNeedsUpdate ?
+      "NEEDS UPDATE: got '" + seriesTitle + "' but expecting '" + book.seriesTitle + "'" : "OK"));
+  }
+
   // Author first name.
   const authorFirstName = await page.$eval('#data-print-book-primary-author-first-name', x => x.value);
   const authorFirstNameNeedsUpdate = authorFirstName != book.authorFirstName;
