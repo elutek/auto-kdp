@@ -1,4 +1,6 @@
 import { Timeouts, Urls, clearTextField, debug } from './utils.js';
+import pkg from 'sleep';
+const { sleep } = pkg;
 
 // This function also creates a book.
 export async function updateBookMetadata(book, params) {
@@ -23,17 +25,22 @@ export async function updateBookMetadata(book, params) {
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_1 });
     await page.waitForTimeout(Timeouts.SEC_2);
 
+    let id = '';
+
     if (!book.wasEverPublished) {
+
+        // This fields can only be updated if the book
+        // has never been published. After publishing, they
+        // are set in stone.
 
         // Title
         debug(verbose, 'Updating title');
-        let id = '#data-print-book-title';
+        id = '#data-print-book-title';
         await page.waitForSelector(id);
         if (!isNew) await clearTextField(page, id);
         await page.type(id, book.title);
 
         // TODO: Support subtitle
-        // TODO: Support series
         // TODO: Support edition number
 
         // Author first name
@@ -70,10 +77,74 @@ export async function updateBookMetadata(book, params) {
         }
     }
 
+    if (book.seriesTitle != null && book.seriesTitle != '') {
+        debug(verbose, 'Getting series title');
+        id = '#series_title';
+        await page.waitForSelector(id);
+        const existingSeriesTitle = (await page.$eval(id, x => x.textContent.trim())) || '';
+
+        if (existingSeriesTitle != '') {
+            debug(verbose, 'Series title already set: ' + existingSeriesTitle);
+            if (existingSeriesTitle != book.seriesTitle) {
+                throw 'Cannot change series title. Please edit your series manually';
+            }
+        } else {
+            debug(verbose, 'Series title not set. Updating it');
+
+            debug(verbose, 'Clicking Add Series');
+            id = '#add_series_button #a-autoid-2-announce';
+            await page.waitForSelector(id);
+            await page.click(id);
+            await page.waitForTimeout(Timeouts.SEC_2);  // Just in case.
+
+            debug(verbose, 'Clicking Select Series for Existing series');
+            id = '#a-popover-content-9 span[data-test-id="modal-button-create-or-select-existing"] button';
+            await page.waitForSelector(id);
+            await page.click(id);
+            await page.waitForTimeout(Timeouts.SEC_5);  // Just in case.
+
+            let searchQuery = book.seriesTitle.replace('?', ' ').trim();
+            debug(verbose, 'Type search query: ' + searchQuery);
+            id = '#a-popover-content-9 input[type="search"]';
+            await page.waitForSelector(id);
+            await page.type(id, searchQuery);
+
+            debug(verbose, 'Click Search');
+            id = '#a-popover-content-9 input[type="submit"]';
+            await page.waitForSelector(id);
+            await page.click(id);
+            await page.waitForTimeout(Timeouts.SEC_2);  // Just in case.
+
+            debug(verbose, 'Clicking on our series (we assume we have only one as a result of the search)');
+            id = '#a-popover-content-9 .a-list-item button';
+            await page.waitForSelector(id);
+            await page.click(id);
+            await page.waitForTimeout(Timeouts.SEC_2);  // Just in case.
+
+            debug(verbose, 'Clicking Main Content');
+            id = '#a-popover-content-9 span[aria-label="Main content"] button';
+            await page.waitForSelector(id);
+            await page.click(id);
+            await page.waitForTimeout(Timeouts.SEC_2);  // Just in case.
+
+            debug(verbose, 'Clicking Confirm and continue');
+            id = '#a-popover-content-9 button';
+            await page.waitForSelector(id);
+            await page.click(id);
+            await page.waitForTimeout(Timeouts.SEC_2);  // Just in case.
+
+            debug(verbose, 'Clicking Done');
+            id = '#react-aui-modal-footer-1 input[type="submit"]';
+            await page.waitForSelector(id);
+            await page.click(id);
+            await page.waitForTimeout(Timeouts.SEC_2);  // Just in case.
+        }
+    }
+
     // Description
     debug(verbose, 'Updating description');
     //id = '#data-print-book-description';
-    let id = '#cke_18'; // Click button 'source'
+    id = '#cke_18'; // Click button 'source'
     await page.waitForSelector(id);
     await page.click(id);
     id = '#cke_1_contents > textarea';

@@ -6,7 +6,7 @@ async function _executeBookAction(action, book, actionCallback, params) {
             console.log(`Book action ${action} #${attempt} start`);
             let callbackResult = await actionCallback(action, book, params);
             let result = (typeof callbackResult == 'boolean') ? { success: callbackResult, nextActions: ''} : callbackResult;
-            console.log(`Book action ${action} #${attempt} done: ` + (result.success ? 'success' : 'failure'));
+            console.log(`Book action ${action} #${attempt} result : ` + JSON.stringify(result));
             if (result.success) {
                 return result;
             }

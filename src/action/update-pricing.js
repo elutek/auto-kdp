@@ -51,35 +51,35 @@ export async function updatePricing(book, params) {
     await page.waitForSelector(id, { visible: true });
     await clearTextField(page, id);
     await page.type(id, '' + book.priceEur);
-    await page.waitForTimeout(Timeouts.SEC_2);
+    await page.waitForTimeout(Timeouts.SEC_1);
 
     debug(verbose, 'Updating price FR/EUR: ' + book.priceEur);
     id = '#data-pricing-print-fr-price-input input';
     await page.waitForSelector(id, { visible: true });
     await clearTextField(page, id);
     await page.type(id, '' + book.priceEur);
-    await page.waitForTimeout(Timeouts.SEC_2);
+    await page.waitForTimeout(Timeouts.SEC_1);
 
     debug(verbose, 'Updating price ES/EUR: ' + book.priceEur);
     id = '#data-pricing-print-es-price-input input';
     await page.waitForSelector(id, { visible: true });
     await clearTextField(page, id);
     await page.type(id, '' + book.priceEur);
-    await page.waitForTimeout(Timeouts.SEC_2);
+    await page.waitForTimeout(Timeouts.SEC_1);
 
     debug(verbose, 'Updating price IT/EUR: ' + book.priceEur);
     id = '#data-pricing-print-it-price-input input';
     await page.waitForSelector(id, { visible: true });
     await clearTextField(page, id);
     await page.type(id, '' + book.priceEur);
-    await page.waitForTimeout(Timeouts.SEC_2);
+    await page.waitForTimeout(Timeouts.SEC_1);
 
     debug(verbose, 'Updating price NL/EUR: ' + book.priceEur);
     id = '#data-pricing-print-nl-price-input input';
     await page.waitForSelector(id, { visible: true });
     await clearTextField(page, id);
     await page.type(id, '' + book.priceEur);
-    await page.waitForTimeout(Timeouts.SEC_2);
+    await page.waitForTimeout(Timeouts.SEC_1);
   }
 
   if (book.pricePl != null && book.pricePl > 0) {
@@ -88,7 +88,7 @@ export async function updatePricing(book, params) {
     await page.waitForSelector(id, { visible: true });
     await clearTextField(page, id);
     await page.type(id, '' + book.pricePl);
-    await page.waitForTimeout(Timeouts.SEC_2);
+    await page.waitForTimeout(Timeouts.SEC_1);
   }
 
   if (book.priceSe != null && book.priceSe > 0) {
@@ -97,7 +97,7 @@ export async function updatePricing(book, params) {
     await page.waitForSelector(id, { visible: true });
     await clearTextField(page, id);
     await page.type(id, '' + book.priceSe);
-    await page.waitForTimeout(Timeouts.SEC_2);
+    await page.waitForTimeout(Timeouts.SEC_1);
   }
 
   if (book.priceJp != null && book.priceJp > 0) {
@@ -106,7 +106,7 @@ export async function updatePricing(book, params) {
     await page.waitForSelector(id, { visible: true });
     await clearTextField(page, id);
     await page.type(id, '' + book.priceJp);
-    await page.waitForTimeout(Timeouts.SEC_2);
+    await page.waitForTimeout(Timeouts.SEC_1);
   }
 
   if (book.priceCa != null && book.priceCa > 0) {
@@ -115,7 +115,7 @@ export async function updatePricing(book, params) {
     await page.waitForSelector(id, { visible: true });
     await clearTextField(page, id);
     await page.type(id, '' + book.priceCa);
-    await page.waitForTimeout(Timeouts.SEC_2);
+    await page.waitForTimeout(Timeouts.SEC_1);
   }
 
   if (book.priceAu != null && book.priceAu > 0) {
@@ -124,8 +124,10 @@ export async function updatePricing(book, params) {
     await page.waitForSelector(id, { visible: true });
     await clearTextField(page, id);
     await page.type(id, '' + book.priceAu);
-    await page.waitForTimeout(Timeouts.SEC_2);
+    await page.waitForTimeout(Timeouts.SEC_1);
   }
+
+  await page.waitForTimeout(Timeouts.SEC_2);
 
   // Save
   debug(verbose, 'Saving');

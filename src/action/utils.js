@@ -3,6 +3,7 @@ import * as fs from 'fs';
 export let Timeouts = {
     SEC_1: 1 * 1000,
     SEC_2: 2 * 1000,
+    SEC_5: 5 * 1000,
     MIN_1: 1 * 60 * 1000,
     MIN_3: 1 * 60 * 1000,
     MIN_5: 5 * 60 * 1000,
@@ -45,4 +46,22 @@ export function debug(verbose, message) {
     if (verbose) {
         console.debug(message);
     }
+}
+
+export function arraysEqual(a, b) {
+    if (a === b) {
+        return true;
+    }
+    if (a == null) { 
+        return b == null;
+    }
+    if (b == null || a.length != b.length) {
+        return false;
+    }
+    for (let i = 0; i < a.length; ++i) {
+        if (a[i] !== b[i]) {
+            return false;
+        }
+    }
+    return true;
 }

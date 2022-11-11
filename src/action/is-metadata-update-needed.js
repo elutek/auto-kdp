@@ -1,4 +1,4 @@
-import { Timeouts, Urls, debug } from './utils.js';
+import { Timeouts, Urls, debug, arraysEqual } from './utils.js';
 
 export async function isMetadataUpdateNeeded(book, params) {
   const verbose = params.verbose;
@@ -16,7 +16,7 @@ export async function isMetadataUpdateNeeded(book, params) {
 
   let needsUpdate = false;
 
-  // Title
+  // Title.
   const title = await page.$eval('#data-print-book-title', x => x.value)
   const titleNeedsUpdate = title != book.title;
   needsUpdate ||= titleNeedsUpdate;
@@ -26,7 +26,7 @@ export async function isMetadataUpdateNeeded(book, params) {
       "NEEDS UPDATE: got '" + title + "' but expecting '" + book.title + "'" : "OK"));
   }
 
-  // Series
+  // Series title.
   const seriesTitle = (await page.$eval('#series_title', x => x.value)) || '';
   const seriesTitleNeedsUpdate = seriesTitle != book.seriesTitle;
   needsUpdate ||= seriesTitleNeedsUpdate;
@@ -127,17 +127,16 @@ export async function isMetadataUpdateNeeded(book, params) {
   debug(verbose, 'Checking keyword6: ' + (keyword6NeedsUpdate ?
     "NEEDS UPDATE: got '" + keyword6 + "' but expecting '" + book.keyword6 + "'" : "OK"));
 
-  const category1 = await page.$eval('#data-print-book-categories-1-bisac', x => x.value);
-  const category1NeedsUpdate = category1 != book.category1;
-  needsUpdate ||= category1NeedsUpdate;
-  debug(verbose, 'Checking category1: ' + (category1NeedsUpdate ?
-    "NEEDS UPDATE: got '" + category1 + "' but expecting '" + book.category1 + "'" : "OK"));
+  const category1 = (await page.$eval('#data-print-book-categories-1-bisac', x => x.value)) || '';
+  const category2 = (await page.$eval('#data-print-book-categories-2-bisac', x => x.value)) || '';
 
-  const category2 = await page.$eval('#data-print-book-categories-2-bisac', x => x.value);
-  const category2NeedsUpdate = category2 != book.category2;
-  needsUpdate ||= category2NeedsUpdate;
-  debug(verbose, 'Checking category2: ' + (category2NeedsUpdate ?
-    "NEEDS UPDATE: got '" + category2 + "' but expecting '" + book.category2 + "'" : "OK"));
+  const hasCategoriesSorted = [category1, category2].filter((x) => x != null && x != '').sort();
+  const needCategoriesSorted = [book.category1, book.category2].filter((x) => x != null && x != '').sort();
+  const categoryNeedsUpdate = !arraysEqual(hasCategoriesSorted, needCategoriesSorted);
+  needsUpdate ||= categoryNeedsUpdate;
+  debug(verbose, 'Checking categories: ' + (categoryNeedsUpdate ?
+    "NEEDS UPDATE: got categories '" + hasCategoriesSorted.toString() +
+    " but expecting '" + needCategoriesSorted + "'" : "OK"));
 
   debug(verbose, 'Needs update: ' + needsUpdate);
 
