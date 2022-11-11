@@ -21,7 +21,8 @@
     "properties-reader": "^2.2.0",
     "puppeteer": "^14.4.1",
     "puppeteer-extra": "^3.3.0",
-    "puppeteer-extra-plugin-stealth": "^2.10.1"
+    "puppeteer-extra-plugin-stealth": "^2.10.1",
+    "sleep": "^6.3.0"
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.18.6",
