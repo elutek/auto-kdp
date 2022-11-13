@@ -1,5 +1,6 @@
-import { Book } from '../book.js';
-import { Timeouts, Urls, debug } from './utils.js';
+import { Timeouts, Urls, clearTextField, debug } from './utils.js';
+
+var globalScrapePage = null;
 
 export async function scrape(book, params) {
   const verbose = params.verbose
@@ -17,15 +18,15 @@ export async function scrape(book, params) {
     return { success: false, nextActions: '' };
   }
 
-  const page = await params.browser.newPage();
-
-  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_3 });
-  await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
+  // We scrape *a lot*. For scrape we will keep a special 
+  // page used only for scraping.
+  const page = await _getScrapePage(url, params);
 
   // Type the search query.
   debug(verbose, 'Querying for the book');
   let id = '#podbookshelftable-search-input';
   await page.waitForSelector(id, { timeout: Timeouts.MIN_1 });
+  await clearTextField(page, id);
   await page.type(id, book.id);
 
   // Click search button.
@@ -75,11 +76,23 @@ export async function scrape(book, params) {
     book.pubDate = '';
   }
 
+  /* We do not close this special page.
   if (!params.keepOpen) {
     await page.close();
   }
+  */
 
   return { success: true, nextActions: book.isFullyLive() ? '' : 'scrape' };
+}
+
+async function _getScrapePage(url, params) {
+  if (globalScrapePage == null) {
+    globalScrapePage = await params.browser.newPage();
+
+    await globalScrapePage.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_3 });
+    await globalScrapePage.waitForTimeout(Timeouts.SEC_1);  // Just in case.
+  }
+  return globalScrapePage;
 }
 
 function _formatDate(str) {
