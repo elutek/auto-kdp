@@ -3,10 +3,10 @@ async function _executeBookAction(action, book, actionCallback, params) {
     let err = null;
     for (let attempt = 1; attempt <= 3; ++attempt) {
         try {
-            console.log(`Book action ${action} #${attempt} start`);
+            console.log(`\nBook action ${action} #${attempt} start`);
             let callbackResult = await actionCallback(action, book, params);
             let result = (typeof callbackResult == 'boolean') ? { success: callbackResult, nextActions: ''} : callbackResult;
-            console.log(`Book action ${action} #${attempt} result : ` + JSON.stringify(result));
+            console.log(`Book action ${action} #${attempt} result : ` + (result.success ? 'OK': 'FAILED'));
             if (result.success) {
                 return result;
             }
