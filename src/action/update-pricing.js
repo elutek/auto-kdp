@@ -1,5 +1,20 @@
 import { Timeouts, Urls, clearTextField, debug } from './utils.js';
 
+async function updatePriceIfNeeded(newPrice, currency, id, page, verbose) {
+  const oldPriceStr = (await page.$eval(id, x => x.value)) || '';
+  const newPriceStr = '' + newPrice;
+  if (newPriceStr != oldPriceStr) {
+    debug(verbose, `Updating price ${currency}: from ${oldPriceStr} to ${newPriceStr}`);
+    await page.waitForSelector(id);
+    await clearTextField(page, id);
+    await page.waitForTimeout(Timeouts.SEC_1);
+    await page.type(id, newPriceStr);
+    await page.waitForTimeout(Timeouts.SEC_1);
+  } else {
+    debug(verbose, `Updating price ${currency} - not needed`);
+  }
+}
+
 export async function updatePricing(book, params) {
   if (params.dryRun) {
     debug(verbose, 'Updating pricing (dry run)');
@@ -18,114 +33,18 @@ export async function updatePricing(book, params) {
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_1 });
   await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
-  let id = '';
-
-  if (book.priceUsd != null && book.priceUsd > 0) {
-    debug(verbose, 'Updating price USD: ' + book.priceUsd);
-    id = '#data-pricing-print-us-price-input input';
-    await page.waitForSelector(id);
-    await clearTextField(page, id);
-    await page.waitForTimeout(Timeouts.SEC_1);
-    await page.type(id, '' + book.priceUsd);
-    await page.waitForTimeout(Timeouts.SEC_2);
-  }
-
-  // Open other markets window.
-  // id = '#data-pricing-print-expander > a';
-  // await page.waitForSelector(id);
-  // await page.click(id);
-
-  if (book.priceGbp != null && book.priceGbp > 0) {
-    debug(verbose, 'Updating price GBP: ' + book.priceGbp);
-    id = '#data-pricing-print-uk-price-input input';
-    await page.waitForSelector(id, { visible: true });
-    await clearTextField(page, id);
-    await page.type(id, '' + book.priceGbp);
-    await page.waitForTimeout(Timeouts.SEC_2);
-  }
-
-  // TODO: separate priceEur into price per country
-  if (book.priceEur != null && book.priceEur > 0) {
-    debug(verbose, 'Updating price DE/EUR: ' + book.priceEur);
-    id = '#data-pricing-print-de-price-input input';
-    await page.waitForSelector(id, { visible: true });
-    await clearTextField(page, id);
-    await page.type(id, '' + book.priceEur);
-    await page.waitForTimeout(Timeouts.SEC_1);
-
-    debug(verbose, 'Updating price FR/EUR: ' + book.priceEur);
-    id = '#data-pricing-print-fr-price-input input';
-    await page.waitForSelector(id, { visible: true });
-    await clearTextField(page, id);
-    await page.type(id, '' + book.priceEur);
-    await page.waitForTimeout(Timeouts.SEC_1);
-
-    debug(verbose, 'Updating price ES/EUR: ' + book.priceEur);
-    id = '#data-pricing-print-es-price-input input';
-    await page.waitForSelector(id, { visible: true });
-    await clearTextField(page, id);
-    await page.type(id, '' + book.priceEur);
-    await page.waitForTimeout(Timeouts.SEC_1);
-
-    debug(verbose, 'Updating price IT/EUR: ' + book.priceEur);
-    id = '#data-pricing-print-it-price-input input';
-    await page.waitForSelector(id, { visible: true });
-    await clearTextField(page, id);
-    await page.type(id, '' + book.priceEur);
-    await page.waitForTimeout(Timeouts.SEC_1);
-
-    debug(verbose, 'Updating price NL/EUR: ' + book.priceEur);
-    id = '#data-pricing-print-nl-price-input input';
-    await page.waitForSelector(id, { visible: true });
-    await clearTextField(page, id);
-    await page.type(id, '' + book.priceEur);
-    await page.waitForTimeout(Timeouts.SEC_1);
-  }
-
-  if (book.pricePl != null && book.pricePl > 0) {
-    debug(verbose, 'Updating price PL: ' + book.pricePl);
-    id = '#data-pricing-print-pl-price-input input';
-    await page.waitForSelector(id, { visible: true });
-    await clearTextField(page, id);
-    await page.type(id, '' + book.pricePl);
-    await page.waitForTimeout(Timeouts.SEC_1);
-  }
-
-  if (book.priceSe != null && book.priceSe > 0) {
-    debug(verbose, 'Updating price SE: ' + book.priceSe);
-    id = '#data-pricing-print-se-price-input input';
-    await page.waitForSelector(id, { visible: true });
-    await clearTextField(page, id);
-    await page.type(id, '' + book.priceSe);
-    await page.waitForTimeout(Timeouts.SEC_1);
-  }
-
-  if (book.priceJp != null && book.priceJp > 0) {
-    debug(verbose, 'Updating price JP: ' + book.priceJp);
-    id = '#data-pricing-print-jp-price-input input';
-    await page.waitForSelector(id, { visible: true });
-    await clearTextField(page, id);
-    await page.type(id, '' + book.priceJp);
-    await page.waitForTimeout(Timeouts.SEC_1);
-  }
-
-  if (book.priceCa != null && book.priceCa > 0) {
-    debug(verbose, 'Updating price CA: ' + book.priceCa);
-    id = '#data-pricing-print-ca-price-input input';
-    await page.waitForSelector(id, { visible: true });
-    await clearTextField(page, id);
-    await page.type(id, '' + book.priceCa);
-    await page.waitForTimeout(Timeouts.SEC_1);
-  }
-
-  if (book.priceAu != null && book.priceAu > 0) {
-    debug(verbose, 'Updating price AU: ' + book.priceCa);
-    id = '#data-pricing-print-au-price-input input';
-    await page.waitForSelector(id, { visible: true });
-    await clearTextField(page, id);
-    await page.type(id, '' + book.priceAu);
-    await page.waitForTimeout(Timeouts.SEC_1);
-  }
+  await updatePriceIfNeeded(book.priceUsd, 'USD', '#data-pricing-print-us-price-input input', page, verbose);
+  await updatePriceIfNeeded(book.priceGbp, 'GBP', '#data-pricing-print-uk-price-input input', page, verbose);
+  await updatePriceIfNeeded(book.priceEur, 'DE/EUR', '#data-pricing-print-de-price-input input', page, verbose);
+  await updatePriceIfNeeded(book.priceEur, 'FR/EUR', '#data-pricing-print-fr-price-input input', page, verbose);
+  await updatePriceIfNeeded(book.priceEur, 'ES/EUR', '#data-pricing-print-es-price-input input', page, verbose);
+  await updatePriceIfNeeded(book.priceEur, 'IT/EUR', '#data-pricing-print-it-price-input input', page, verbose);
+  await updatePriceIfNeeded(book.priceEur, 'NL/EUR', '#data-pricing-print-nl-price-input input', page, verbose);
+  await updatePriceIfNeeded(book.pricePl, 'PL', '#data-pricing-print-pl-price-input input', page, verbose);
+  await updatePriceIfNeeded(book.priceSe, 'PL', '#data-pricing-print-se-price-input input', page, verbose);
+  await updatePriceIfNeeded(book.priceJp, 'JP', '#data-pricing-print-jp-price-input input', page, verbose);
+  await updatePriceIfNeeded(book.priceCa, 'CA', '#data-pricing-print-ca-price-input input', page, verbose);
+  await updatePriceIfNeeded(book.priceAu, 'AU', '#data-pricing-print-au-price-input input', page, verbose);
 
   await page.waitForTimeout(Timeouts.SEC_2);
 
