@@ -1,4 +1,4 @@
-import { Timeouts, Urls, debug, arraysEqual } from './utils.js';
+import { Timeouts, Urls, debug, arraysEqual, normalizeText } from './utils.js';
 
 export async function isMetadataUpdateNeeded(book, params) {
   const verbose = params.verbose;
@@ -75,8 +75,8 @@ export async function isMetadataUpdateNeeded(book, params) {
   // Description.
   await page.click('#cke_18'); // Click button 'source'
   const description = await page.$eval('#cke_1_contents > textarea', x => x.value);
-  const gotDescription = _normalize(description);
-  const expDescription = _normalize(book.description);
+  const gotDescription = normalizeText(description);
+  const expDescription = normalizeText(book.description);
   const descriptionNeedsUpdate = gotDescription != expDescription;
   needsUpdate ||= descriptionNeedsUpdate;
   debug(verbose, 'Checking description: ' + (descriptionNeedsUpdate ?
@@ -147,10 +147,3 @@ export async function isMetadataUpdateNeeded(book, params) {
   return { success: true, nextActions: needsUpdate ? 'book-metadata:pricing:publish:scrape' : '' };
 }
 
-function _normalize(str) {
-  return str.replaceAll('\n', ' ')
-    .replaceAll(/\s+/g, ' ')
-    .replaceAll(/\s+$/g, '')
-    .replaceAll('> <', '><')
-    .replaceAll('. </', '.</');
-}

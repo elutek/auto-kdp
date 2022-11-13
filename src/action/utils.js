@@ -1,9 +1,12 @@
 import * as fs from 'fs';
 
 export let Timeouts = {
+    SEC_HALF: 1 * 1000,
     SEC_1: 1 * 1000,
     SEC_2: 2 * 1000,
     SEC_5: 5 * 1000,
+    SEC_10: 10 * 1000,
+    SEC_30: 30 * 1000,
     MIN_1: 1 * 60 * 1000,
     MIN_3: 1 * 60 * 1000,
     MIN_5: 5 * 60 * 1000,
@@ -64,4 +67,12 @@ export function arraysEqual(a, b) {
         }
     }
     return true;
+}
+
+export function normalizeText(str) {
+  return str.replaceAll('\n', ' ')
+    .replaceAll(/\s+/g, ' ')
+    .replaceAll(/\s+$/g, '')
+    .replaceAll('> <', '><')
+    .replaceAll('. </', '.</');
 }
