@@ -120,7 +120,12 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
         //
         let progressPerc = Math.round(10 * 100 * numProcessed / totalToProcess) / 10;
         let etaMin = numProcessed == 0 ? 0 : Math.round(((totalToProcess - numProcessed) * totalSeconds / numProcessed) / 60);
-        console.log(verbose, `\n=== Processed ${numProcessed}/${totalToProcess} (${progressPerc}%), ETA: ${etaMin}min ===`);
+        let etaHrs = 0;
+        if (etaMin >= 60) {
+          etaHrs = Math.floor(etaMin / 60);
+          etaMin -= etaHrs * 60;
+        }
+        console.log(verbose, `\n=== Processed ${numProcessed}/${totalToProcess} (${progressPerc}%), ETA: ${etaHrs}h ${etaMin}m ===`);
 
         //
         // Process one book. Measure how long.
@@ -129,7 +134,7 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
         const startTime = performance.now();
         const isSuccess = await _doProcessOneBook(bookFile, bookList, book, params);
         const durationSeconds = (performance.now() - startTime) / 1000;
-        _debug(`Book processing ${isSuccess ? 'OK' : 'FAILED'}, took ${Math.round(durationSeconds)} secs`);
+        console.log(`Book processing ${isSuccess ? 'OK' : 'FAILED'}, took ${Math.round(durationSeconds)} secs`);
 
         // Update stats
         totalSeconds += durationSeconds;
@@ -173,7 +178,7 @@ async function main() {
 function _debug(verbose, ...message) {
   // TODO: this is silly, we need a proper logger.
   if (verbose && message != null && message.length > 0) {
-    console.debug(message[0], message.join(" "));
+    console.debug(message[0], message.slice(1).join(" "));
   }
 }
 
