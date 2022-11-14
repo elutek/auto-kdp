@@ -15,9 +15,9 @@ export async function publish(book, params) {
   await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
   debug(verbose, 'Clicking publish');
-  await page.waitForSelector('#save-and-publish-announce', { timeout: Timeouts.MIN_3 });
-  await page.click('#save-and-publish-announce');
-  await page.waitForNavigation({ timeout: Timeouts.MIN_3 });
+  await page.waitForSelector('#save-and-publish-announce', { timeout: Timeouts.MIN_1 });
+  await page.click('#save-and-publish-announce', { timeout: Timeouts.MIN_1 });
+  await page.waitForNavigation({ timeout: Timeouts.MIN_1 });
   await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
   book.wasEverPublished = 'true';

@@ -25,15 +25,15 @@ export async function scrape(book, params) {
   // Type the search query.
   debug(verbose, 'Querying for the book');
   let id = '#podbookshelftable-search-input';
-  await page.waitForSelector(id, { timeout: Timeouts.MIN_1 });
-  await clearTextField(page, id);
+  await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
+  await clearTextField(page, id, true);
   await page.type(id, book.id);
 
   // Click search button.
   debug(verbose, 'Clicking Search');
   id = '#podbookshelftable-search-button-submit .a-button-input';
-  await page.waitForSelector(id, { timeout: Timeouts.MIN_1 });
-  await page.click(id);
+  await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
+  await page.click(id, { timeout: Timeouts.SEC_1 });
 
   // Get ASIN from the search result.
   debug(verbose, 'Getting ASIN');

@@ -25,13 +25,13 @@ export let Urls = {
     EDIT_PAPERBACK_PRICING: 'https://kdp.amazon.com/en_US/title-setup/paperback/$id/pricing?ref_=kdp_BS_D_ta_pr',
 };
 
-export async function clearTextField(page, id) {
+export async function clearTextField(page, id, fast = false) {
     await page.focus(id);
     await page.keyboard.down('Control');
     await page.keyboard.press('A');
     await page.keyboard.up('Control');
     await page.keyboard.press('Backspace');
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(fast ? 300 : 1000);
 }
 
 export function fileExists(path) {

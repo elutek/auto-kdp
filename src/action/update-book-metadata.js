@@ -145,11 +145,12 @@ export async function updateBookMetadata(book, params) {
     // Description - first check if update is needed. The typing
     // is pretty slow so we avoid it if not necessary.
     id = '#cke_18'; // Click button 'source'
+    await page.waitForSelector(id);
     await page.click(id, { timeout: Timeouts.SEC_5 }); // Click button 'source'
     const oldDescription = normalizeText(await page.$eval('#cke_1_contents > textarea', x => x.value) || '');
     if (normalizeText(oldDescription) != normalizeText(book.description)) {
         // Description needs to be updated.
-        debug(verbose, 'Updating description');
+        debug(verbose, `Updating description from\n\t${oldDescription}\n\tto\n\t${book.description}`);
         //id = '#data-print-book-description';
         await page.waitForSelector(id);
         await page.click(id, { timeout: Timeouts.SEC_5 });
