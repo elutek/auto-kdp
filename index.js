@@ -25,7 +25,9 @@ import { publish } from './src/action/publish.js';
 
 
 async function executeBookActionCallback(action, book, params) {
-  _debug(params.verbose, 'Executing book action: ' + action);
+  if (params.verbose) {
+    console.log('Executing book action: ' + action);
+  }
 
   if (action == 'updateMetadataIfNeeded') {
     return await isMetadataUpdateNeeded(book, params);
@@ -52,10 +54,14 @@ async function executeBookActionCallback(action, book, params) {
 async function _doProcessOneBook(bookFile, bookList, book, params) {
   const results = await ExecuteBookActions(book, (a, b, p) => executeBookActionCallback(a, b, p), params);
   if (results.numSuccesses > 0) {
-    _debug(params.verbose, `Writing ${bookList.size()} books`)
+    if (params.verbose) {
+      console.log(`Writing ${bookList.size()} books`);
+    }
     await bookFile.writeBooksAsync(bookList);
   } else {
-    _debug(params.verbose, 'No need to update books');
+    if (params.verbose) {
+      console.debug('No need to update books');
+    }
   }
   return results.result;
 }
@@ -73,23 +79,39 @@ async function _startBrowser(bookList, headlessOverride, userDataDir, verbose) {
 }
 
 async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDataDir, keepOpen, headlessOverride, dryRun, verbose) {
-  _debug(verbose && dryRun, 'This is DRY RUN');
+  if (verbose && dryRun) {
+    console.log('This is DRY RUN');
+  }
 
   //
   // Read books
   //
-  _debug(verbose, `Using \n\tbooks CSV file: ${booksCsvFile}\n\tbook config file: ${booksConfigFile}\n\tbooks content dir ${contentDir}` +
-    `\n\tuser data dir ${userDataDir}\n\tkeepOpen: ${keepOpen}\n\tdryRun: ${dryRun}\n\tverbose; ${verbose}`);
+  if (verbose) {
+    console.log(`Using \n` +
+      `\tbooks CSV file: ${booksCsvFile}\n` +
+      `\tbook config file: ${booksConfigFile}\n` +
+      `\tbooks content dir ${contentDir}\n` +
+      `\tuser data dir ${userDataDir}\n` +
+      `\tkeepOpen: ${keepOpen}\n` +
+      `\tdryRun: ${dryRun}\n` +
+      `\tverbose; ${verbose}`);
+  }
   let bookFile = new BookFile(booksCsvFile, booksConfigFile, contentDir);
   let bookList = await bookFile.readBooksAsync();
-  _debug(verbose, `Read ${bookList.size()} books, have ${bookList.getNumBooksToProcess()} to process`);
+  if (verbose) {
+    console.log(`Found total ${bookList.size()} books, to process:`, bookList.getBooksToProcess());
+  }
 
   //
   // Start browser and login. After this succeeds we should finally close the browser.
   //
-  _debug(verbose, 'Starting browser');
+  if (verbose) {
+    console.debug('Starting browser');
+  }
   let browser = await _startBrowser(bookList, headlessOverride, userDataDir, verbose);
-  _debug(verbose, 'Browser started');
+  if (verbose) {
+    console.debug('Browser started');
+  }
 
   try {
     let params = {
@@ -102,10 +124,13 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
     //
     // Login.
     // 
-    _debug(verbose, 'Logging in');
+    if (verbose) {
+      console.debug('Logging in');
+    }
     await ensureLoggedIn(params);
-    _debug(verbose, 'Logged in');
-
+    if (verbose) {
+      console.debug('Logged in');
+    }
 
     //
     // Process all books, write useful stats.
@@ -126,12 +151,16 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
           etaHrs = Math.floor(etaMin / 60);
           etaMin -= etaHrs * 60;
         }
-        console.log(verbose, `\n=== Processed ${numProcessed}/${totalToProcess} (${progressPerc}%), ETA: ${etaHrs}h ${etaMin}m ===`);
+        if (verbose) {
+          console.log(`\n=== Processed ${numProcessed}/${totalToProcess} (${progressPerc}%), ETA: ${etaHrs}h ${etaMin}m ===`);
+        }
 
         //
         // Process one book. Measure how long.
         //
-        _debug(verbose, book);
+        if (verbose) {
+          console.log(book);
+        }
         const startTime = performance.now();
         const isSuccess = await _doProcessOneBook(bookFile, bookList, book, params);
         const durationSeconds = (performance.now() - startTime) / 1000;
@@ -147,7 +176,9 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
       await browser.close();
     }
   }
-  _debug(verbose, 'We are done');
+  if (verbose) {
+    console.log('We are done');
+  }
 };
 
 async function main() {
@@ -175,14 +206,6 @@ async function main() {
 
   await mainWithOptions(opts.books, opts.config, opts.contentDir, opts.userData, opts.keepOpen, headlessOverride, opts.dryRun, verbose);
 }
-
-function _debug(verbose, ...message) {
-  // TODO: this is silly, we need a proper logger.
-  if (verbose && message != null && message.length > 0) {
-    console.debug(message[0], message.slice(1).join(" "));
-  }
-}
-
 
 (async () => { main() })();
 
