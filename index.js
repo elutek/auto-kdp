@@ -78,7 +78,8 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
   //
   // Read books
   //
-  _debug(verbose, `Using books CSV file: ${booksCsvFile}, config file ${booksConfigFile}, content dir ${contentDir}`);
+  _debug(verbose, `Using \n\tbooks CSV file: ${booksCsvFile}\n\tbook config file: ${booksConfigFile}\n\tbooks content dir ${contentDir}` +
+    `\n\tuser data dir ${userDataDir}\n\tkeepOpen: ${keepOpen}\n\tdryRun: ${dryRun}\n\tverbose; ${verbose}`);
   let bookFile = new BookFile(booksCsvFile, booksConfigFile, contentDir);
   let bookList = await bookFile.readBooksAsync();
   _debug(verbose, `Read ${bookList.size()} books, have ${bookList.getNumBooksToProcess()} to process`);
