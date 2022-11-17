@@ -76,3 +76,10 @@ export function normalizeText(str) {
     .replaceAll('> <', '><')
     .replaceAll('. </', '.</');
 }
+
+export async function waitForElements(page, ids) {
+  for (const id of ids) {
+    await page.waitForSelector(id);
+  }
+  await page.waitForTimeout(Timeouts.SEC_1); // Just in case.
+}
