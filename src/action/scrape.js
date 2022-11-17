@@ -49,7 +49,7 @@ export async function scrape(book, params) {
   id = '[id="' + book.id + '-status"] .element-popover-text > span';
   await page.waitForSelector(id);
   const pubStatus = await page.$eval(id, el => el.innerText.trim());
-  book.pubStatus = pubStatus;
+  book.pubStatus = pubStatus.trim();
   debug(verbose, 'Got pubStatus: ' + pubStatus);
 
   // Get pubStatusDetail from the search result (it's right after
@@ -82,7 +82,9 @@ export async function scrape(book, params) {
   }
   */
 
-  return { success: true, nextActions: book.isFullyLive() ? '' : 'scrape' };
+  let nextActions = !book.isFullyLive() && book.numActions() <= 1 ? 'scrape' : '';
+  console.log(`Next actions: ${nextActions}`);
+  return { success: true, nextActions: nextActions };
 }
 
 async function _getScrapePage(url, params) {
