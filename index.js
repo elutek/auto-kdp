@@ -14,6 +14,7 @@ import { ExecuteBookActions } from './src/book-action-executor.js';
 import { scrapeAmazonCoverImageUrl } from './src/action/scrape-amazon-cover-image-url.js';
 import { scrapeIsbn } from './src/action/scrape-isbn.js';
 import { isMetadataUpdateNeeded } from './src/action/is-metadata-update-needed.js';
+import { isPricingUpdateNeeded } from './src/action/is-pricing-update-needed.js';
 import { scrape } from './src/action/scrape.js';
 import { produceManuscript } from './src/action/produce-manuscript.js';
 import { ensureLoggedIn } from './src/action/ensure-logged-in.js';
@@ -31,6 +32,8 @@ async function executeBookActionCallback(action, book, params) {
 
   if (action == 'updateMetadataIfNeeded') {
     return await isMetadataUpdateNeeded(book, params);
+  } else if (action == 'updatePricingIfNeeded') {
+    return await isPricingUpdateNeeded(book, params);
   } else if (action == 'scrape') {
     return await scrape(book, params);
   }
@@ -94,7 +97,7 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
       `\tuser data dir ${userDataDir}\n` +
       `\tkeepOpen: ${keepOpen}\n` +
       `\tdryRun: ${dryRun}\n` +
-      `\tverbose; ${verbose}`);
+      `\tverbose: ${verbose}`);
   }
   let bookFile = new BookFile(booksCsvFile, booksConfigFile, contentDir);
   let bookList = await bookFile.readBooksAsync();
