@@ -34,7 +34,9 @@ export async function ExecuteBookActions(book, actionCallback, params) {
             ++numSuccesses;
             book.popFirstAction();
             if (result.nextActions != '') {
+                console.log('Next actions are: ' + result.nextActions);
                 book.action = result.nextActions + (result.nextActions != '' && book.action != '' ? ':' : '') + book.action;
+                console.log('New actions: ' + book.action);
                 break;
                 // When we have more actions to execute, we stop now to avoid infinite loop, and to let the user review the new actions.
             }
