@@ -113,7 +113,7 @@ export class Book {
   }
 
   isFullyLive() {
-    return this.pubStatus == 'LIVE' && this.pubStatusDetail == '';
+    return this.wasEverPublished && this.pubStatus == 'LIVE' && this.pubStatusDetail == '';
   }
 
   numActions() {
