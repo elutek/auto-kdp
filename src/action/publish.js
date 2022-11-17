@@ -8,6 +8,11 @@ export async function publish(book, params) {
     return true;
   }
 
+  if (book.wasEverPublished && book.pubStatus == 'LIVE' && book.pubStatusDetail == '') {
+    // Publishing not needed.
+    return true;
+  }
+
   const url = Urls.EDIT_PAPERBACK_PRICING.replace('$id', book.id);
   debug(verbose, 'Publishing at url: ' + url);
   const page = await params.browser.newPage();
