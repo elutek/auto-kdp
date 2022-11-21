@@ -171,18 +171,26 @@ export async function updateBookMetadata(book, params) {
 
   // Description - first check if update is needed. The typing
   // is pretty slow so we avoid it if not necessary.
-  id = '#cke_18'; // Click button 'source'
-  await page.click(id, { timeout: Timeouts.SEC_5 }); // Click button 'source'
+  id = '#cke_18'; // Button 'Source' to switch to HTML editing.
+
+  console.log(`Waiting for Source button (${id})`)
+  await page.waitForSelector(id);
+  console.log(`Clicking Source button`);
+  await page.click(id, { timeout: Timeouts.SEC_5 });
+  id = '#cke_1_contents > textarea';
+  console.log(`Waiting for textarea (${id})`)
+  await page.waitForSelector(id);
   const oldDescription = normalizeText(await page.$eval('#cke_1_contents > textarea', x => x.value) || '');
+
   if (normalizeText(oldDescription) != normalizeText(book.description)) {
     // Description needs to be updated.
     debug(verbose, `Updating description from\n\t${oldDescription}\n\tto\n\t${book.description}`);
     wasModified = true;
-    await page.waitForSelector(id);
-    await page.click(id, { timeout: Timeouts.SEC_5 });
-    id = '#cke_1_contents > textarea';
-    await page.waitForSelector(id);
+
+    console.log(`Cleaning textarea`)
     if (!isNew) await clearTextField(page, id);
+
+    console.log(`Typing new description`)
     await page.type(id, book.description);
   } else {
     debug(verbose, 'Updating description - not needed');
