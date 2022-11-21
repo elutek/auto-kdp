@@ -1,15 +1,17 @@
-import { Timeouts, Urls, debug } from './utils.js';
+import { ActionResult } from '../action-result.js';
+import { debug } from '../utils.js';
+import { Timeouts, Urls } from './utils.js';
 
 export async function scrapeIsbn(book, params) {
   const verbose = params.verbose;
 
   if (params.dryRun) {
     debug(verbose, 'Getting ISBN (dry run)');
-    return true;
+    return new ActionResult(true);
   }
   if (book.isbn != '') {
     debug(verbose, 'Already have ISBN: ' + book.isbn);
-    return true;
+    return new ActionResult(true);
   }
 
   const url = Urls.EDIT_PAPERBACK_CONTENT.replace('$id', book.id);
@@ -36,5 +38,5 @@ export async function scrapeIsbn(book, params) {
     await page.close();
   }
 
-  return isbn != '';
+  return new ActionResult(isbn != '');
 }

@@ -1,136 +1,110 @@
-import { Keys } from './keys';
-import { Book } from './book';
-import { ExecuteBookActions } from './book-action-executor';
+import { ExecuteBookActions } from './book-action-executor.js';
+import { ActionsResult } from './actions-result.js';
 import { makeOkTestBook } from './test-utils'
+import { ActionResult } from './action-result.js';
 
-test('one action succeeds', async () => {
+test('one action - succeeds', async () => {
     let book = makeOkTestBook();
-    book.action = 'action1';
-    let cb = async (a, b, p) => { return { success: true, nextActions: '' } };
+    book.action = 'a';
+    let cb = async (a, b, p) => new ActionResult(true);
     let result = await ExecuteBookActions(book, cb, {});
-    expect(result.numSuccesses).toBe(1);
-    expect(result.result).toBe.truthy;
+    expect(result.numSuccesses).toEqual(1);
+    expect(result.numFailures).toEqual(0);
 });
 
-test('one action succeeds / boolean callback', async () => {
+test('one action - fails', async () => {
     let book = makeOkTestBook();
-    book.action = 'action1';
-    let cb = async (a, b, p) => true;
+    book.action = 'a';
+    let cb = async (a, b, p) => new ActionResult(false);
     let result = await ExecuteBookActions(book, cb, {});
-    expect(result.numSuccesses).toBe(1);
-    expect(result.result).toBe.truthy;
+    expect(result.numSuccesses).toEqual(0);
+    expect(result.numFailures).toEqual(1);
 });
 
-
-test('one action fails', async () => {
+test('one action - succeeds on 2nd attempt', async () => {
     let book = makeOkTestBook();
-    book.action = 'action1';
-    let cb = async (a, b, p) => { return { success: false, nextActions: '' } };
-    let result = await ExecuteBookActions(book, cb, {});
-    expect(result.numSuccesses).toBe(0);
-    expect(result.result).toBe.false;
-});
-
-test('one action fails and succeeds on second attempt', async () => {
-    let book = makeOkTestBook();
-    book.action = 'action1';
-    let cb = async (a, b, p) => { return { success: p.attempt++ > 1, nextActions: '' } };
+    book.action = 'a';
+    let cb = async (a, b, p) => new ActionResult(p.attempt++ > 1);
     let result = await ExecuteBookActions(book, cb, { attempt: 1 });
-    expect(result.numSuccesses).toBe(1);
-    expect(result.result).toBe.true;
+    expect(result.numSuccesses).toEqual(1);
+    expect(result.numFailures).toEqual(0);
 });
 
-test('one action fails and succeeds on third attempt', async () => {
+test('one action - succeeds on 3rd attempt', async () => {
     let book = makeOkTestBook();
     book.action = 'action1';
-    let cb = async (a, b, p) => { return { success: p.attempt++ > 2, nextActions: '' } };
+    let cb = async (a, b, p) => new ActionResult(p.attempt++ > 2);
     let result = await ExecuteBookActions(book, cb, { attempt: 1 });
-    expect(result.numSuccesses).toBe(1);
-    expect(result.result).toBe.true;
+    expect(result.numSuccesses).toEqual(1);
+    expect(result.numFailures).toEqual(0);
 });
 
-test('one action throws', async () => {
+test('one action - throws', async () => {
     let book = makeOkTestBook();
-    book.action = 'action1';
+    book.action = 'a';
     let cb = async (a, b, p) => { throw new Error('bad action'); }
     let result = await ExecuteBookActions(book, cb, {});
-    expect(result.numSuccesses).toBe(0);
-    expect(result.result).toBe.false;
+    expect(result.numSuccesses).toEqual(0);
+    expect(result.numFailures).toEqual(1);
 });
 
-test('two actions succeed', async () => {
+test('two actions - both succeed', async () => {
     let book = makeOkTestBook();
-    book.action = 'action1:action2';
-    let cb = async (a, b, p) => { return { success: true, nextActions: '' } };
+    book.action = 'a:b';
+    let cb = async (a, b, p) => new ActionResult(true);
     let result = await ExecuteBookActions(book, cb, {});
-    expect(result.numSuccesses).toBe(2);
-    expect(result.result).toBe.true;
+    expect(result.numSuccesses).toEqual(2);
+    expect(result.numFailures).toEqual(0);
 });
 
-test('one action succeeds, one fails', async () => {
+test('two actions - 1 succeeds, 2 fails', async () => {
     let book = makeOkTestBook();
-    book.action = 'action1:action2';
-    let cb = async (a, b, p) => { return { success: a == 'action1', nextActions: '' } };
+    book.action = 'a:b';
+    let cb = async (a, b, p) => new ActionResult(a == 'a');
     let result = await ExecuteBookActions(book, cb, {});
-    expect(result.numSuccesses).toBe(1);
-    expect(result.result).toBe.false;
+    expect(result.numSuccesses).toEqual(1);
+    expect(result.numFailures).toEqual(1);
 });
 
-test('three actions succeed', async () => {
+test('three actions - all succeed', async () => {
     let book = makeOkTestBook();
-    book.action = 'action1:action2:action3';
-    let cb = async (a, b, p) => { return { success: true, nextActions: '' } };
+    book.action = 'a:b:c';
+    let cb = async (a, b, p) => new ActionResult(true);
     let result = await ExecuteBookActions(book, cb, {});
-    expect(result.numSuccesses).toBe(3);
-    expect(result.result).toBe.true;
+    expect(result.numSuccesses).toEqual(3);
+    expect(result.numFailures).toEqual(0);
 });
 
-test('two actions succeed and one fails', async () => {
+test('three actions - 1-2 succeed, 3 fails', async () => {
     let book = makeOkTestBook();
-    book.action = 'action1:action2:action3';
-    let cb = async (a, b, p) => { return { success: a != 'action3', nextActions: '' } };
+    book.action = 'a:b:c';
+    let cb = async (a, b, p) => new ActionResult(a != 'c');
     let result = await ExecuteBookActions(book, cb, {});
-    expect(result.numSuccesses).toBe(2);
-    expect(result.result).toBe.false;
+    expect(result.numSuccesses).toEqual(2);
+    expect(result.numFailures).toEqual(1);
 });
 
-test('one actions succeed, one fails, onenever runs', async () => {
+test('three actions - 1 succeed 2 fails 3 never runs', async () => {
     let book = makeOkTestBook();
-    book.action = 'action1:action2:action3';
-    let cb = async (a, b, p) => { return { success: a != 'action2', nextActions: '' } };
+    book.action = 'a:b:c';
+    let cb = async (a, b, p) => new ActionResult(a != 'b');
     let result = await ExecuteBookActions(book, cb, {});
-    expect(result.numSuccesses).toBe(1);
-    expect(result.result).toBe.false;
+    expect(result.numSuccesses).toEqual(1);
+    expect(result.numFailures).toEqual(1);
 });
 
-test('do not execute the same next actions', async () => {
+test('next actions - last', async () => {
     let book = makeOkTestBook();
-    book.action = 'action1';
-    let cb = async (a, b, p) => { return { success: a == 'action1', nextActions: 'action1' } };
+    book.action = 'a';
+    let cb = async (a, b, p) => new ActionResult(a == 'a').setNextActions('NEXT');
     let result = await ExecuteBookActions(book, cb, {});
-    expect(book.action).toBe('action1');
+    expect(book.action).toEqual('NEXT');
 });
 
-test('has next actions', async () => {
+test('next actions - not last', async () => {
     let book = makeOkTestBook();
-    book.action = 'action1';
-    let cb = async (a, b, p) => { return { success: a == 'action1', nextActions: 'NEXT' } };
+    book.action = 'a:b';
+    let cb = async (a, b, p) => new ActionResult(a == 'a').setNextActions('NEXT');
     let result = await ExecuteBookActions(book, cb, {});
-    expect(book.action).toBe('NEXT');
-});
-
-test('next actions for last action', async () => {
-    let book = makeOkTestBook();
-    book.action = 'action1:action2:action3';
-    let cb = async (a, b, p) => { return { success: a != 'NEXT', nextActions: a == 'action3' ? 'NEXT' : '' } };
-    let result = await ExecuteBookActions(book, cb, {});
-    expect(book.action).toBe('NEXT');
-});
-
-test('next actions for middle action', async () => {
-    let book = makeOkTestBook();
-    book.action = 'action1:action2:action3';
-    let cb = async (a, b, p) => { return { success: a != 'NEXT', nextActions: a == 'action2' ? 'NEXT:NEXT' : '' } };
-    let result = await ExecuteBookActions(book, cb, {});
-    expect(book.action).toBe('NEXT:NEXT:action3');
+    expect(book.action).toEqual('NEXT:b');
 });

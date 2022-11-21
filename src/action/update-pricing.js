@@ -1,4 +1,6 @@
-import { Timeouts, Urls, clearTextField, debug, waitForElements } from './utils.js';
+import { ActionResult } from '../action-result.js';
+import { debug } from '../utils.js'
+import { Timeouts, Urls, clearTextField, waitForElements } from './utils.js';
 
 async function updatePriceIfNeeded(newPrice, currency, id, page, verbose) {
   const oldPriceStr = (await page.$eval(id, x => x.value)) || '';
@@ -19,7 +21,7 @@ async function updatePriceIfNeeded(newPrice, currency, id, page, verbose) {
 export async function updatePricing(book, params) {
   if (params.dryRun) {
     debug(verbose, 'Updating pricing (dry run)');
-    return true;
+    return new ActionResult(true);
   }
 
   const verbose = params.verbose;
@@ -82,5 +84,5 @@ export async function updatePricing(book, params) {
     await page.close();
   }
 
-  return true;
+  return new ActionResult(true);
 }

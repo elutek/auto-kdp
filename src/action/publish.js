@@ -1,16 +1,18 @@
-import { Timeouts, Urls, debug, waitForElements } from './utils.js';
+import { ActionResult } from '../action-result.js';
+import { debug } from '../utils.js';
+import { Timeouts, Urls, waitForElements } from './utils.js';
 
 export async function publish(book, params) {
   const verbose = params.verbose;
 
   if (params.dryRun) {
     debug(verbose, 'Publishing (dry run)');
-    return true;
+    return new ActionResult(true);
   }
 
   if (book.wasEverPublished && book.pubStatus == 'LIVE' && book.pubStatusDetail == '') {
     // Publishing not needed.
-    return true;
+    return new ActionResult(true);
   }
 
   const url = Urls.EDIT_PAPERBACK_PRICING.replace('$id', book.id);
@@ -38,7 +40,7 @@ export async function publish(book, params) {
 
   let ok = (metadataStatus == 'Complete') && contentStatus == 'Complete' && pricingStatus == 'Complete';
 
-  let isSucess = ok;
+  let isSuccess = ok;
   if (ok) {
     debug(verbose, 'Metadata, content and pricing status: OK');
     debug(verbose, 'Clicking publish');
@@ -50,11 +52,12 @@ export async function publish(book, params) {
     book.wasEverPublished = 'true';
   } else {
     debug(verbose, `Cannot publish! Metadata: ${metadataStatus}, content: ${contentStatus}, pricing: ${pricingStatus}`);
+    isSuccess = false;
   }
 
   if (!params.keepOpen) {
     await page.close();
   }
 
-  return isSucess;
+  return new ActionResult(isSuccess);
 }

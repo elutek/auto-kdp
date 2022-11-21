@@ -23,6 +23,7 @@ import { updateBookMetadata } from './src/action/update-book-metadata.js';
 import { updateContentMetadata } from './src/action/update-content-metadata.js';
 import { updateContent } from './src/action/update-content.js';
 import { publish } from './src/action/publish.js';
+import { ActionResult } from './src/action-result.js';
 
 
 async function executeBookActionCallback(action, book, params) {
@@ -38,25 +39,22 @@ async function executeBookActionCallback(action, book, params) {
     return await scrape(book, params);
   }
 
-  let success = false;
   switch (action) {
-    case 'book-metadata': success = await updateBookMetadata(book, params); break;
-    case 'content-metadata': success = await updateContentMetadata(book, params); break;
-    case 'scrapeIsbn': success = await scrapeIsbn(book, params); break;
-    case 'produceManuscript': success = await produceManuscript(book, params); break;
-    case 'content': success = await updateContent(book, params); break;
-    case 'pricing': success = await updatePricing(book, params); break;
-    case 'publish': success = await publish(book, params); break;
-    case 'scrapeAmazonCoverImageUrl': success = await scrapeAmazonCoverImageUrl(book, params); break;
-    default:
-      throw new Error('Unknown action: ' + action);
+    case 'book-metadata': return await updateBookMetadata(book, params); break;
+    case 'content-metadata': return await updateContentMetadata(book, params); break;
+    case 'scrapeIsbn': return await scrapeIsbn(book, params); break;
+    case 'produceManuscript': return await produceManuscript(book, params); break;
+    case 'content': return await updateContent(book, params); break;
+    case 'pricing': return await updatePricing(book, params); break;
+    case 'publish': return await publish(book, params); break;
+    case 'scrapeAmazonCoverImageUrl': return await scrapeAmazonCoverImageUrl(book, params); break;
   }
-  return { success: success, nextActions: '' };
+  throw new Error('Unknown action: ' + action);
 }
 
 async function _doProcessOneBook(bookFile, bookList, book, params) {
-  const results = await ExecuteBookActions(book, (a, b, p) => executeBookActionCallback(a, b, p), params);
-  if (results.numSuccesses > 0) {
+  const actionsResult = await ExecuteBookActions(book, (a, b, p) => executeBookActionCallback(a, b, p), params);
+  if (actionsResult.hasSuccess()) {
     if (params.verbose) {
       console.log(`Writing ${bookList.size()} books`);
     }
@@ -66,7 +64,6 @@ async function _doProcessOneBook(bookFile, bookList, book, params) {
       console.debug('No need to update books');
     }
   }
-  return results.result;
 }
 
 async function _startBrowser(bookList, headlessOverride, userDataDir, verbose) {
@@ -165,9 +162,9 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
           console.log(book);
         }
         const startTime = performance.now();
-        const isSuccess = await _doProcessOneBook(bookFile, bookList, book, params);
+        await _doProcessOneBook(bookFile, bookList, book, params);
         const durationSeconds = (performance.now() - startTime) / 1000;
-        console.log(`Book processing ${isSuccess ? 'OK' : 'FAILED'}, took ${Math.round(durationSeconds)} secs`);
+        console.log(`Book processing took ${Math.round(durationSeconds)} secs`);
 
         // Update stats
         totalSeconds += durationSeconds;

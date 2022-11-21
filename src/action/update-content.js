@@ -1,19 +1,21 @@
-import { Timeouts, Urls, fileExists, debug } from './utils.js';
+import { ActionResult } from '../action-result.js';
+import { debug } from '../utils.js'
+import { Timeouts, Urls, fileExists } from './utils.js';
 
 export async function updateContent(book, params) {
     const verbose = params.verbose;
     if (params.dryRun) {
         debug(verbose, 'Updating content (dry run)');
-        return true;
+        return new ActionResult(true);
     }
 
     if (!fileExists(book.manuscriptLocalFile)) {
         console.error("File does not exist: " + book.manuscriptLocalFile);
-        return false;
+        return new ActionResult(false).doNotRetry();
     }
     if (!fileExists(book.coverLocalFile)) {
         console.error("File does not exist: " + book.coverLocalFile);
-        return false;
+        return new ActionResult(false).doNotRetry();
     }
 
     const url = Urls.EDIT_PAPERBACK_CONTENT.replace('$id', book.id);
@@ -83,5 +85,5 @@ export async function updateContent(book, params) {
         await page.close();
     }
 
-    return true;
+    return new ActionResult(true);
 }

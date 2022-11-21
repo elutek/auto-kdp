@@ -45,38 +45,6 @@ export function fileExists(path) {
     return false;
 }
 
-export function debug(verbose, message) {
-    if (verbose) {
-        console.debug(message);
-    }
-}
-
-export function arraysEqual(a, b) {
-    if (a === b) {
-        return true;
-    }
-    if (a == null) { 
-        return b == null;
-    }
-    if (b == null || a.length != b.length) {
-        return false;
-    }
-    for (let i = 0; i < a.length; ++i) {
-        if (a[i] !== b[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-
-export function normalizeText(str) {
-  return str.replaceAll('\n', ' ')
-    .replaceAll(/\s+/g, ' ')
-    .replaceAll(/\s+$/g, '')
-    .replaceAll('> <', '><')
-    .replaceAll('. </', '.</');
-}
-
 export async function waitForElements(page, ids) {
   for (const id of ids) {
     await page.waitForSelector(id);

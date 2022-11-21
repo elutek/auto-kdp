@@ -64,43 +64,43 @@ test('can read book file', async () => {
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
     const bookList = await bookFile.readBooksAsync();
     const books = bookList.books;
-    expect(books.length).toBe(2);
+    expect(books.length).toEqual(2);
     {
         let book = books[0];
         // Select only a few key fields for checking.
-        expect(book.action).toBe('test_actionA');
-        expect(book.asin).toBe('test_asinA');
-        expect(book.authorFirstName).toBe('test_author_first_name');
-        expect(book.authorLastName).toBe('test_author_last_name');
-        expect(book.coverLocalFile).toBe('content/dir/test_cover_file_Ava');
-        expect(book.coverImageUrl).toBe('test_cover_image_urlA');
-        expect(book.description).toBe('test_description for Ava');
-        expect(book.id).toBe('test_idA');
-        expect(book.isbn).toBe('test_isbnA');
-        expect(book.keyword0).toBe('test Ava');
-        expect(book.manuscriptCreationCommand).toBe('make book_Ava');
-        expect(book.manuscriptLocalFile).toBe('content/dir/manuscript/file/Ava.pdf');
-        expect(book.priceUsd).toBe(1.2);
-        expect(book.wasEverPublished).toBe(false);
-        expect(book.signature).toBe('Ava');
+        expect(book.action).toEqual('test_actionA');
+        expect(book.asin).toEqual('test_asinA');
+        expect(book.authorFirstName).toEqual('test_author_first_name');
+        expect(book.authorLastName).toEqual('test_author_last_name');
+        expect(book.coverLocalFile).toEqual('content/dir/test_cover_file_Ava');
+        expect(book.coverImageUrl).toEqual('test_cover_image_urlA');
+        expect(book.description).toEqual('test_description for Ava');
+        expect(book.id).toEqual('test_idA');
+        expect(book.isbn).toEqual('test_isbnA');
+        expect(book.keyword0).toEqual('test Ava');
+        expect(book.manuscriptCreationCommand).toEqual('make book_Ava');
+        expect(book.manuscriptLocalFile).toEqual('content/dir/manuscript/file/Ava.pdf');
+        expect(book.priceUsd).toEqual(1.2);
+        expect(book.wasEverPublished).toEqual(false);
+        expect(book.signature).toEqual('Ava');
     }
     {
         let book = books[1];
-        expect(book.action).toBe('test_actionB');
-        expect(book.asin).toBe('test_asinB');
-        expect(book.authorFirstName).toBe('test_author_first_name');
-        expect(book.authorLastName).toBe('test_author_last_name');
-        expect(book.coverLocalFile).toBe('content/dir/test_cover_file_Belle');
-        expect(book.coverImageUrl).toBe('test_cover_image_urlB');
-        expect(book.description).toBe('test_description for Belle');
-        expect(book.id).toBe('test_idB');
-        expect(book.isbn).toBe('test_isbnB');
-        expect(book.keyword0).toBe('test Belle');
-        expect(book.manuscriptCreationCommand).toBe('make book_Belle');
-        expect(book.manuscriptLocalFile).toBe('content/dir/manuscript/file/Belle.pdf');
-        expect(book.priceUsd).toBe(1.2);
-        expect(book.wasEverPublished).toBe(true);
-        expect(book.signature).toBe('Belle');
+        expect(book.action).toEqual('test_actionB');
+        expect(book.asin).toEqual('test_asinB');
+        expect(book.authorFirstName).toEqual('test_author_first_name');
+        expect(book.authorLastName).toEqual('test_author_last_name');
+        expect(book.coverLocalFile).toEqual('content/dir/test_cover_file_Belle');
+        expect(book.coverImageUrl).toEqual('test_cover_image_urlB');
+        expect(book.description).toEqual('test_description for Belle');
+        expect(book.id).toEqual('test_idB');
+        expect(book.isbn).toEqual('test_isbnB');
+        expect(book.keyword0).toEqual('test Belle');
+        expect(book.manuscriptCreationCommand).toEqual('make book_Belle');
+        expect(book.manuscriptLocalFile).toEqual('content/dir/manuscript/file/Belle.pdf');
+        expect(book.priceUsd).toEqual(1.2);
+        expect(book.wasEverPublished).toEqual(true);
+        expect(book.signature).toEqual('Belle');
     }
 });
 
@@ -156,25 +156,25 @@ seriesTitle =
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
     const bookList = await bookFile.readBooksAsync();
     const books = bookList.books;
-    expect(books.length).toBe(1);
+    expect(books.length).toEqual(1);
     {
         let book = books[0];
         // Select only a few key fields for checking.
-        expect(book.action).toBe('');
-        expect(book.asin).toBe('');
-        expect(book.authorFirstName).toBe('');
-        expect(book.authorLastName).toBe('');
-        expect(book.coverLocalFile).toBe('content/dir/');
-        expect(book.coverImageUrl).toBe('');
-        expect(book.description).toBe('');
-        expect(book.id).toBe('');
-        expect(book.isbn).toBe('');
-        expect(book.keyword0).toBe('');
-        expect(book.manuscriptCreationCommand).toBe('');
-        expect(book.manuscriptLocalFile).toBe('content/dir/');
+        expect(book.action).toEqual('');
+        expect(book.asin).toEqual('');
+        expect(book.authorFirstName).toEqual('');
+        expect(book.authorLastName).toEqual('');
+        expect(book.coverLocalFile).toEqual('content/dir/');
+        expect(book.coverImageUrl).toEqual('');
+        expect(book.description).toEqual('');
+        expect(book.id).toEqual('');
+        expect(book.isbn).toEqual('');
+        expect(book.keyword0).toEqual('');
+        expect(book.manuscriptCreationCommand).toEqual('');
+        expect(book.manuscriptLocalFile).toEqual('content/dir/');
         expect(book.priceUsd).toBeNull();
-        expect(book.wasEverPublished).toBe.false;
-        expect(book.name).toBe('Belle');
+        expect(book.wasEverPublished).toEqual(false);
+        expect(book.name).toEqual('Belle');
     }
 });
 
@@ -261,5 +261,5 @@ test_actionB,true,test_idB,test_isbnB,test_asinB,Belle,test_pub_statusB,test_pub
 
     // Test the file written is the same as the source.
     let books_new = fs.readFileSync('books.csv.new', { encoding: "utf8", flag: "r" });
-    expect(books_new).toBe(books_csv);
+    expect(books_new).toEqual(books_csv);
 });

@@ -1,16 +1,18 @@
-import { Timeouts, Urls, debug } from './utils.js';
+import { ActionResult } from '../action-result.js';
+import { debug } from '../utils.js'
+import { Timeouts, Urls } from './utils.js';
 
 export async function updateContentMetadata(book, params) {
   const verbose = params.verbose;
 
   if (params.dryRun) {
     debug(verbose, 'Updating content metadata (dry run)');
-    return true;
+    return new ActionResult(true);
   }
 
   if (book.wasEverPublished) {
     console.error('Cannot republish content of a published book');
-    return false;
+    return new ActionResult(false).doNotRetry();
   }
 
   const url = Urls.EDIT_PAPERBACK_CONTENT.replace('$id', book.id);
@@ -136,5 +138,5 @@ export async function updateContentMetadata(book, params) {
     await page.close();
   }
 
-  return true;
+  return new ActionResult(true);
 }

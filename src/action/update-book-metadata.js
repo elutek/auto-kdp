@@ -1,6 +1,6 @@
-import { Timeouts, Urls, clearTextField, arraysEqual, debug, normalizeText, waitForElements } from './utils.js';
-import pkg from 'sleep';
-const { sleep } = pkg;
+import { ActionResult } from '../action-result.js';
+import { debug, arraysEqual, normalizeText, } from '../utils.js';
+import { Timeouts, Urls, clearTextField, waitForElements } from './utils.js';
 
 // This function also creates a book.
 export async function updateBookMetadata(book, params) {
@@ -8,12 +8,12 @@ export async function updateBookMetadata(book, params) {
 
   if (params.dryRun) {
     debug(verbose, 'Updating book (dry run)');
-    return true;
+    return new ActionResult(true);
   }
 
   if (!book.canBeCreated()) {
-    console.error('Some required fields missing - cannot create/update the book');
-    return false;
+    console.error('Fields missing - cannot create/update the book');
+    return new ActionResult(false).doNotRetry();
   }
 
   const isNew = book.id == '';
@@ -23,15 +23,16 @@ export async function updateBookMetadata(book, params) {
 
   const page = await params.browser.newPage();
   let response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_1 });
-  await page.waitForTimeout(Timeouts.SEC_1);
 
   if (response.status() == 500) {
     console.log('KDP returned internal erorr (500).');
     if (!params.keepOpen) {
       await page.close();
     }
-    return false;
+    return new ActionResult(false).doNotRetry();
   }
+
+  await page.waitForTimeout(Timeouts.SEC_1); // Just in case.
 
   await waitForElements(page, [
     '#data-print-book-title',
@@ -353,5 +354,5 @@ export async function updateBookMetadata(book, params) {
 
   console.log("Closed");
 
-  return isSuccess;
+  return new ActionResult(isSuccess);
 }

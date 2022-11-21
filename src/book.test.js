@@ -52,49 +52,49 @@ test('create book without defaults', () => {
         makeMap(),
         'content/dir');
 
-    expect(book.action).toBe('test_action');
-    expect(book.asin).toBe('test_asin');
-    expect(book.authorFirstName).toBe('test_author_first_name');
-    expect(book.authorLastName).toBe('test_author_last_name');
-    expect(book.category1).toBe('test_cat1');
-    expect(book.category2).toBe('test_cat2');
-    expect(book.coverLocalFile).toBe('content/dir/test_cover_file');
-    expect(book.coverImageUrl).toBe('test_cover_image_url');
-    expect(book.description).toBe('test_description');
-    expect(book.id).toBe('test_id');
-    expect(book.illustratorFirstName).toBe('test_illustrator_first_name');
-    expect(book.illustratorLastName).toBe('test_illustrator_last_name');
-    expect(book.isbn).toBe('test_isbn');
-    expect(book.keyword0).toBe('test_keyword0');
-    expect(book.keyword1).toBe('test_keyword1');
-    expect(book.keyword2).toBe('test_keyword2');
-    expect(book.keyword3).toBe('test_keyword3');
-    expect(book.keyword4).toBe('test_keyword4');
-    expect(book.keyword5).toBe('test_keyword5');
-    expect(book.keyword6).toBe('test_keyword6');
-    expect(book.language).toBe('test_language');
-    expect(book.manuscriptCreationCommand).toBe('test_manuscript_creation_command');
-    expect(book.manuscriptLocalFile).toBe('content/dir/test_manuscript_file');
-    expect(book.notes).toBe('test_notes');
-    expect(book.paperBleed).toBe('test_paper_bleed');
-    expect(book.paperCoverFinish).toBe('test_paper_cover_finish');
-    expect(book.paperColor).toBe('test_paper_color');
-    expect(book.paperTrim).toBe('test_paper_trim');
-    expect(book.priceAu).toBe(1.1);
-    expect(book.priceCa).toBe(2.1);
-    expect(book.priceEur).toBe(3.1);
-    expect(book.priceGbp).toBe(4.1);
-    expect(book.priceJp).toBe(5.1);
-    expect(book.pricePl).toBe(6.1);
-    expect(book.priceSe).toBe(7.1);
-    expect(book.priceUsd).toBe(8.1);
-    expect(book.pubDate).toBe('test_pub_date');
-    expect(book.pubStatus).toBe('test_pub_status');
-    expect(book.pubStatusDetail).toBe('test_pub_status_detail');
-    expect(book.title).toBe('test_title');
-    expect(book.seriesTitle).toBe('test_series_title');
-    expect(book.wasEverPublished).toBe(false);
-    expect(book.signature).toBe('test_signature');
+    expect(book.action).toEqual('test_action');
+    expect(book.asin).toEqual('test_asin');
+    expect(book.authorFirstName).toEqual('test_author_first_name');
+    expect(book.authorLastName).toEqual('test_author_last_name');
+    expect(book.category1).toEqual('test_cat1');
+    expect(book.category2).toEqual('test_cat2');
+    expect(book.coverLocalFile).toEqual('content/dir/test_cover_file');
+    expect(book.coverImageUrl).toEqual('test_cover_image_url');
+    expect(book.description).toEqual('test_description');
+    expect(book.id).toEqual('test_id');
+    expect(book.illustratorFirstName).toEqual('test_illustrator_first_name');
+    expect(book.illustratorLastName).toEqual('test_illustrator_last_name');
+    expect(book.isbn).toEqual('test_isbn');
+    expect(book.keyword0).toEqual('test_keyword0');
+    expect(book.keyword1).toEqual('test_keyword1');
+    expect(book.keyword2).toEqual('test_keyword2');
+    expect(book.keyword3).toEqual('test_keyword3');
+    expect(book.keyword4).toEqual('test_keyword4');
+    expect(book.keyword5).toEqual('test_keyword5');
+    expect(book.keyword6).toEqual('test_keyword6');
+    expect(book.language).toEqual('test_language');
+    expect(book.manuscriptCreationCommand).toEqual('test_manuscript_creation_command');
+    expect(book.manuscriptLocalFile).toEqual('content/dir/test_manuscript_file');
+    expect(book.notes).toEqual('test_notes');
+    expect(book.paperBleed).toEqual('test_paper_bleed');
+    expect(book.paperCoverFinish).toEqual('test_paper_cover_finish');
+    expect(book.paperColor).toEqual('test_paper_color');
+    expect(book.paperTrim).toEqual('test_paper_trim');
+    expect(book.priceAu).toEqual(1.1);
+    expect(book.priceCa).toEqual(2.1);
+    expect(book.priceEur).toEqual(3.1);
+    expect(book.priceGbp).toEqual(4.1);
+    expect(book.priceJp).toEqual(5.1);
+    expect(book.pricePl).toEqual(6.1);
+    expect(book.priceSe).toEqual(7.1);
+    expect(book.priceUsd).toEqual(8.1);
+    expect(book.pubDate).toEqual('test_pub_date');
+    expect(book.pubStatus).toEqual('test_pub_status');
+    expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
+    expect(book.title).toEqual('test_title');
+    expect(book.seriesTitle).toEqual('test_series_title');
+    expect(book.wasEverPublished).toEqual(false);
+    expect(book.signature).toEqual('test_signature');
 });
 
 test('create book with defaults', () => {
@@ -150,49 +150,49 @@ test('create book with defaults', () => {
         ),
         'content/dir');
 
-    expect(book.action).toBe('test_action');
-    expect(book.asin).toBe('test_asin');
-    expect(book.authorFirstName).toBe('test_author_first_name');
-    expect(book.authorLastName).toBe('test_author_last_name');
-    expect(book.category1).toBe('test_cat1');
-    expect(book.category2).toBe('test_cat2');
-    expect(book.coverLocalFile).toBe('content/dir/test_cover_file');
-    expect(book.coverImageUrl).toBe('test_cover_image_url');
-    expect(book.description).toBe('test_description');
-    expect(book.id).toBe('test_id');
-    expect(book.illustratorFirstName).toBe('test_illustrator_first_name');
-    expect(book.illustratorLastName).toBe('test_illustrator_last_name');
-    expect(book.isbn).toBe('test_isbn');
-    expect(book.keyword0).toBe('test_keyword0');
-    expect(book.keyword1).toBe('test_keyword1');
-    expect(book.keyword2).toBe('test_keyword2');
-    expect(book.keyword3).toBe('test_keyword3');
-    expect(book.keyword4).toBe('test_keyword4');
-    expect(book.keyword5).toBe('test_keyword5');
-    expect(book.keyword6).toBe('test_keyword6');
-    expect(book.language).toBe('test_language');
-    expect(book.manuscriptCreationCommand).toBe('make book');
-    expect(book.manuscriptLocalFile).toBe('content/dir/test_manuscript_file');
-    expect(book.notes).toBe('test_notes');
-    expect(book.paperBleed).toBe('test_paper_bleed');
-    expect(book.paperCoverFinish).toBe('test_paper_cover_finish');
-    expect(book.paperColor).toBe('test_paper_color');
-    expect(book.paperTrim).toBe('test_paper_trim');
-    expect(book.priceAu).toBe(1.1);
-    expect(book.priceCa).toBe(2.1);
-    expect(book.priceEur).toBe(3.1);
-    expect(book.priceGbp).toBe(4.1);
-    expect(book.priceJp).toBe(5.1);
-    expect(book.pricePl).toBe(6.1);
-    expect(book.priceSe).toBe(7.1);
-    expect(book.priceUsd).toBe(8.1);
-    expect(book.pubDate).toBe('test_pub_date');
-    expect(book.pubStatus).toBe('test_pub_status');
-    expect(book.pubStatusDetail).toBe('test_pub_status_detail');
-    expect(book.title).toBe('test_title');
-    expect(book.seriesTitle).toBe('test_series_title');
-    expect(book.wasEverPublished).toBe(false);
-    expect(book.signature).toBe('test_signature');
+    expect(book.action).toEqual('test_action');
+    expect(book.asin).toEqual('test_asin');
+    expect(book.authorFirstName).toEqual('test_author_first_name');
+    expect(book.authorLastName).toEqual('test_author_last_name');
+    expect(book.category1).toEqual('test_cat1');
+    expect(book.category2).toEqual('test_cat2');
+    expect(book.coverLocalFile).toEqual('content/dir/test_cover_file');
+    expect(book.coverImageUrl).toEqual('test_cover_image_url');
+    expect(book.description).toEqual('test_description');
+    expect(book.id).toEqual('test_id');
+    expect(book.illustratorFirstName).toEqual('test_illustrator_first_name');
+    expect(book.illustratorLastName).toEqual('test_illustrator_last_name');
+    expect(book.isbn).toEqual('test_isbn');
+    expect(book.keyword0).toEqual('test_keyword0');
+    expect(book.keyword1).toEqual('test_keyword1');
+    expect(book.keyword2).toEqual('test_keyword2');
+    expect(book.keyword3).toEqual('test_keyword3');
+    expect(book.keyword4).toEqual('test_keyword4');
+    expect(book.keyword5).toEqual('test_keyword5');
+    expect(book.keyword6).toEqual('test_keyword6');
+    expect(book.language).toEqual('test_language');
+    expect(book.manuscriptCreationCommand).toEqual('make book');
+    expect(book.manuscriptLocalFile).toEqual('content/dir/test_manuscript_file');
+    expect(book.notes).toEqual('test_notes');
+    expect(book.paperBleed).toEqual('test_paper_bleed');
+    expect(book.paperCoverFinish).toEqual('test_paper_cover_finish');
+    expect(book.paperColor).toEqual('test_paper_color');
+    expect(book.paperTrim).toEqual('test_paper_trim');
+    expect(book.priceAu).toEqual(1.1);
+    expect(book.priceCa).toEqual(2.1);
+    expect(book.priceEur).toEqual(3.1);
+    expect(book.priceGbp).toEqual(4.1);
+    expect(book.priceJp).toEqual(5.1);
+    expect(book.pricePl).toEqual(6.1);
+    expect(book.priceSe).toEqual(7.1);
+    expect(book.priceUsd).toEqual(8.1);
+    expect(book.pubDate).toEqual('test_pub_date');
+    expect(book.pubStatus).toEqual('test_pub_status');
+    expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
+    expect(book.title).toEqual('test_title');
+    expect(book.seriesTitle).toEqual('test_series_title');
+    expect(book.wasEverPublished).toEqual(false);
+    expect(book.signature).toEqual('test_signature');
 });
 
 test('detects missing key', () => {
@@ -299,49 +299,49 @@ test('create book with resolution', () => {
         ),
         'content/dir');
 
-    expect(book.action).toBe('test_action');
-    expect(book.asin).toBe('test_asin');
-    expect(book.authorFirstName).toBe('test_author_first_name');
-    expect(book.authorLastName).toBe('test_author_last_name');
-    expect(book.category1).toBe('test_cat1');
-    expect(book.category2).toBe('test_cat2');
-    expect(book.coverLocalFile).toBe('content/dir/test_cover_file');
-    expect(book.coverImageUrl).toBe('test_cover_image_url');
-    expect(book.description).toBe('test_description');
-    expect(book.id).toBe('test_id');
-    expect(book.illustratorFirstName).toBe('test_illustrator_first_name');
-    expect(book.illustratorLastName).toBe('test_illustrator_last_name');
-    expect(book.isbn).toBe('test_isbn');
-    expect(book.keyword0).toBe('test_keyword0');
-    expect(book.keyword1).toBe('test_keyword1');
-    expect(book.keyword2).toBe('test_keyword2');
-    expect(book.keyword3).toBe('test_keyword3');
-    expect(book.keyword4).toBe('test_keyword4');
-    expect(book.keyword5).toBe('test_keyword5');
-    expect(book.keyword6).toBe('test_keyword6');
-    expect(book.language).toBe('test_language');
-    expect(book.manuscriptCreationCommand).toBe('make test_title');
-    expect(book.manuscriptLocalFile).toBe('content/dir/test_manuscript_file');
-    expect(book.notes).toBe('test_notes');
-    expect(book.paperBleed).toBe('test_paper_bleed');
-    expect(book.paperCoverFinish).toBe('test_paper_cover_finish');
-    expect(book.paperColor).toBe('test_paper_color');
-    expect(book.paperTrim).toBe('test_paper_trim');
-    expect(book.priceAu).toBe(2.17);
-    expect(book.priceCa).toBe(2.17);
-    expect(book.priceEur).toBe(2.17);
-    expect(book.priceGbp).toBe(2.17);
-    expect(book.priceJp).toBe(2.17);
-    expect(book.pricePl).toBe(2.17);
-    expect(book.priceSe).toBe(2.17);
-    expect(book.priceUsd).toBe(2.17);
-    expect(book.pubDate).toBe('test_pub_date');
-    expect(book.pubStatus).toBe('test_pub_status');
-    expect(book.pubStatusDetail).toBe('test_pub_status_detail');
-    expect(book.title).toBe('test_title');
-    expect(book.seriesTitle).toBe('test_series_title');
-    expect(book.wasEverPublished).toBe(false);
-    expect(book.signature).toBe('test_signature');
+    expect(book.action).toEqual('test_action');
+    expect(book.asin).toEqual('test_asin');
+    expect(book.authorFirstName).toEqual('test_author_first_name');
+    expect(book.authorLastName).toEqual('test_author_last_name');
+    expect(book.category1).toEqual('test_cat1');
+    expect(book.category2).toEqual('test_cat2');
+    expect(book.coverLocalFile).toEqual('content/dir/test_cover_file');
+    expect(book.coverImageUrl).toEqual('test_cover_image_url');
+    expect(book.description).toEqual('test_description');
+    expect(book.id).toEqual('test_id');
+    expect(book.illustratorFirstName).toEqual('test_illustrator_first_name');
+    expect(book.illustratorLastName).toEqual('test_illustrator_last_name');
+    expect(book.isbn).toEqual('test_isbn');
+    expect(book.keyword0).toEqual('test_keyword0');
+    expect(book.keyword1).toEqual('test_keyword1');
+    expect(book.keyword2).toEqual('test_keyword2');
+    expect(book.keyword3).toEqual('test_keyword3');
+    expect(book.keyword4).toEqual('test_keyword4');
+    expect(book.keyword5).toEqual('test_keyword5');
+    expect(book.keyword6).toEqual('test_keyword6');
+    expect(book.language).toEqual('test_language');
+    expect(book.manuscriptCreationCommand).toEqual('make test_title');
+    expect(book.manuscriptLocalFile).toEqual('content/dir/test_manuscript_file');
+    expect(book.notes).toEqual('test_notes');
+    expect(book.paperBleed).toEqual('test_paper_bleed');
+    expect(book.paperCoverFinish).toEqual('test_paper_cover_finish');
+    expect(book.paperColor).toEqual('test_paper_color');
+    expect(book.paperTrim).toEqual('test_paper_trim');
+    expect(book.priceAu).toEqual(2.17);
+    expect(book.priceCa).toEqual(2.17);
+    expect(book.priceEur).toEqual(2.17);
+    expect(book.priceGbp).toEqual(2.17);
+    expect(book.priceJp).toEqual(2.17);
+    expect(book.pricePl).toEqual(2.17);
+    expect(book.priceSe).toEqual(2.17);
+    expect(book.priceUsd).toEqual(2.17);
+    expect(book.pubDate).toEqual('test_pub_date');
+    expect(book.pubStatus).toEqual('test_pub_status');
+    expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
+    expect(book.title).toEqual('test_title');
+    expect(book.seriesTitle).toEqual('test_series_title');
+    expect(book.wasEverPublished).toEqual(false);
+    expect(book.signature).toEqual('test_signature');
 });
 
 test('detects bad resolution', () => {
@@ -373,32 +373,33 @@ test('detects bad resolution', () => {
 
 test('isFullyLive', () => {
     let book = makeOkTestBook();
+    book.wasEverPublished = true;
     book.pubStatus = 'Publishing';
 
-    expect(book.isFullyLive()).toBe.false;
+    expect(book.isFullyLive()).toEqual(false);
 
     book.pubStatus = 'LIVE';
-    book.pubStatusDetails = 'some updates pending';
+    book.pubStatusDetail = 'some updates pending';
 
-    expect(book.isFullyLive()).toBe.false;
+    expect(book.isFullyLive()).toEqual(false);
 
-    book.pubStatusDetails = '';
+    book.pubStatusDetail = '';
 
-    expect(book.isFullyLive()).toBe.true;
+    expect(book.isFullyLive()).toEqual(true);
 });
 
 test('canBeCreated', () => {
     let book = makeOkTestBook();
 
     book.authorLastName = '';
-    expect(book.canBeCreated()).toBe.false;
+    expect(book.canBeCreated()).toEqual(false);
 
     book.authorLastName = 'Smith';
-    expect(book.canBeCreated()).toBe.true;
+    expect(book.canBeCreated()).toEqual(true);
 });
 
 test('canRewriteAction', () => {
-    expect(makeOkTestBook('blah').action).toBe('blah');
+    expect(makeOkTestBook('blah').action).toEqual('blah');
     expect(makeOkTestBook('all').action).toMatch(/metadata.*content.*publish/);
     expect(makeOkTestBook('update-published-book').action).toMatch(/metadata.*pricing.*publish/);
 });
@@ -406,30 +407,30 @@ test('canRewriteAction', () => {
 test('can handle first action', () => {
     {
         let book = makeOkTestBook('a1:a2:a3');
-        expect(book.hasAction()).toBe.true;
-        expect(book.getFirstAction()).toBe('a1');
-        expect(book.popFirstAction()).toBe('a1');
-        expect(book.action).toBe('a2:a3');
+        expect(book.hasAction()).toEqual(true);
+        expect(book.getFirstAction()).toEqual('a1');
+        expect(book.popFirstAction()).toEqual('a1');
+        expect(book.action).toEqual('a2:a3');
     }
     {
         let book = makeOkTestBook('a1:a2');
-        expect(book.hasAction()).toBe.true;
-        expect(book.getFirstAction()).toBe('a1');
-        expect(book.popFirstAction()).toBe('a1');
-        expect(book.action).toBe('a2');
+        expect(book.hasAction()).toEqual(true);
+        expect(book.getFirstAction()).toEqual('a1');
+        expect(book.popFirstAction()).toEqual('a1');
+        expect(book.action).toEqual('a2');
     }
     {
         let book = makeOkTestBook('a1');
-        expect(book.hasAction()).toBe.true;
-        expect(book.getFirstAction()).toBe('a1');
-        expect(book.popFirstAction()).toBe('a1');
-        expect(book.action).toBe('');
+        expect(book.hasAction()).toEqual(true);
+        expect(book.getFirstAction()).toEqual('a1');
+        expect(book.popFirstAction()).toEqual('a1');
+        expect(book.action).toEqual('');
     }
     {
         let book = makeOkTestBook('');
-        expect(book.hasAction()).toBe.false;
-        expect(book.getFirstAction()).toBe('');
-        expect(book.popFirstAction()).toBe('');
-        expect(book.action).toBe('');
+        expect(book.hasAction()).toEqual(false);
+        expect(book.getFirstAction()).toEqual('');
+        expect(book.popFirstAction()).toEqual('');
+        expect(book.action).toEqual('');
     }
 })

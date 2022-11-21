@@ -1,11 +1,12 @@
-import { Timeouts, Urls, debug, arraysEqual, normalizeText } from './utils.js';
+import { debug, arraysEqual, normalizeText } from '../utils.js';
+import { Timeouts, Urls } from './utils.js';
 
 export async function isMetadataUpdateNeeded(book, params) {
   const verbose = params.verbose;
 
   if (params.dryRun) {
     debug(verbose, 'Checking if metadata needs update (dry run)');
-    return { success: true, nextActions: '' };
+    return new ActionResult(true);
   }
 
   const url = Urls.EDIT_PAPERBACK_DETAILS.replace('$id', book.id);
@@ -144,6 +145,6 @@ export async function isMetadataUpdateNeeded(book, params) {
     await page.close();
   }
 
-  return { success: true, nextActions: needsUpdate ? 'book-metadata:pricing:publish:scrape' : '' };
+  return new ActionResult(true).setNextActions('book-metadata:pricing:publish:scrape');
 }
 

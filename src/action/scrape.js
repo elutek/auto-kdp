@@ -1,4 +1,6 @@
-import { Timeouts, Urls, clearTextField, debug } from './utils.js';
+import { ActionResult } from '../action-result.js';
+import { debug } from '../utils.js';
+import { Timeouts, Urls, clearTextField } from './utils.js';
 
 var globalScrapePage = null;
 
@@ -7,7 +9,7 @@ export async function scrape(book, params) {
 
   if (params.dryRun) {
     debug(verbose, 'Scraping (dry run)');
-    return { success: true, nextActions: '' };
+    return new ActionResult(true);
   }
 
   const url = Urls.BOOKSHELF_URL;
@@ -15,7 +17,7 @@ export async function scrape(book, params) {
 
   if (book.id == '') {
     debug(verbose, 'NOT scraping - need book id for that');
-    return { success: false, nextActions: '' };
+    return new ActionResult(false).doNotRetry();
   }
 
   // We scrape *a lot*. For scrape we will keep a special 
@@ -84,7 +86,7 @@ export async function scrape(book, params) {
 
   let nextActions = !book.isFullyLive() && book.numActions() <= 1 ? 'scrape' : '';
   console.log(`Next actions: ${nextActions}`);
-  return { success: true, nextActions: nextActions };
+  return new ActionResult(true).setNextActions(nextActions);
 }
 
 async function _getScrapePage(url, params) {

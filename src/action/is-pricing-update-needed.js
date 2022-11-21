@@ -1,4 +1,5 @@
-import { Timeouts, Urls, debug, waitForElements } from './utils.js';
+import { debug } from '../utils.js';
+import { Timeouts, Urls, waitForElements } from './utils.js';
 
 async function priceNeedsUpdate(newPrice, currency, id, page, verbose) {
   const oldPriceStr = (await page.$eval(id, x => x.value)) || '';
@@ -19,7 +20,7 @@ export async function isPricingUpdateNeeded(book, params) {
 
   if (params.dryRun) {
     debug(verbose, 'Checking if pricing needs update (dry run)');
-    return true;
+    return new ActionResult(true);
   }
 
   const url = Urls.EDIT_PAPERBACK_PRICING.replace('$id', book.id);
@@ -64,6 +65,6 @@ export async function isPricingUpdateNeeded(book, params) {
     await page.close();
   }
 
-  return { success: true, nextActions: needsUpdate ? 'pricing:publish:scrape' : '' };
+  return new ActionResult(true).setNextActions('pricing:publish:scrape');
 }
 

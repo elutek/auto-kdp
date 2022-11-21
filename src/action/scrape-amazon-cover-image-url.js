@@ -1,18 +1,20 @@
-import { Timeouts, Urls, debug } from './utils.js';
+import { ActionResult } from '../action-result.js';
+import { debug } from '../utils.js';
+import { Timeouts, Urls } from './utils.js';
 
 export async function scrapeAmazonCoverImageUrl(book, params) {
   const verbose = params.verbose;
 
   if (params.dryRun) {
     debug(verbose, 'Scraping cover (dry run)');
-    return true;
+    return new ActionResult(true);
   }
   const url = Urls.AMAZON_PRODUCT_URL + book.asin;
   debug(verbose, 'Scraping cover at product url: ' + url);
 
   if (book.asin == '') {
     debug(verbose, 'NOT scaraping cover: no ASIN');
-    return false;
+    return new ActionResult(false).doNotRetry();
   }
 
   const page = await params.browser.newPage();
@@ -44,5 +46,5 @@ export async function scrapeAmazonCoverImageUrl(book, params) {
     await page.close();
   }
 
-  return success;
+  return new ActionResult(success);
 }
