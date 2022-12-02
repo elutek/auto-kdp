@@ -11,6 +11,7 @@ export async function publish(book, params) {
   }
 
   if (book.wasEverPublished && book.pubStatus == 'LIVE' && book.pubStatusDetail == '') {
+    debug(verbose, 'Publishing - not needed, already fully published');
     // Publishing not needed.
     return new ActionResult(true);
   }
