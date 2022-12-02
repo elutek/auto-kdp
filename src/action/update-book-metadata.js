@@ -105,68 +105,99 @@ export async function updateBookMetadata(book, params) {
   }
 
   // Series title.
-  if (book.seriesTitle != null && book.seriesTitle != '') {
-    debug(verbose, 'Getting series title');
-    id = '#series_title';
-    const existingSeriesTitle = (await page.$eval(id, x => x.textContent.trim())) || '';
+  debug(verbose, 'Getting series title');
+  id = '#series_title';
+  const existingSeriesTitle = (await page.$eval(id, x => x.textContent.trim())) || '';
+  debug(verbose, `Current series title: ${existingSeriesTitle}`);
 
-    if (existingSeriesTitle != '') {
-      debug(verbose, 'Updating series title - not needed, got ' + existingSeriesTitle);
-      if (existingSeriesTitle != book.seriesTitle) {
-        throw 'Cannot change series title. Please edit your series manually';
-      }
-    } else {
-      debug(verbose, 'Updating series title');
-      wasModified = true;
+  if (book.seriesTitle == existingSeriesTitle) {
+    debug(verbose, `Updating series title - not needed, got ${existingSeriesTitle}`);
+  } else if (book.seriesTitle != '' && existingSeriesTitle == '') {
+    debug(verbose, `Updating series title to ${book.seriesTitle}`);
+    wasModified = true;
 
-      debug(verbose, 'Clicking Add Series');
-      id = '#add_series_button #a-autoid-2-announce';
-      await page.waitForSelector(id);
-      await page.click(id, { timeout: Timeouts.SEC_30 });
-      await page.waitForTimeout(Timeouts.SEC_1);
+    debug(verbose, 'Clicking Add Series');
+    id = '#add_series_button #a-autoid-2-announce';
+    await page.waitForSelector(id);
+    await page.click(id, { timeout: Timeouts.SEC_30 });
+    await page.waitForTimeout(Timeouts.SEC_1);
 
-      debug(verbose, 'Clicking Select Series for Existing series');
-      id = '#react-aui-modal-content-1 span[data-test-id="modal-button-create-or-select-existing"] button';
-      await page.waitForSelector(id);
-      await page.click(id, { timeout: Timeouts.SEC_30 });
-      await page.waitForTimeout(Timeouts.SEC_1);
+    debug(verbose, 'Clicking Select Series for Existing series');
+    id = '#react-aui-modal-content-1 span[data-test-id="modal-button-create-or-select-existing"] button';
+    await page.waitForSelector(id);
+    await page.click(id, { timeout: Timeouts.SEC_30 });
+    await page.waitForTimeout(Timeouts.SEC_1);
 
-      let searchQuery = book.seriesTitle.replace('?', ' ').trim();
-      debug(verbose, 'Type search query: ' + searchQuery);
-      id = '#react-aui-modal-content-1 input[type="search"]';
-      await page.waitForSelector(id);
-      await page.type(id, searchQuery);
+    let searchQuery = book.seriesTitle.replace('?', ' ').trim();
+    debug(verbose, 'Type search query: ' + searchQuery);
+    id = '#react-aui-modal-content-1 input[type="search"]';
+    await page.waitForSelector(id);
+    await page.type(id, searchQuery);
 
-      debug(verbose, 'Click Search');
-      id = '#react-aui-modal-content-1 input[type="submit"]';
-      await page.waitForSelector(id);
-      await page.click(id, { timeout: Timeouts.SEC_30 });
-      await page.waitForTimeout(Timeouts.SEC_1);
+    debug(verbose, 'Click Search');
+    id = '#react-aui-modal-content-1 input[type="submit"]';
+    await page.waitForSelector(id);
+    await page.click(id, { timeout: Timeouts.SEC_30 });
+    await page.waitForTimeout(Timeouts.SEC_1);
 
-      debug(verbose, 'Clicking on our series (we assume we have only one as a result of the search)');
-      id = '#react-aui-modal-content-1 .a-list-item button';
-      await page.waitForSelector(id);
-      await page.click(id, { timeout: Timeouts.SEC_30 });
-      await page.waitForTimeout(Timeouts.SEC_1);
+    debug(verbose, 'Clicking on our series (we assume we have only one as a result of the search)');
+    id = '#react-aui-modal-content-1 .a-list-item button';
+    await page.waitForSelector(id);
+    await page.click(id, { timeout: Timeouts.SEC_30 });
+    await page.waitForTimeout(Timeouts.SEC_1);
 
-      debug(verbose, 'Clicking Main Content');
-      id = '#react-aui-modal-content-1 span[aria-label="Main content"] button';
-      await page.waitForSelector(id);
-      await page.click(id, { timeout: Timeouts.SEC_30 });
-      await page.waitForTimeout(Timeouts.SEC_1);
+    debug(verbose, 'Clicking Main Content');
+    id = '#react-aui-modal-content-1 span[aria-label="Main content"] button';
+    await page.waitForSelector(id);
+    await page.click(id, { timeout: Timeouts.SEC_30 });
+    await page.waitForTimeout(Timeouts.SEC_1);
 
-      debug(verbose, 'Clicking Confirm and continue');
-      id = '#react-aui-modal-content-1 button';
-      await page.waitForSelector(id);
-      await page.click(id, { timeout: Timeouts.SEC_30 });
-      await page.waitForTimeout(Timeouts.SEC_10);
+    debug(verbose, 'Clicking Confirm and continue');
+    id = '#react-aui-modal-content-1 button';
+    await page.waitForSelector(id);
+    await page.click(id, { timeout: Timeouts.SEC_30 });
+    await page.waitForTimeout(Timeouts.SEC_10);
 
-      debug(verbose, 'Clicking Done');
-      id = '#react-aui-modal-footer-1 input[type="submit"]';
-      await page.waitForSelector(id);
-      await page.click(id, { timeout: Timeouts.SEC_30 });
-      await page.waitForTimeout(Timeouts.SEC_5);
-    }
+    debug(verbose, 'Clicking Done');
+    id = '#react-aui-modal-footer-1 input[type="submit"]';
+    await page.waitForSelector(id);
+    await page.click(id, { timeout: Timeouts.SEC_30 });
+    await page.waitForTimeout(Timeouts.SEC_5);
+
+    // Returning failure to retry immediately. I don't know why
+    // clicking 'Done' this way does not bring us back in proper 
+    // edit mode.
+    return new ActionResult(false);
+
+  } else if (book.seriesTitle == '' && existingSeriesTitle != '') {
+
+    debug(verbose, `Removing book from series ${book.seriesTitle}`);
+    wasModified = true;
+
+    debug(verbose, 'Clicking Remove from Series');
+    id = '#a-autoid-1-announce';
+    await page.waitForSelector(id);
+    await page.click(id, { timeout: Timeouts.SEC_30 });
+    await page.waitForTimeout(Timeouts.SEC_1);
+
+    debug(verbose, 'Clicking Remove from Series (confirmation)');
+    id = '#react-aui-modal-footer-1 span[aria-label="Remove from series"] button';
+    await page.waitForSelector(id);
+    await page.click(id, { timeout: Timeouts.SEC_30 });
+    await page.waitForTimeout(Timeouts.SEC_10);
+
+    debug(verbose, 'Clicking Done');
+    id = '#react-aui-modal-footer-1 input[type="submit"]';
+    await page.waitForSelector(id);
+    await page.click(id, { timeout: Timeouts.SEC_30 });
+    await page.waitForTimeout(Timeouts.SEC_1);
+
+    // Returning failure to retry immediately. I don't know why
+    // clicking 'Done' this way does not bring us back in proper 
+    // edit mode.
+    return new ActionResult(false);
+  } else {
+    throw `Cannot modify series title from ${existingSeriesTitle} to ${book.seriesTitle}`;
   }
 
   // Description - first check if update is needed. The typing
