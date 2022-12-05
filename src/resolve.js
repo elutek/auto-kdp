@@ -77,22 +77,34 @@ function _extractNeededKeys(value) {
     }
     return keys;
 }
+// Examples
+//    ${x} == 2
+//    ${name} != Anna
+function _resolveComparison(value) {
+    let equality = true;
+    let j = value.indexOf('==');
+    if (j < 0) {
+        equality = false;
+        j = value.indexOf('!=');
+    }
+    if (j < 0) {
+        throw 'incorrect syntax: ' + value;
+    }
+    let val1 = value.slice(0, j).trim();
+    let val2 = value.slice(j + 2).trim();
+    let equal = val1 == val2;
+    return equality ? equal : !equal;
+}
 
 // Examples:
 //   "$vareq 0    == 1"
 //   "$vareq blah == 10 && ${x} == 10 || ${y} == 20"
-function _resolveVareq(value, allData) {
+function _resolveVareq(value) {
     let orResult = false;
     for (let orComponent of value.split('||')) {
         let andResult = true;
         for (let v of orComponent.split('&&')) {
-            if (!v.includes('==')) {
-                throw '$vareq incorrect syntax: ' + value;
-            }
-            let j = v.indexOf('==');
-            let val1 = v.slice(0, j).trim();
-            let val2 = v.slice(j + 2).trim();
-            andResult &&= (val1 == val2);
+            andResult &&= _resolveComparison(v)
         }
         orResult ||= andResult;
     }
@@ -102,7 +114,7 @@ function _resolveVareq(value, allData) {
 // Examples:
 //   "$varif ${x} == 100  ?? 10    :: 20"
 //   "$varif ${x} == blah ?? blah1 :: blah2"
-function _resolveVarif(value, allData) {
+function _resolveVarif(value) {
     if (!value.includes('??')) {
         throw '$varif incorrect syntax: ' + value;
     }
@@ -137,9 +149,9 @@ function _resolveVarbookref(value, allData) {
 function _getResolvedValue(value, allData) {
     if (value.startsWith('$var')) {
         if (value.startsWith('$vareq ')) {
-            return _resolveVareq(stripPrefix(value, '$vareq '), allData);
+            return _resolveVareq(stripPrefix(value, '$vareq '));
         } else if (value.startsWith('$varif ')) {
-            return _resolveVarif(stripPrefix(value, '$varif '), allData);
+            return _resolveVarif(stripPrefix(value, '$varif '));
         } else if (value.startsWith('$varbookref ')) {
             return _resolveVarbookref(stripPrefix(value, '$varbookref '), allData);
         } else {

@@ -63,7 +63,7 @@ test('resolve_vareq', () => {
       'result3t', '$vareq ${y} == a || ${y} == b || ${y} == Y',
       'result3f', '$vareq ${y} == a || ${y} == b || ${y} == c',
       'result4t', '$vareq ${y} == a || ${y} == Y && ${x} == t || ${x} == X && ${y} == Y',
-      'result4f', '$vareq ${y} == a || ${y} == Y && ${x} == t || ${x} == X && ${y} == 2',
+      'result4f', '$vareq ${y} != Y || ${y} == Y && ${x} == t || ${x} == X && ${y} == 2',
     ),
     null, null)).toEqual(
       makeMap('x', 'X', 'y', 'Y', 'z', 'Z',
