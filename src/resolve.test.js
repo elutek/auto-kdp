@@ -80,7 +80,6 @@ test('resolve_vareq', () => {
 });
 
 test('resolve_vareq bad syntax', () => {
-  // Missing "=="
   expect(() => resolveAllValues(makeMap('x', '$vareq a'), null, null)).toThrow(/incorrect syntax/);
   expect(() => resolveAllValues(makeMap('x', '$vareq a b'), null, null)).toThrow(/incorrect syntax/);
   expect(() => resolveAllValues(makeMap('x', '$vareq a = b'), null, null)).toThrow(/incorrect syntax/);
@@ -88,8 +87,28 @@ test('resolve_vareq bad syntax', () => {
 
 test('resolve_varif', () => {
   expect(resolveAllValues(
-    makeMap('x', 'blah', 'y', '$vareq ${x}== blah', 'z', '$vareq ${x} == blah1', 'w', '$varif ${y} ??yes:: no', 't', '$varif ${z} ?? yes ::no'), null, null)).toEqual(
-      makeMap('x', 'blah', 'y', 'true', 'z', 'false', 'w', 'yes', 't', 'no'));
+    makeMap(
+      'x', 'blah',
+      'y', '$vareq ${x}== blah',
+      'z', '$vareq ${x} == blah1',
+      'w', '$varif ${y} ??yes:: no',
+      't', '$varif ${z} ?? yes ::no',
+      'a', 'A',
+      'b', 'B',
+      'v_true', '$varif ${a} == B || ${a} == A && ${b} == B ?? yes :: no',
+      'v_false', '$varif ${a} == C || ${a} == A && ${b} == blah ?? yes :: no',
+    ), null, null)).toEqual(
+      makeMap(
+        'x', 'blah',
+        'y', 'true',
+        'z', 'false',
+        'w', 'yes',
+        't', 'no',
+        'a', 'A',
+        'b', 'B',
+        'v_true', 'yes',
+        'v_false', 'no'
+      ));
 });
 
 test('resolve_varif bad syntax', () => {

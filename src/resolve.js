@@ -81,6 +81,13 @@ function _extractNeededKeys(value) {
 //    ${x} == 2
 //    ${name} != Anna
 function _resolveComparison(value) {
+    value = value.trim();
+    if (value == 'true') {
+        return true;
+    }
+    if (value == 'false') {
+        return false;
+    }
     let equality = true;
     let j = value.indexOf('==');
     if (j < 0) {
@@ -97,9 +104,9 @@ function _resolveComparison(value) {
 }
 
 // Examples:
-//   "$vareq 0    == 1"
-//   "$vareq blah == 10 && ${x} == 10 || ${y} == 20"
-function _resolveVareq(value) {
+//   "0    == 1"
+//   "blah == 10 && ${x} == 10 || ${y} == 20"
+function _resolveCondition(value) {
     let orResult = false;
     for (let orComponent of value.split('||')) {
         let andResult = true;
@@ -108,7 +115,7 @@ function _resolveVareq(value) {
         }
         orResult ||= andResult;
     }
-    return orResult ? 'true' : 'false';
+    return orResult;
 }
 
 // Examples:
@@ -127,7 +134,7 @@ function _resolveVarif(value) {
     let k = value.indexOf('::');
     let val2 = value.slice(0, k).trim();
     let val3 = value.slice(k + 2).trim();
-    return val1 == 'true' ? val2 : val3;
+    return _resolveCondition(val1) ? val2 : val3;
 }
 
 // Examples:
@@ -149,7 +156,7 @@ function _resolveVarbookref(value, allData) {
 function _getResolvedValue(value, allData) {
     if (value.startsWith('$var')) {
         if (value.startsWith('$vareq ')) {
-            return _resolveVareq(stripPrefix(value, '$vareq '));
+            return _resolveCondition(stripPrefix(value, '$vareq ')) ? 'true' : 'false';
         } else if (value.startsWith('$varif ')) {
             return _resolveVarif(stripPrefix(value, '$varif '));
         } else if (value.startsWith('$varbookref ')) {
