@@ -40,7 +40,7 @@ export async function scrape(book, params) {
   // Get ASIN from the search result.
   debug(verbose, 'Getting ASIN');
   id = '#zme-indie-bookshelf-dual-print-price-asin-' + book.id;
-  await page.waitForSelector(id);
+  await page.waitForSelector(id, { timeout: Timeouts.SEC_5 });
   const rawAsin = await page.$eval(id, el => el.innerText);
   const asin = _stripPrefix(rawAsin.trim(), 'ASIN:').trim();
   debug(verbose, 'Got ASIN: ' + asin);
