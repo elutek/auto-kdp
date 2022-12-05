@@ -53,6 +53,30 @@ test('resolve_vareq', () => {
   expect(resolveAllValues(
     makeMap('x', 'blah', 'y', '$vareq ${x} == blah', 'z', '$vareq ${x} ==blah1'), null, null)).toEqual(
       makeMap('x', 'blah', 'y', 'true', 'z', 'false'));
+
+  expect(resolveAllValues(
+    makeMap('x', 'X', 'y', 'Y', 'z', 'Z',
+      'result1t', '$vareq ${x} == X',
+      'result1f', '$vareq ${x} == bad',
+      'result2t', '$vareq ${x} == X && ${y} == Y',
+      'result2f', '$vareq ${x} == X && ${y} == a',
+      'result3t', '$vareq ${y} == a || ${y} == b || ${y} == Y',
+      'result3f', '$vareq ${y} == a || ${y} == b || ${y} == c',
+      'result4t', '$vareq ${y} == a || ${y} == Y && ${x} == t || ${x} == X && ${y} == Y',
+      'result4f', '$vareq ${y} == a || ${y} == Y && ${x} == t || ${x} == X && ${y} == 2',
+    ),
+    null, null)).toEqual(
+      makeMap('x', 'X', 'y', 'Y', 'z', 'Z',
+        'result1t', 'true',
+        'result1f', 'false',
+        'result2t', 'true',
+        'result2f', 'false',
+        'result3t', 'true',
+        'result3f', 'false',
+        'result4t', 'true',
+        'result4f', 'false',
+      ),
+    );
 });
 
 test('resolve_vareq bad syntax', () => {

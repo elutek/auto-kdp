@@ -80,16 +80,23 @@ function _extractNeededKeys(value) {
 
 // Examples:
 //   "$vareq 0    == 1"
-//   "$vareq blah == 10"
-//   "$vareq ${x} == 10"
+//   "$vareq blah == 10 && ${x} == 10 || ${y} == 20"
 function _resolveVareq(value, allData) {
-    if (!value.includes('==')) {
-        throw '$vareq incorrect syntax: ' + value;
+    let orResult = false;
+    for (let orComponent of value.split('||')) {
+        let andResult = true;
+        for (let v of orComponent.split('&&')) {
+            if (!v.includes('==')) {
+                throw '$vareq incorrect syntax: ' + value;
+            }
+            let j = v.indexOf('==');
+            let val1 = v.slice(0, j).trim();
+            let val2 = v.slice(j + 2).trim();
+            andResult &&= (val1 == val2);
+        }
+        orResult ||= andResult;
     }
-    let j = value.indexOf('==');
-    let val1 = value.slice(0, j).trim();
-    let val2 = value.slice(j + 2).trim();
-    return val1 == val2 ? 'true' : 'false';
+    return orResult ? 'true' : 'false';
 }
 
 // Examples:
