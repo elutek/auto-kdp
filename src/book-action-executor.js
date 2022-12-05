@@ -38,6 +38,10 @@ export async function ExecuteBookActions(book, actionCallback, params) {
             if (result.nextActions != '') {
                 book.action = mergeActions(result.nextActions, book.action);
             }
+        } else {
+            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+            console.log('!!!!     Book processing failed   !!!!!');
+            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
         }
     }
     actionsResult.isDone = true;
