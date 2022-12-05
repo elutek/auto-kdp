@@ -1,4 +1,4 @@
-import { arraysEqual, mergeActions, normalizeText } from './utils';
+import { arraysEqual, mergeActions, normalizeText, stripPrefix } from './utils';
 
 test('mergeActions', () => {
   expect(mergeActions('a:b', 'c:d')).toEqual('a:b:c:d');
@@ -32,4 +32,12 @@ test('normalizeText', () => {
   expect(normalizeText('  blah \n \t blah \n\t \n\n')).toEqual('blah blah');
   expect(normalizeText('  <p>abc</p>   <p>def</p>')).toEqual('<p>abc</p><p>def</p>');
   expect(normalizeText('  <p>abc. </p>')).toEqual('<p>abc.</p>');
+});
+
+test('stripPrefix', () => {
+  expect(stripPrefix('', 'blah')).toEqual('');
+  expect(stripPrefix('test', 'blah')).toEqual('test');
+  expect(stripPrefix('test', '')).toEqual('test');
+  expect(stripPrefix('test', 't')).toEqual('est');
+  expect(stripPrefix('test', 'test')).toEqual('');
 });

@@ -38,3 +38,6 @@ export function normalizeText(str) {
     .trim();
 }
 
+export function stripPrefix(str, prefix) {
+  return str.startsWith(prefix) ? str.substring(prefix.length) : str;
+}
