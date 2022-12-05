@@ -1,4 +1,4 @@
-import { stripPrefix } from "./utils";
+import { stripPrefix, stringToIntOrThrow } from "./utils";
 
 export function resolveAllValues(data, unresolvedKeys, allData) {
     // Init already resolved keys.
@@ -88,19 +88,53 @@ function _resolveComparison(value) {
     if (value == 'false') {
         return false;
     }
+    if (value.includes('==') || value.includes('!=')) {
+        return _resolveEquality(value);
+    } else if (value.includes('<') || value.includes('>')) {
+        return _resolveNumberComparison(value);
+    }
+    throw '(resolve comparison) incorrect syntax: ' + value;
+}
+
+function _resolveEquality(value) {
     let equality = true;
     let j = value.indexOf('==');
     if (j < 0) {
         equality = false;
         j = value.indexOf('!=');
     }
-    if (j < 0) {
-        throw 'incorrect syntax: ' + value;
-    }
     let val1 = value.slice(0, j).trim();
     let val2 = value.slice(j + 2).trim();
     let equal = val1 == val2;
     return equality ? equal : !equal;
+}
+
+function _resolveNumberComparison(value) {
+    let less = true;
+    let j = value.indexOf('<');
+    if (j < 0) {
+        j = value.indexOf('>');
+        less = false;
+    }
+    let equalityToo = j + 1 < value.length && value.charAt(j + 1) == '=';
+    let val1 = value.slice(0, j).trim();
+    let val2 = value.slice(j + (equalityToo ? 2 : 1)).trim();
+    let num1 = stringToIntOrThrow(val1);
+    let num2 = stringToIntOrThrow(val2);
+
+    if (less) {
+        if (equalityToo) {
+            return num1 <= num2;
+        } else {
+            return num1 < num2;
+        }
+    } else {
+        if (equalityToo) {
+            return num1 >= num2;
+        } else {
+            return num1 > num2;
+        }
+    }
 }
 
 // Examples:
@@ -118,23 +152,52 @@ function _resolveCondition(value) {
     return orResult;
 }
 
-// Examples:
 //   "$varif ${x} == 100  ?? 10    :: 20"
 //   "$varif ${x} == blah ?? blah1 :: blah2"
-function _resolveVarif(value) {
-    if (!value.includes('??')) {
-        throw '$varif incorrect syntax: ' + value;
+function _tryResolveConditionalSelector(value, sep1, sep2) {
+    let j = value.indexOf(sep1);
+    if (j >= 0) {
+        let val1 = value.slice(0, j).trim();
+        let k = value.indexOf(sep2, j + sep1.length);
+        if (k >= j + sep1.length) {
+            let val2 = value.slice(j + sep1.length, k).trim();
+            let val3 = value.slice(k + sep2.length).trim();
+            return _resolveCondition(val1) ? _resolveValue(val2) : _resolveValue(val3);
+        }
     }
-    let j = value.indexOf('??');
-    let val1 = value.slice(0, j).trim();
-    value = value.slice(j + 2).trim();
-    if (!value.includes('::')) {
-        throw '$varif incorrect syntax (missing colon): ' + value;
+    return null;
+}
+
+function _resolveConditionalSelector(value) {
+    let result = _tryResolveConditionalSelector(value, '???', ':::');
+    if (result == null) {
+        result = _tryResolveConditionalSelector(value, '??', '::');
     }
-    let k = value.indexOf('::');
-    let val2 = value.slice(0, k).trim();
-    let val3 = value.slice(k + 2).trim();
-    return _resolveCondition(val1) ? val2 : val3;
+    if (result == null) {
+        result = _tryResolveConditionalSelector(value, '?', ':');
+    }
+    if (result == null) {
+        throw '(resolve conditional selector) incorrect syntax: ' + value;
+    }
+    return result;
+}
+
+//   "$varif ${x} == 100  ?? 10    :: (${y} != 20 ?? 1 :: 2)"
+function _resolveValue(value) {
+    value = value.trim();
+
+    // Strip parenthesis.
+    if (value.startsWith('(') && value.endsWith(')')) {
+        return _resolveValue(value.substring(1, value.length - 1));
+    }
+
+    // Handle conditional like: a == b ?? c : d
+    if (value.includes('?')) {
+        return _resolveConditionalSelector(value);
+    }
+
+    // Handle simple variable
+    return value;
 }
 
 // Examples:
@@ -143,7 +206,7 @@ function _resolveVarif(value) {
 //   "$varbookref name Clara, lang RU !! title"   <-- title isbn of the book with keys name=Clara lang=RU
 function _resolveVarbookref(value, allData) {
     if (!value.includes('!!')) {
-        throw '$varbookref incorrect syntax: ' + value;
+        throw '(resolve book ref) incorrect syntax: ' + value;
     }
     let j = value.indexOf('!!');
     let searchKeys = value.slice(0, j).trim();
@@ -158,7 +221,7 @@ function _getResolvedValue(value, allData) {
         if (value.startsWith('$vareq ')) {
             return _resolveCondition(stripPrefix(value, '$vareq ')) ? 'true' : 'false';
         } else if (value.startsWith('$varif ')) {
-            return _resolveVarif(stripPrefix(value, '$varif '));
+            return _resolveConditionalSelector(stripPrefix(value, '$varif '));
         } else if (value.startsWith('$varbookref ')) {
             return _resolveVarbookref(stripPrefix(value, '$varbookref '), allData);
         } else {

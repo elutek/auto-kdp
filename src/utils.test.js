@@ -1,4 +1,4 @@
-import { arraysEqual, mergeActions, normalizeText, stripPrefix } from './utils';
+import { arraysEqual, mergeActions, normalizeText, stripPrefix, stringToIntOrThrow } from './utils';
 
 test('mergeActions', () => {
   expect(mergeActions('a:b', 'c:d')).toEqual('a:b:c:d');
@@ -40,4 +40,15 @@ test('stripPrefix', () => {
   expect(stripPrefix('test', '')).toEqual('test');
   expect(stripPrefix('test', 't')).toEqual('est');
   expect(stripPrefix('test', 'test')).toEqual('');
+});
+
+test('stringToInt', () => {
+  expect(stringToIntOrThrow('0')).toEqual(0);
+  expect(stringToIntOrThrow('1')).toEqual(1);
+  expect(stringToIntOrThrow('-1')).toEqual(-1);
+  expect(stringToIntOrThrow('2')).toEqual(2);
+  expect(stringToIntOrThrow('22222')).toEqual(22222);
+  expect(stringToIntOrThrow('-102938')).toEqual(-102938);
+  expect(() => stringToIntOrThrow('1.1')).toThrow(/cannot parse/)
+  expect(() => stringToIntOrThrow('abc')).toThrow(/cannot parse/)
 });

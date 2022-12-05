@@ -15,7 +15,7 @@ export function arraysEqual(a, b) {
     if (a === b) {
         return true;
     }
-    if (a == null) { 
+    if (a == null) {
         return b == null;
     }
     if (b == null || a.length != b.length) {
@@ -30,14 +30,22 @@ export function arraysEqual(a, b) {
 }
 
 export function normalizeText(str) {
-  return str.replaceAll('\n', ' ')
-    .replaceAll(/\s+/g, ' ')
-    .replaceAll(/\s+$/g, '')
-    .replaceAll('> <', '><')
-    .replaceAll('. </', '.</')
-    .trim();
+    return str.replaceAll('\n', ' ')
+        .replaceAll(/\s+/g, ' ')
+        .replaceAll(/\s+$/g, '')
+        .replaceAll('> <', '><')
+        .replaceAll('. </', '.</')
+        .trim();
 }
 
 export function stripPrefix(str, prefix) {
-  return str.startsWith(prefix) ? str.substring(prefix.length) : str;
+    return str.startsWith(prefix) ? str.substring(prefix.length) : str;
+}
+
+export function stringToIntOrThrow(str) {
+    let i = parseInt(str);
+    if (str != '' + i) {
+        throw `cannot parse as int: ${str}`;
+    }
+    return i;
 }
