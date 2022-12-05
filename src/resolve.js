@@ -1,3 +1,5 @@
+import { stripPrefix } from "./utils";
+
 export function resolveAllValues(data, unresolvedKeys, allData) {
     // Init already resolved keys.
     let resolvedKeys = new Set();
@@ -25,7 +27,7 @@ function _resolveStep(data, resolvedKeys, allData) {
     let changedKey = null;
     let changedValue = null;
     for (const [key, val] of data) {
-        if (!(resolvedKeys.has(key))) {
+        if (!resolvedKeys.has(key)) {
             let newValue = _resolveOneValue(key, val, data, allData, resolvedKeys);
             if (val != newValue) {
                 changedKey = key;
@@ -76,65 +78,67 @@ function _extractNeededKeys(value) {
     return keys;
 }
 
+// Examples:
+//   "$vareq 0    == 1"
+//   "$vareq blah == 10"
+//   "$vareq ${x} == 10"
+function _resolveVareq(value, allData) {
+    if (!value.includes('==')) {
+        throw '$vareq incorrect syntax: ' + value;
+    }
+    let j = value.indexOf('==');
+    let val1 = value.slice(0, j).trim();
+    let val2 = value.slice(j + 2).trim();
+    return val1 == val2 ? 'true' : 'false';
+}
+
+// Examples:
+//   "$varif ${x} == 100  ?? 10    :: 20"
+//   "$varif ${x} == blah ?? blah1 :: blah2"
+function _resolveVarif(value, allData) {
+    if (!value.includes('??')) {
+        throw '$varif incorrect syntax: ' + value;
+    }
+    let j = value.indexOf('??');
+    let val1 = value.slice(0, j).trim();
+    value = value.slice(j + 2).trim();
+    if (!value.includes('::')) {
+        throw '$varif incorrect syntax (missing colon): ' + value;
+    }
+    let k = value.indexOf('::');
+    let val2 = value.slice(0, k).trim();
+    let val3 = value.slice(k + 2).trim();
+    return val1 == 'true' ? val2 : val3;
+}
+
+// Examples:
+//   "$varbookref isbn 123456789      !! name"   <-- get name of the book with that isbn
+//   "$varbookref name Clara          !! asin "  <-- get asin of the book with key name=Clara
+//   "$varbookref name Clara, lang RU !! title"   <-- title isbn of the book with keys name=Clara lang=RU
+function _resolveVarbookref(value, allData) {
+    if (!value.includes('!!')) {
+        throw '$varbookref incorrect syntax: ' + value;
+    }
+    let j = value.indexOf('!!');
+    let searchKeys = value.slice(0, j).trim();
+    let fieldToExtract = value.slice(j + 2).trim();
+    let matchedBookField = _getBookField(allData, searchKeys, fieldToExtract);
+    // If no match, return empty string
+    return matchedBookField != null ? matchedBookField : '';
+}
+
 function _getResolvedValue(value, allData) {
     if (value.startsWith('$var')) {
         if (value.startsWith('$vareq ')) {
-            //
-            // Examples:
-            //   "$vareq 0    == 1"
-            //   "$vareq blah == 10"
-            //   "$vareq ${x} == 10"
-            //
-            if (!value.includes('==')) {
-                throw '$vareq incorrect syntax: ' + value;
-            }
-            value = value.slice('$vareq '.length);
-            let j = value.indexOf('==');
-            let val1 = value.slice(0, j).trim();
-            let val2 = value.slice(j + 2).trim();
-            return val1 == val2 ? 'true' : 'false';
+            return _resolveVareq(stripPrefix(value, '$vareq '), allData);
         } else if (value.startsWith('$varif ')) {
-            //
-            // Examples:
-            //   "$varif ${x} == 100  ?? 10    :: 20"
-            //   "$varif ${x} == blah ?? blah1 :: blah2"
-            //
-            if (!value.includes('??')) {
-                throw '$varif incorrect syntax: ' + value;
-            }
-            value = value.slice('$varif '.length);
-            let j = value.indexOf('??');
-            let val1 = value.slice(0, j).trim();
-            value = value.slice(j + 2).trim();
-            if (!value.includes('::')) {
-                throw '$varif incorrect syntax (missing colon): ' + value;
-            }
-            let k = value.indexOf('::');
-            let val2 = value.slice(0, k).trim();
-            let val3 = value.slice(k + 2).trim();
-            return val1 == 'true' ? val2 : val3;
+            return _resolveVarif(stripPrefix(value, '$varif '), allData);
         } else if (value.startsWith('$varbookref ')) {
-            //
-            // Examples:
-            //   "otherName =  $varbookref isbn 123456789      !! name"   <-- get name of the book with that isbn
-            //   "otherAsin =  $varbookref name Clara          !! asin "  <-- get asin of the book with key name=Clara
-            //   "otherTitle = $varbookref name Clara, lang RU !! title"   <-- title isbn of the book with keys name=Clara lang=RU
-            //
-            if (!value.includes('!!')) {
-                throw '$varbookref incorrect syntax: ' + value;
-            }
-            value = value.slice('$varbookref '.length);
-            let j = value.indexOf('!!');
-            let searchKeys = value.slice(0, j).trim();
-            let fieldToExtract = value.slice(j + 2).trim();
-            let matchedBookField = _getBookField(allData, searchKeys, fieldToExtract);
-            // If no match, return empty string
-            return matchedBookField != null  ? matchedBookField : '';
+            return _resolveVarbookref(stripPrefix(value, '$varbookref '), allData);
         } else {
             throw new Error('Unknown key starting with a special prefix $var. Expected are $vareq, $varif and $varbookref')
         }
     }
-
     return value;
 }
 
@@ -146,7 +150,7 @@ function _getBookField(allData, searchKeys, fieldToExtract) {
     let matchedData = null;
     for (let data of allData) {
         if (_dataMatchesKeys(data, searchKeys)) {
-            if (matchedData  == null) {
+            if (matchedData == null) {
                 matchedData = data;
             } else {
                 throw new Error('Matched more than one record for key: ' + searchKeys);
