@@ -105,6 +105,8 @@ test('resolve_varif', () => {
       'd2', '$varif ${d}<=3 ?? true::false',
       'd3', '$varif ${d}>=3 ?? true::false',
       'd4', '$varif ${d}>3  ?? true::false',
+      'd5', 'Who will baby be? (girl)',
+      'd6', '$varif 1 == 1 ?? Who will baby be? (girl) :: Another title with question mark?',
     ), null, null)).toEqual(
       makeMap(
         'x', 'blah',
@@ -124,6 +126,8 @@ test('resolve_varif', () => {
         'd2', 'true',
         'd3', 'true',
         'd4', 'false',
+        'd5', 'Who will baby be? (girl)',
+        'd6', 'Who will baby be? (girl)',
       ));
 });
 

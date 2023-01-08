@@ -189,7 +189,7 @@ function _resolveValue(value) {
     }
 
     // Handle conditional like: a == b ?? c : d
-    if (value.includes('?')) {
+    if (value.includes('??') && value.includes('::')) {
         return _resolveConditionalSelector(value);
     }
 
