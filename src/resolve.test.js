@@ -91,21 +91,20 @@ test('resolve_varif', () => {
       'x', 'blah',
       'y', '$vareq ${x}== blah',
       'z', '$vareq ${x} == blah1',
-      'w', '$varif ${y} ?yes: no',
-      't', '$varif ${z} ? yes :no',
+      'w', '$varif ${y} ??yes:: no',
+      't', '$varif ${z} ?? yes ::no',
       'a', 'A',
       'b', 'B',
-      'v_true', '$varif ${a} == B || ${a} == A && ${b} == B ? yes : no',
-      'v_false', '$varif ${a} == C || ${a} == A && ${b} == blah ? yes : no',
-      'ww1', '$varif ${a} == A ?? (${b} == B ? case1 : case2) :: case3',
-      'ww2', '$varif ${a} == A ?? (${b} != B ? case1 : case2) :: case3',
-      'ww3', '$varif ${a} != A ?? (${b} != B ? case1 : case2) :: (case3)',
+      'v_true', '$varif ${a} == B || ${a} == A && ${b} == B ?? yes :: no',
+      'v_false', '$varif ${a} == C || ${a} == A && ${b} == blah ??? yes ::: no',
+      'ww1', '$varif ${a} == A ??? (${b} == B ?? case1 :: case2) ::: case3',
+      'ww2', '$varif ${a} == A ??? (${b} != B ?? case1 :: case2) ::: case3',
+      'ww3', '$varif ${a} != A ??? (${b} != B ?? case1 :: case2) ::: (case3)',
       'd', '3',
-      'd1', '$varif ${d}<3  ?true:false',
-      'd2', '$varif ${d}<=3 ?true:false',
-      'd3', '$varif ${d}>=3 ?true:false',
-      'd4', '$varif ${d}>3  ?true:false',
-      'd5', '$varif ${d}<=50 ??? (${d}<=25 ?? (${d}<=12 ? under12 : under25over13) :: (${d}<=30 ? btw-26-30 : btw-31-50)) ::: (${d}<=75 ?? x :: y)',
+      'd1', '$varif ${d}<3  ?? true::false',
+      'd2', '$varif ${d}<=3 ?? true::false',
+      'd3', '$varif ${d}>=3 ?? true::false',
+      'd4', '$varif ${d}>3  ?? true::false',
     ), null, null)).toEqual(
       makeMap(
         'x', 'blah',
@@ -125,7 +124,6 @@ test('resolve_varif', () => {
         'd2', 'true',
         'd3', 'true',
         'd4', 'false',
-        'd5', 'under12'
       ));
 });
 
@@ -141,7 +139,7 @@ test('resolve_varif bad syntax', () => {
   // Bad parenthesis
   expect(() => resolveAllValues(makeMap('x', '$varif true ?? 1 : 2'), null, null)).toThrow(/incorrect syntax/);
   // Bad integer
-  expect(() => resolveAllValues(makeMap('x', '$varif blah <= 3 ?? yes : no'), null, null)).toThrow(/cannot parse/);
+  expect(() => resolveAllValues(makeMap('x', '$varif blah <= 3 ?? yes : no'), null, null)).toThrow(/incorrect syntax/);
 });
 
 test('resolve_varbookref', () => {

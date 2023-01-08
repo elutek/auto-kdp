@@ -1,4 +1,4 @@
-import { stripPrefix, stringToIntOrThrow } from "./utils";
+import { stripPrefix, stringToIntOrThrow } from "./utils.js";
 
 export function resolveAllValues(data, unresolvedKeys, allData) {
     // Init already resolved keys.
@@ -172,9 +172,6 @@ function _resolveConditionalSelector(value) {
     let result = _tryResolveConditionalSelector(value, '???', ':::');
     if (result == null) {
         result = _tryResolveConditionalSelector(value, '??', '::');
-    }
-    if (result == null) {
-        result = _tryResolveConditionalSelector(value, '?', ':');
     }
     if (result == null) {
         throw '(resolve conditional selector) incorrect syntax: ' + value;
