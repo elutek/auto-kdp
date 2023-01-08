@@ -141,6 +141,8 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
     for (let book of bookList.books) {
       if (book.action != '') {
 
+        console.log('-------------------------------------------------------------------------');
+
         //
         // Print current stats
         //
