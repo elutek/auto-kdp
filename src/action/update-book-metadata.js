@@ -1,5 +1,5 @@
 import { ActionResult } from '../action-result.js';
-import { debug, arraysEqual, normalizeText, } from '../utils.js';
+import { debug, arraysEqual, normalizeText, normalizeSearchQuery } from '../utils.js';
 import { Timeouts, Urls, clearTextField, waitForElements } from './utils.js';
 
 // This function also creates a book.
@@ -128,7 +128,7 @@ export async function updateBookMetadata(book, params) {
     await page.click(id, { timeout: Timeouts.SEC_30 });
     await page.waitForTimeout(Timeouts.SEC_1);
 
-    let searchQuery = book.seriesTitle.replace('?', ' ').trim();
+    let searchQuery = normalizeSearchQuery(book.seriesTitle)
     debug(verbose, 'Type search query: ' + searchQuery);
     id = '#react-aui-modal-content-1 input[type="search"]';
     await page.waitForSelector(id);

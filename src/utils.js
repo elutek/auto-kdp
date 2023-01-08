@@ -38,6 +38,22 @@ export function normalizeText(str) {
         .trim();
 }
 
+export function normalizeSearchQuery(str) {
+    return str
+        .replaceAll('?', '')
+        .replaceAll('(', '')
+        .replaceAll(')', '')
+        .replaceAll('[', '')
+        .replaceAll(']', '')
+        .replaceAll(',', '')
+        .replaceAll('.', '')
+        .replaceAll('"', '')
+        .replaceAll('\'', '')
+        .replaceAll(/\s+/g, ' ')
+        .replaceAll(/\s+$/g, '')
+        .trim();
+}
+
 export function stripPrefix(str, prefix) {
     return str.startsWith(prefix) ? str.substring(prefix.length) : str;
 }
