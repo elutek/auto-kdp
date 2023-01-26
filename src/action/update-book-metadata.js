@@ -129,22 +129,40 @@ export async function updateBookMetadata(book, params) {
     await page.waitForTimeout(Timeouts.SEC_1);
 
     let searchQuery = normalizeSearchQuery(book.seriesTitle)
-    debug(verbose, 'Type search query: ' + searchQuery);
-    id = '#react-aui-modal-content-1 input[type="search"]';
-    await page.waitForSelector(id);
-    await page.type(id, searchQuery);
 
-    debug(verbose, 'Click Search for the series');
-    id = '#react-aui-modal-content-1 input[type="submit"]';
-    await page.waitForSelector(id);
-    await page.click(id, { timeout: Timeouts.SEC_30 });
-    await page.waitForTimeout(Timeouts.SEC_1);
+    const maxAttempts = 2;
 
-    debug(verbose, 'Clicking on our series (we assume we have only one as a result of the search)');
-    id = '#react-aui-modal-content-1 .a-list-item button';
-    await page.waitForSelector(id);
-    await page.click(id, { timeout: Timeouts.SEC_30 });
-    await page.waitForTimeout(Timeouts.SEC_1);
+    for (let attempt = 1; attempt <= maxAttempts; ++attempt) {
+      try {
+        debug(verbose, 'Typing search query: ' + searchQuery);
+        id = '#react-aui-modal-content-1 input[type="search"]';
+        await page.waitForSelector(id);
+        await page.type(id, searchQuery);
+
+        debug(verbose, 'Click Search for the series');
+        id = '#react-aui-modal-content-1 input[type="submit"]';
+        await page.waitForSelector(id);
+        await page.click(id, { timeout: Timeouts.SEC_30 });
+        await page.waitForTimeout(Timeouts.SEC_1);
+
+        debug(verbose, 'Clicking on our series (we assume we have only one as a result of the search)');
+        id = '#react-aui-modal-content-1 .a-list-item button';
+        await page.waitForSelector(id);
+        await page.click(id, { timeout: Timeouts.SEC_30 });
+        await page.waitForTimeout(Timeouts.SEC_1);
+
+        // We are done.
+        attempt = maxAttempts;
+      } catch (e) {
+        // Failure - search results did not return any results.
+        if (attempt < maxAttempts) {
+          debug(verbose, 'Failed - retrying');
+        } else {
+          debug(verbose, 'Failed - failing');
+          return new ActionResult(false);
+        }
+      }
+    }
 
     debug(verbose, 'Clicking Main Content');
     id = '#react-aui-modal-content-1 span[aria-label="Main content"] button';
