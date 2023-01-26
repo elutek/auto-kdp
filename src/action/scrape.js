@@ -23,6 +23,7 @@ export async function scrape(book, params) {
   // We scrape *a lot*. For scrape we will keep a special 
   // page used only for scraping.
   const page = await _getScrapePage(url, params);
+  await page.bringToFront();
 
   // Type the search query.
   debug(verbose, 'Querying for the book');
@@ -35,6 +36,7 @@ export async function scrape(book, params) {
   debug(verbose, 'Clicking Search');
   id = '#podbookshelftable-search-button-submit .a-button-input';
   await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
+  await page.focus(id);
   await page.click(id, { timeout: Timeouts.SEC_1 });
 
   // Get ASIN from the search result.
