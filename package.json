@@ -8,7 +8,8 @@
   "license": "ISC",
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --silent",
-    "dist": "npx webpack"
+    "build": "npx webpack",
+    "clean": "rm -fr coverage dist"
   },
   "dependencies": {
     "commander": "^9.4.0",

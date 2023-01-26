@@ -12,7 +12,8 @@ export default {
     },
     output: {
         path: path.resolve(__dirname, './dist'),
-        filename: "auto-kdp.js"
+        filename: "auto-kdp.js",
+        clean: true
     },
     resolve: {
         extensions: [".ts", ".tsx", ".js"],
