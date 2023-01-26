@@ -134,7 +134,7 @@ export async function updateBookMetadata(book, params) {
     await page.waitForSelector(id);
     await page.type(id, searchQuery);
 
-    debug(verbose, 'Click Search');
+    debug(verbose, 'Click Search for the series');
     id = '#react-aui-modal-content-1 input[type="submit"]';
     await page.waitForSelector(id);
     await page.click(id, { timeout: Timeouts.SEC_30 });
@@ -156,18 +156,22 @@ export async function updateBookMetadata(book, params) {
     id = '#react-aui-modal-content-1 button';
     await page.waitForSelector(id);
     await page.click(id, { timeout: Timeouts.SEC_30 });
-    await page.waitForTimeout(Timeouts.SEC_10);
+
+    debug(verbose, 'Waiting for the "Saving" message to disappear');
+    await page.waitForTimeout(Timeouts.SEC_5);
 
     debug(verbose, 'Clicking Done');
     id = '#react-aui-modal-footer-1 input[type="submit"]';
     await page.waitForSelector(id);
     await page.click(id, { timeout: Timeouts.SEC_30 });
-    await page.waitForTimeout(Timeouts.SEC_5);
+    await page.waitForTimeout(Timeouts.SEC_1);
 
-    // Returning failure to retry immediately. I don't know why
-    // clicking 'Done' this way does not bring us back in proper 
-    // edit mode.
-    return new ActionResult(false);
+    debug(verbose, 'Clicking in the page');
+    id = '#a-page';
+    await page.waitForSelector(id);
+    await page.click(id, { timeout: Timeouts.SEC_10 });
+    await page.waitForTimeout(Timeouts.SEC_1);
+    await page.focus(id);
 
   } else if (book.seriesTitle == '' && existingSeriesTitle != '') {
 
@@ -210,7 +214,7 @@ export async function updateBookMetadata(book, params) {
   await page.click(id, { timeout: Timeouts.SEC_5 });
   id = '#cke_1_contents > textarea';
   console.log(`Waiting for textarea (${id})`)
-  await page.waitForSelector(id);
+  await page.waitForSelector(id, { timeout: Timeouts.SEC_5 });
   const oldDescription = normalizeText(await page.$eval('#cke_1_contents > textarea', x => x.value) || '');
 
   if (normalizeText(oldDescription) != normalizeText(book.description)) {
