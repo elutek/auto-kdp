@@ -9,6 +9,7 @@
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --silent",
     "build": "npx webpack",
+    "build-watch": "npx webpack --watch",
     "clean": "rm -fr coverage dist"
   },
   "dependencies": {
