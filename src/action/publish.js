@@ -16,6 +16,12 @@ export async function publish(book, params) {
     return new ActionResult(true);
   }
 
+  if (book.wasEverPublished && book.pubStatus == 'LIVE' && book.pubStatusDetail == 'Updates publishing') {
+    debug(verbose, 'Publishing - already in progress');
+    // Publishing not needed.
+    return new ActionResult(true);
+  }
+
   const url = Urls.EDIT_PAPERBACK_PRICING.replace('$id', book.id);
   debug(verbose, 'Publishing at url: ' + url);
   const page = await params.browser.newPage();
