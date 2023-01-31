@@ -49,6 +49,7 @@ export function normalizeSearchQuery(str) {
         .replaceAll('.', '')
         .replaceAll('"', '')
         .replaceAll('\'', '')
+        .replaceAll('-', '')
         .replaceAll(/\s+/g, ' ')
         .replaceAll(/\s+$/g, '')
         .trim();

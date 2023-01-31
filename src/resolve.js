@@ -96,6 +96,16 @@ function _resolveComparison(value) {
     throw '(resolve comparison) incorrect syntax: ' + value;
 }
 
+// Examples
+//     abc
+//     firstletter(abc)
+function _getVal(str) {
+    if (str.length > 13 && str.startsWith("firstletter(") && str.endsWith(")")) {
+        str = str.charAt(12)
+    }
+    return str;
+}
+
 function _resolveEquality(value) {
     let equality = true;
     let j = value.indexOf('==');
@@ -103,9 +113,10 @@ function _resolveEquality(value) {
         equality = false;
         j = value.indexOf('!=');
     }
-    let val1 = value.slice(0, j).trim();
-    let val2 = value.slice(j + 2).trim();
+    let val1 = _getVal(value.slice(0, j).trim());
+    let val2 = _getVal(value.slice(j + 2).trim());
     let equal = val1 == val2;
+    console.log(`Comparing ${val1} == ${val2}`);
     return equality ? equal : !equal;
 }
 
@@ -169,7 +180,10 @@ function _tryResolveConditionalSelector(value, sep1, sep2) {
 }
 
 function _resolveConditionalSelector(value) {
-    let result = _tryResolveConditionalSelector(value, '???', ':::');
+    let result = _tryResolveConditionalSelector(value, '????', '::::');
+    if (result == null) {
+        result = _tryResolveConditionalSelector(value, '???', ':::');
+    }
     if (result == null) {
         result = _tryResolveConditionalSelector(value, '??', '::');
     }

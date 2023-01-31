@@ -64,6 +64,9 @@ test('resolve_vareq', () => {
       'result3f', '$vareq ${y} == a || ${y} == b || ${y} == c',
       'result4t', '$vareq ${y} == a || ${y} == Y && ${x} == t || ${x} == X && ${y} == Y',
       'result4f', '$vareq ${y} != Y || ${y} == Y && ${x} == t || ${x} == X && ${y} == 2',
+      'Result5', '$vareq firstletter(${x}) == X',
+      'Result6', '$vareq firstletter(${x}) == XXXX',
+      'Result7', '$vareq firstletter(${x}) == wrong'
     ),
     null, null)).toEqual(
       makeMap('x', 'X', 'y', 'Y', 'z', 'Z',
@@ -75,6 +78,9 @@ test('resolve_vareq', () => {
         'result3f', 'false',
         'result4t', 'true',
         'result4f', 'false',
+        'Result5', 'true',
+        'Result6', 'false',
+        'Result7', 'false',
       ),
     );
 });
@@ -100,6 +106,7 @@ test('resolve_varif', () => {
       'ww1', '$varif ${a} == A ??? (${b} == B ?? case1 :: case2) ::: case3',
       'ww2', '$varif ${a} == A ??? (${b} != B ?? case1 :: case2) ::: case3',
       'ww3', '$varif ${a} != A ??? (${b} != B ?? case1 :: case2) ::: (case3)',
+      'ww4', '$varif ${a} == A ???? (${b} == B ??? (${b} == B ?? case2 :: case3) ::: case4) :::: case5',
       'd', '3',
       'd1', '$varif ${d}<3  ?? true::false',
       'd2', '$varif ${d}<=3 ?? true::false',
@@ -121,6 +128,7 @@ test('resolve_varif', () => {
         'ww1', 'case1',
         'ww2', 'case2',
         'ww3', 'case3',
+        'ww4', 'case2',
         'd', '3',
         'd1', 'false',
         'd2', 'true',
