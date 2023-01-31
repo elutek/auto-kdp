@@ -1,4 +1,4 @@
-import { arraysEqual, mergeActions, normalizeText, normalizeSearchQuery, stripPrefix, stringToIntOrThrow } from './utils';
+import { arraysEqual, isInt, mergeActions, normalizeText, normalizeSearchQuery, stripPrefix, stringToIntOrThrow } from './utils';
 
 test('mergeActions', () => {
   expect(mergeActions('a:b', 'c:d')).toEqual('a:b:c:d');
@@ -39,6 +39,9 @@ test('normalizeSearchQuery', () => {
   expect(normalizeSearchQuery('blah')).toEqual('blah');
   expect(normalizeSearchQuery('blah (a) "b" \'c\' ,d, .e. [f] g?')).toEqual('blah a b c d e f g');
   expect(normalizeSearchQuery('\tblah\n\t  blah  ')).toEqual('blah blah');
+  expect(normalizeSearchQuery('blah R-Z')).toEqual('blah R Z');
+  expect(normalizeSearchQuery('blah R/Z')).toEqual('blah R Z');
+  expect(normalizeSearchQuery('blah R\\Z')).toEqual('blah R Z');
 });
 
 test('stripPrefix', () => {
@@ -47,6 +50,20 @@ test('stripPrefix', () => {
   expect(stripPrefix('test', '')).toEqual('test');
   expect(stripPrefix('test', 't')).toEqual('est');
   expect(stripPrefix('test', 'test')).toEqual('');
+});
+
+test('isInt', () => {
+  expect(isInt('0')).toEqual(true);
+  expect(isInt('1')).toEqual(true);
+  expect(isInt('-1')).toEqual(true);
+  expect(isInt('2')).toEqual(true);
+  expect(isInt('-2')).toEqual(true);
+  expect(isInt('-234')).toEqual(true);
+  expect(isInt('-23456789')).toEqual(true);
+  expect(isInt('1.1')).toEqual(false);
+  expect(isInt('blah')).toEqual(false);
+  expect(isInt('2blah')).toEqual(false);
+  expect(isInt('blah2')).toEqual(false);
 });
 
 test('stringToInt', () => {

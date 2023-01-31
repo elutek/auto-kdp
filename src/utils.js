@@ -40,16 +40,18 @@ export function normalizeText(str) {
 
 export function normalizeSearchQuery(str) {
     return str
-        .replaceAll('?', '')
-        .replaceAll('(', '')
-        .replaceAll(')', '')
-        .replaceAll('[', '')
-        .replaceAll(']', '')
-        .replaceAll(',', '')
-        .replaceAll('.', '')
-        .replaceAll('"', '')
-        .replaceAll('\'', '')
-        .replaceAll('-', '')
+        .replaceAll('?', ' ')
+        .replaceAll('(', ' ')
+        .replaceAll(')', ' ')
+        .replaceAll('[', ' ')
+        .replaceAll(']', ' ')
+        .replaceAll(',', ' ')
+        .replaceAll('.', ' ')
+        .replaceAll('"', ' ')
+        .replaceAll('\'', ' ')
+        .replaceAll('/', ' ')
+        .replaceAll('\\', ' ')
+        .replaceAll('-', ' ')
         .replaceAll(/\s+/g, ' ')
         .replaceAll(/\s+$/g, '')
         .trim();
@@ -57,6 +59,11 @@ export function normalizeSearchQuery(str) {
 
 export function stripPrefix(str, prefix) {
     return str.startsWith(prefix) ? str.substring(prefix.length) : str;
+}
+
+export function isInt(str) {
+    let i = parseInt(str);
+    return str == '' + i 
 }
 
 export function stringToIntOrThrow(str) {

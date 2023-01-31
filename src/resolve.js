@@ -1,4 +1,4 @@
-import { stripPrefix, stringToIntOrThrow } from "./utils.js";
+import { stripPrefix, stringToIntOrThrow, isInt } from "./utils.js";
 
 export function resolveAllValues(data, unresolvedKeys, allData) {
     // Init already resolved keys.
@@ -91,7 +91,7 @@ function _resolveComparison(value) {
     if (value.includes('==') || value.includes('!=')) {
         return _resolveEquality(value);
     } else if (value.includes('<') || value.includes('>')) {
-        return _resolveNumberComparison(value);
+        return _resolveNumberOrStringComparison(value);
     }
     throw '(resolve comparison) incorrect syntax: ' + value;
 }
@@ -116,11 +116,11 @@ function _resolveEquality(value) {
     let val1 = _getVal(value.slice(0, j).trim());
     let val2 = _getVal(value.slice(j + 2).trim());
     let equal = val1 == val2;
-    //console.log(`Comparing ${val1} == ${val2}`);
+    // console.log(`Comparing ${val1} == ${val2}`);
     return equality ? equal : !equal;
 }
 
-function _resolveNumberComparison(value) {
+function _resolveNumberOrStringComparison(value) {
     let less = true;
     let j = value.indexOf('<');
     if (j < 0) {
@@ -130,20 +130,30 @@ function _resolveNumberComparison(value) {
     let equalityToo = j + 1 < value.length && value.charAt(j + 1) == '=';
     let val1 = value.slice(0, j).trim();
     let val2 = value.slice(j + (equalityToo ? 2 : 1)).trim();
-    let num1 = stringToIntOrThrow(val1);
-    let num2 = stringToIntOrThrow(val2);
+
+    if (isInt(val1) && isInt(val2)) {
+        val1 = stringToIntOrThrow(val1);
+        val2 = stringToIntOrThrow(val2);
+    } else {
+        val1 = _getVal(val1);
+        val2 = _getVal(val2);
+    }
 
     if (less) {
         if (equalityToo) {
-            return num1 <= num2;
+            // console.log(`Comparing (num/str) ${val1} <= ${val2}`);
+            return val1 <= val2;
         } else {
-            return num1 < num2;
+            // console.log(`Comparing (num/str) ${val1} < ${val2}`);
+            return val1 < val2;
         }
     } else {
         if (equalityToo) {
-            return num1 >= num2;
+            // console.log(`Comparing (num/str) ${val1} >= ${val2}`);
+            return val1 >= val2;
         } else {
-            return num1 > num2;
+            // console.log(`Comparing (num/str) ${val1} > ${val2}`);
+            return val1 > val2;
         }
     }
 }

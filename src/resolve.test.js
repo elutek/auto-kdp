@@ -66,7 +66,7 @@ test('resolve_vareq', () => {
       'result4f', '$vareq ${y} != Y || ${y} == Y && ${x} == t || ${x} == X && ${y} == 2',
       'Result5', '$vareq firstletter(${x}) == X',
       'Result6', '$vareq firstletter(${x}) == XXXX',
-      'Result7', '$vareq firstletter(${x}) == wrong'
+      'Result7', '$vareq firstletter(${x}) == wrong',
     ),
     null, null)).toEqual(
       makeMap('x', 'X', 'y', 'Y', 'z', 'Z',
@@ -114,6 +114,12 @@ test('resolve_varif', () => {
       'd4', '$varif ${d}>3  ?? true::false',
       'd5', 'Who will baby be? (girl)',
       'd6', '$varif 1 == 1 ?? Who will baby be? (girl) :: Another title with question mark?',
+      'e', 'e',
+      'e1', '$varif ${e}<f  ?? true::false',
+      'e2', '$varif ${e}<=firstletter(eeee) ?? true::false',
+      'e3', '$varif ${e}>=t ?? true::false',
+      'e4', '$varif ${e}>a  ?? true::false',
+      'e4', '$varif ${e}>firstletter(a)  ?? true::false',
     ), null, null)).toEqual(
       makeMap(
         'x', 'blah',
@@ -136,6 +142,11 @@ test('resolve_varif', () => {
         'd4', 'false',
         'd5', 'Who will baby be? (girl)',
         'd6', 'Who will baby be? (girl)',
+        'e', 'e',
+        'e1', 'true',
+        'e2', 'true',
+        'e3', 'false',
+        'e4', 'true',
       ));
 });
 
@@ -243,4 +254,21 @@ test('circular reference', () => {
   let inputMap = makeMap('x', '${y}', 'y', '${x}');
   expect(resolveAllValues(inputMap, unresolvedKeys, null)).toEqual(inputMap);
   expect(unresolvedKeys).toEqual(new Set(['x', 'y']));
+});
+
+test('test examples', () => {
+  expect(resolveAllValues(
+    makeMap(
+      'babyName', 'Quinn',
+      'babyGender', 'she',
+      'babyHairColor', 'dark',
+      'seriesTitle', '$varif ${babyGender} == she ???? ( ${babyHairColor} == fair ??? ( firstletter(${babyName}) >= R ?? seriesGirlBlondRZ :: seriesGirlBlondAQ ) ::: ( firstletter(${babyName}) >= R ?? seriesGirlDarkRZ :: seriesGirlDarkAQ ) ) :::: ( ${babyHairColor} == fair ??? seriesBoyBlond ::: seriesBoyDark ) '
+    ), null, null)).toEqual(
+      makeMap(
+        'babyName', 'Quinn',
+        'babyGender', 'she',
+        'babyHairColor', 'dark',
+        'seriesTitle', 'seriesGirlDarkAQ'
+      ),
+    );
 });
