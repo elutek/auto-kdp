@@ -116,7 +116,7 @@ function _resolveEquality(value) {
     let val1 = _getVal(value.slice(0, j).trim());
     let val2 = _getVal(value.slice(j + 2).trim());
     let equal = val1 == val2;
-    console.log(`Comparing ${val1} == ${val2}`);
+    //console.log(`Comparing ${val1} == ${val2}`);
     return equality ? equal : !equal;
 }
 
