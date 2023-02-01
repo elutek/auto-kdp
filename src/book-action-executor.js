@@ -23,7 +23,7 @@ async function doExecuteBookActionWithRetries(action, book, actionCallback, para
 // Reads actions from book.action. Writes new actions the same way.
 // If this procedure fails, actions remain unchanged.
 // Returns whether any action succeeded.
-export async function ExecuteBookActions(book, actionCallback, params) {
+export async function ExecuteBookActions(book, bookFile, bookList, actionCallback, params) {
     // Process actions until the first action fails.
     // The book.actions field is only modified in this function, not in ExecuteBookAction().
     let actionsResult = new ActionsResult();
@@ -43,6 +43,12 @@ export async function ExecuteBookActions(book, actionCallback, params) {
             console.log('!!!!     Book processing failed   !!!!!');
             console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
         }
+
+        // Write out the books to preserve current state.
+        if (params.verbose) {
+            console.log(`Writing ${bookList.size()} books`);
+        }
+        await bookFile.writeBooksAsync(bookList);
     }
     actionsResult.isDone = true;
     return actionsResult;

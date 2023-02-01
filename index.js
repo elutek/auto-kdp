@@ -53,17 +53,7 @@ async function executeBookActionCallback(action, book, params) {
 }
 
 async function _doProcessOneBook(bookFile, bookList, book, params) {
-  const actionsResult = await ExecuteBookActions(book, (a, b, p) => executeBookActionCallback(a, b, p), params);
-  if (actionsResult.hasSuccess()) {
-    if (params.verbose) {
-      console.log(`Writing ${bookList.size()} books`);
-    }
-    await bookFile.writeBooksAsync(bookList);
-  } else {
-    if (params.verbose) {
-      console.debug('No need to update books');
-    }
-  }
+  await ExecuteBookActions(book, bookFile, bookList, (a, b, p) => executeBookActionCallback(a, b, p), params);
 }
 
 async function _startBrowser(bookList, headlessOverride, userDataDir, verbose) {
