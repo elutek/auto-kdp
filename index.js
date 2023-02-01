@@ -197,16 +197,19 @@ async function main() {
   program.parse();
 
   const opts = program.opts();
-  const verbose = opts.verbose;
-  let headlessStr = opts.headless != null ? opts.headless : '';
+
+  let headlessStr = opts.headless != undefined && opts.headless != null ? opts.headless : '';
   let headlessOverride = headlessStr == 'yes' || headlessStr == 'true' ? true : (headlessStr == 'no' || headlessStr == 'false' ? false : null);
+  let dryRun = opts.dryRun != undefined && opts.dryRun != null ? opts.dryRun : false;
+  let keepOpen = opts.keepOpen != undefined && opts.keepOpen != null ? opts.keepOpen : false;
+  let verbose = opts.verbose != undefined && opts.verbose != null ? opts.verbose : false;
 
   process.on("unhandledRejection", (error) => {
     console.error(error);
     throw error;
   });
 
-  await mainWithOptions(opts.books, opts.config, opts.contentDir, opts.userData, opts.keepOpen, headlessOverride, opts.dryRun, verbose);
+  await mainWithOptions(opts.books, opts.config, opts.contentDir, opts.userData, keepOpen, headlessOverride, dryRun, verbose);
 }
 
 (async () => { main() })();
