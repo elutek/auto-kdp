@@ -13,7 +13,7 @@ export async function scrapeAmazonCoverImageUrl(book, params) {
   debug(verbose, 'Scraping cover at product url: ' + url);
 
   if (book.asin == '') {
-    debug(verbose, 'NOT scaraping cover: no ASIN');
+    debug(verbose, 'NOT scraping cover: no ASIN');
     return new ActionResult(false).doNotRetry();
   }
 

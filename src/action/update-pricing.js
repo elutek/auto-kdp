@@ -54,7 +54,10 @@ export async function updatePricing(book, params) {
 
   let wasUpdated = false;
 
+
   wasUpdated |= await updatePriceIfNeeded(book.priceUsd, 'USD', '#data-pricing-print-us-price-input input', page, verbose);
+  await page.waitForTimeout(Timeouts.SEC_5);
+
   wasUpdated |= await updatePriceIfNeeded(book.priceGbp, 'GBP', '#data-pricing-print-uk-price-input input', page, verbose);
   wasUpdated |= await updatePriceIfNeeded(book.priceEur, 'DE/EUR', '#data-pricing-print-de-price-input input', page, verbose);
   wasUpdated |= await updatePriceIfNeeded(book.priceEur, 'FR/EUR', '#data-pricing-print-fr-price-input input', page, verbose);
