@@ -101,7 +101,7 @@ export class Book {
 
     // Handle special actions
     if (this.action == 'all') {
-      this.action = 'book-metadata:content-metadata:scrapeIsbn:produceManuscript:content:pricing:publish:scrape:scrapeAmazonCoverImageUrl';
+      this.action = 'book-metadata:content-metadata:scrapeIsbn:produceManuscript:content:pricing:book-metadata:scrape:publish:scrape:scrapeAmazonCoverImageUrl';
     } else if (this.action == 'update-published-book') {
       this.action = 'book-metadata:pricing:publish:scrape';
     }
