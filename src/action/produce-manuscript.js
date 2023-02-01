@@ -1,3 +1,4 @@
+import { ActionResult } from '../action-result.js';
 import ChildProcess from 'child_process';
 import { debug } from '../utils.js';
 import { fileExists } from './utils.js';
