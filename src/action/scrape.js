@@ -1,5 +1,5 @@
 import { ActionResult } from '../action-result.js';
-import { debug, stripPrefix } from '../utils.js';
+import { debug } from '../utils.js';
 import { Timeouts, Urls, clearTextField } from './utils.js';
 
 var globalScrapePage = null;
@@ -85,15 +85,26 @@ export async function scrape(book, params) {
   // Get series title.
   debug(verbose, 'Getting series title');
   id = '#zme-indie-bookshelf-dual-metadata-series_title-' + book.id + ' > a';
-  await page.waitForSelector(id, { timeout: Timeouts.SEC_2 });
-  const scrapedSeriesTitleLowercase = await page.$eval(id, el => el.innerText.trim()) || "";
-  if (book.seriesTitle.toLowerCase() == scrapedSeriesTitleLowercase) {
-    console.log('Got series title: MATCHING OK');
-    book.scrapedSeriesTitle = 'ok';
-  } else {
-    console.log('Got series title: DIFFERS: ' + scrapedSeriesTitleLowercase);
-    book.scrapedSeriesTitle = 'differs: ' + scrapedSeriesTitleLowercase;
+  let scrapedSeriesTitle = '';
+  try {
+    await page.waitForSelector(id, { timeout: Timeouts.SEC_1 });
+    await page.waitForTimeout(Timeouts.SEC_1);
+    await page.bringToFront();
+    await page.focus(id);
+    scrapedSeriesTitle = await page.$eval(id, el => el.innerText.trim()) || "";
+    //console.log(await page.content());
+  } catch (e) {
   }
+
+  if (scrapedSeriesTitle == book.seriesTitle.toLowerCase()) {
+    book.scrapedSeriesTitle = 'ok';
+  } else if (scrapedSeriesTitle == '') {
+    book.scrapedSeriesTitle = 'missing should be: ' + book.seriesTitle;
+  } else {
+    book.scrapedSeriesTitle = 'mismatch - got ' + scrapedSeriesTitle + ' but expecting ' + book.seriesTitle.toLowerCase();
+  }
+
+  console.log('Got series title: ' + book.scrapedSeriesTitle);
 
 
   /* We do not close this special page.
