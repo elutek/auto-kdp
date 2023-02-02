@@ -45,10 +45,12 @@ export async function ExecuteBookActions(book, bookFile, bookList, actionCallbac
         }
 
         // Write out the books to preserve current state.
-        if (params.verbose) {
-            console.log(`Writing ${bookList.size()} books`);
+        if (bookFile != null && bookList != null) {
+            if (params.verbose) {
+                console.log(`Writing ${bookList.size()} books`);
+            }
+            await bookFile.writeBooksAsync(bookList);
         }
-        await bookFile.writeBooksAsync(bookList);
     }
     actionsResult.isDone = true;
     return actionsResult;

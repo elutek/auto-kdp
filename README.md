@@ -140,4 +140,3 @@ All actions and puppeteer messiness is in  ```src/action``` - this is not tested
 ## What is needed
 
 - Some fields missing, e.g. subtitle.
-- Write the CSV file after every action, not after a set of actions
