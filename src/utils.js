@@ -61,9 +61,17 @@ export function stripPrefix(str, prefix) {
     return str.startsWith(prefix) ? str.substring(prefix.length) : str;
 }
 
+export function stripQuotes(str) {
+    if (str.startsWith('"') && str.endsWith('"') ||
+        str.startsWith("'") && str.endsWith("'")) {
+        return str.substring(1, str.length - 1);
+    }
+    return str;
+}
+
 export function isInt(str) {
     let i = parseInt(str);
-    return str == '' + i 
+    return str == '' + i
 }
 
 export function stringToIntOrThrow(str) {

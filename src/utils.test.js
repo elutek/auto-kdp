@@ -1,4 +1,4 @@
-import { arraysEqual, isInt, mergeActions, normalizeText, normalizeSearchQuery, stripPrefix, stringToIntOrThrow } from './utils';
+import { arraysEqual, isInt, mergeActions, normalizeText, normalizeSearchQuery, stripPrefix, stripQuotes, stringToIntOrThrow } from './utils';
 
 test('mergeActions', () => {
   expect(mergeActions('a:b', 'c:d')).toEqual('a:b:c:d');
@@ -50,6 +50,15 @@ test('stripPrefix', () => {
   expect(stripPrefix('test', '')).toEqual('test');
   expect(stripPrefix('test', 't')).toEqual('est');
   expect(stripPrefix('test', 'test')).toEqual('');
+});
+
+test('stripQuotes', () => {
+  expect(stripQuotes('')).toEqual('');
+  expect(stripQuotes('blah')).toEqual('blah');
+  expect(stripQuotes('"blah"')).toEqual('blah');
+  expect(stripQuotes("'test 123'")).toEqual('test 123');
+  expect(stripQuotes('test"')).toEqual('test"');
+  expect(stripQuotes("'test")).toEqual("'test");
 });
 
 test('isInt', () => {
