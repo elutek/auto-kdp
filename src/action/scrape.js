@@ -104,7 +104,7 @@ export async function scrape(book, params) {
     book.scrapedSeriesTitle = 'mismatch - got ' + scrapedSeriesTitle + ' but expecting ' + book.seriesTitle.toLowerCase();
   }
 
-  console.log('Got series title: ' + book.scrapedSeriesTitle);
+  console.log('Got scraped series title: ' + scrapedSeriesTitle + ' - ' + book.scrapedSeriesTitle);
 
 
   /* We do not close this special page.
