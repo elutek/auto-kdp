@@ -46,6 +46,7 @@ export function makeOkTestBook(action = 'test_action') {
             Keys.SIGNATURE, 'test_signature',
             Keys.TITLE, 'test_title',
             Keys.SERIES_TITLE, 'test_series_title',
+            Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
             Keys.WAS_EVER_PUBLISHED, 'false',
         ),
         makeMap(),

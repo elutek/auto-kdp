@@ -49,9 +49,9 @@ afterEach(() => {
 
 test('can read book file', async () => {
     const books_csv =
-        `action     ,wasEverPublished,id       ,isbn       ,asin       ,name  ,pubStatus        ,pubDate        ,pubStatusDetail         ,coverImageUrl
-        test_actionA,false           ,test_idA ,test_isbnA ,test_asinA ,Ava   ,test_pub_statusA ,test_pub_dateA ,test_pub_status_detailA ,test_cover_image_urlA
-        test_actionB,true            ,test_idB ,test_isbnB ,test_asinB ,Belle ,test_pub_statusB ,test_pub_dateB ,test_pub_status_detailB ,test_cover_image_urlB`;
+        `action     ,wasEverPublished,id       ,isbn       ,asin       ,name  ,pubStatus        ,pubDate        ,pubStatusDetail         ,coverImageUrl         ,scrapedSeriesTitle
+        test_actionA,false           ,test_idA ,test_isbnA ,test_asinA ,Ava   ,test_pub_statusA ,test_pub_dateA ,test_pub_status_detailA ,test_cover_image_urlA ,scraped_series_titleA
+        test_actionB,true            ,test_idB ,test_isbnB ,test_asinB ,Belle ,test_pub_statusB ,test_pub_dateB ,test_pub_status_detailB ,test_cover_image_urlB ,scraped_series_titleB`;
 
     mock({
         'books.csv': books_csv,
@@ -83,6 +83,7 @@ test('can read book file', async () => {
         expect(book.priceUsd).toEqual(1.2);
         expect(book.wasEverPublished).toEqual(false);
         expect(book.signature).toEqual('Ava');
+        expect(book.scrapedSeriesTitle).toEqual('scraped_series_titleA');
     }
     {
         let book = books[1];
@@ -101,13 +102,14 @@ test('can read book file', async () => {
         expect(book.priceUsd).toEqual(1.2);
         expect(book.wasEverPublished).toEqual(true);
         expect(book.signature).toEqual('Belle');
+        expect(book.scrapedSeriesTitle).toEqual('scraped_series_titleB');
     }
 });
 
 test('can read book with empty values', async () => {
     const empty_books_csv =
-        `action,wasEverPublished,id,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl
-               ,                ,  ,    ,    ,Belle,         ,       ,               ,`;
+        `action,wasEverPublished,id,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
+               ,                ,  ,    ,    ,Belle,         ,       ,               ,             ,`;
 
     const empty_books_conf = `
 authorFirstName =
@@ -144,6 +146,7 @@ paperTrim =
 signature =
 title =
 seriesTitle =
+scrapedSeriesTitle =
 `
     mock({
         'books.csv': empty_books_csv,
@@ -175,16 +178,15 @@ seriesTitle =
         expect(book.priceUsd).toBeNull();
         expect(book.wasEverPublished).toEqual(false);
         expect(book.name).toEqual('Belle');
+        expect(book.scrapedSeriesTitle).toEqual('');
     }
 });
 
-
-
 test('detects same id', async () => {
     const books_csv =
-        `action,wasEverPublished,id,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl
-        a      ,false           ,SAMEID,a   ,a   ,Ava  ,a        ,a      ,a              ,a
-        a      ,true            ,SAMEID,b   ,b   ,Belle,b        ,b      ,b              ,b`;
+        `action,wasEverPublished,id,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
+        a      ,false           ,SAMEID,a   ,a   ,Ava  ,a        ,a      ,a              ,a        ,A
+        a      ,true            ,SAMEID,b   ,b   ,Belle,b        ,b      ,b              ,b        ,B`;
 
     mock({
         'books.csv': books_csv,
@@ -201,9 +203,9 @@ test('detects same id', async () => {
 
 test('detects same isbn', async () => {
     const books_csv =
-        `action,wasEverPublished,id,isbn     ,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl
-        a      ,false           ,a  ,SAMEISBN,a   ,Ava  ,a        ,a      ,a              ,a
-        a      ,true            ,b  ,SAMEISBN,b   ,Belle,b        ,b      ,b              ,b`;
+        `action,wasEverPublished,id,isbn     ,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
+        a      ,false           ,a  ,SAMEISBN,a   ,Ava  ,a        ,a      ,a              ,a            ,A
+        a      ,true            ,b  ,SAMEISBN,b   ,Belle,b        ,b      ,b              ,b            ,B`;
 
     mock({
         'books.csv': books_csv,
@@ -220,9 +222,9 @@ test('detects same isbn', async () => {
 
 test('detects same signature', async () => {
     const books_csv =
-        `action,wasEverPublished,id,isbn,asin,name,pubStatus,pubDate,pubStatusDetail,coverImageUrl
-        a      ,false           ,a  ,a  ,a   ,Ava ,a        ,a      ,a              ,a
-        a      ,true            ,b  ,b  ,b   ,Ava ,b        ,b      ,b              ,b`;
+        `action,wasEverPublished,id,isbn,asin,name,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
+        a      ,false           ,a  ,a  ,a   ,Ava ,a        ,a      ,a              ,a            ,A
+        a      ,true            ,b  ,b  ,b   ,Ava ,b        ,b      ,b              ,b            ,B`;
 
     mock({
         'books.csv': books_csv,
@@ -239,9 +241,9 @@ test('detects same signature', async () => {
 
 test('can read and write the book file', async () => {
     const books_csv =
-        `action,wasEverPublished,id,isbn,asin,name,pubStatus,pubDate,pubStatusDetail,coverImageUrl
-test_actionA,false,test_idA,test_isbnA,test_asinA,Ava,test_pub_statusA,test_pub_dateA,test_pub_status_detailA,test_cover_image_urlA
-test_actionB,true,test_idB,test_isbnB,test_asinB,Belle,test_pub_statusB,test_pub_dateB,test_pub_status_detailB,test_cover_image_urlB
+        `action,wasEverPublished,id,isbn,asin,name,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
+test_actionA,false,test_idA,test_isbnA,test_asinA,Ava,test_pub_statusA,test_pub_dateA,test_pub_status_detailA,test_cover_image_urlA,title_a
+test_actionB,true,test_idB,test_isbnB,test_asinB,Belle,test_pub_statusB,test_pub_dateB,test_pub_status_detailB,test_cover_image_urlB,title_b
 `;
 
     mock({

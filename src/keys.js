@@ -21,6 +21,7 @@ export let Keys = {
     KEYWORD6: 'keyword6',
     LANGUAGE: 'language',
     SERIES_TITLE: 'seriesTitle',
+    SCRAPED_SERIES_TITLE: 'scrapedSeriesTitle',
     TITLE: 'title',
     PRICE_AU: 'priceAu',
     PRICE_CA: 'priceCa',

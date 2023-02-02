@@ -91,6 +91,7 @@ export class Book {
     this.pubStatus = getValue(Keys.PUB_STATUS);
     this.pubStatusDetail = getValue(Keys.PUB_STATUS_DETAIL);
     this.seriesTitle = getValue(Keys.SERIES_TITLE);
+    this.scrapedSeriesTitle = getValue(Keys.SCRAPED_SERIES_TITLE);
     this.title = getValue(Keys.TITLE);
     this.wasEverPublished = getValue(Keys.WAS_EVER_PUBLISHED) == 'true';
     this.signature = getValue(Keys.SIGNATURE);
@@ -138,6 +139,10 @@ export class Book {
     let firstAction = actions.shift();
     this.action = actions.join(':');
     return firstAction;
+  }
+
+  getActionList() {
+    return this.action.split(':').filter(x => x);
   }
 }
 

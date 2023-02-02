@@ -48,10 +48,16 @@ test('containsContentAction', () => {
   {
     let bl = makeBookList([makeOkTestBook(), makeOkTestBook()]);
     expect(bl.containsContentAction()).toEqual(false);
-    bl.books[1].action = 'content-blah';
+
+    bl.books[1].action = 'content:abc';
     expect(bl.containsContentAction()).toEqual(true);
-    bl.books[1].action = 'blahContent blah';
+    bl.books[1].action = 'abc:content';
     expect(bl.containsContentAction()).toEqual(true);
+    bl.books[1].action = 'abc:content:abc';
+    expect(bl.containsContentAction()).toEqual(true);
+
+    bl.books[1].action = 'blah:content-blah';
+    expect(bl.containsContentAction()).toEqual(false);
   }
 });
 

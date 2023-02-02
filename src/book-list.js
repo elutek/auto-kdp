@@ -36,7 +36,7 @@ export class BookList {
 
     containsContentAction() {
         for (let book of this.books) {
-            if (book.action != null && book.action.toLowerCase().includes('content')) {
+            if (book.action != null && book.getActionList().includes('content')) {
                 return true;
             }
         }

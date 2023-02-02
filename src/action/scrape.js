@@ -1,5 +1,5 @@
 import { ActionResult } from '../action-result.js';
-import { debug } from '../utils.js';
+import { debug, stripPrefix } from '../utils.js';
 import { Timeouts, Urls, clearTextField } from './utils.js';
 
 var globalScrapePage = null;
@@ -44,7 +44,7 @@ export async function scrape(book, params) {
     debug(verbose, 'Getting ASIN');
     id = '#zme-indie-bookshelf-dual-print-price-asin-' + book.id;
     await page.waitForSelector(id, { timeout: Timeouts.SEC_5 });
-    const rawAsin = await page.$eval(id, el => el.innerText);
+    const rawAsin = await page.$eval(id, el => el.innerText) || "";
     const asin = _stripPrefix(rawAsin.trim(), 'ASIN:').trim();
     debug(verbose, 'Got ASIN: ' + asin);
     book.asin = asin;
@@ -63,7 +63,7 @@ export async function scrape(book, params) {
   debug(verbose, 'Getting pubStatusDetail');
   id = '[id="' + book.id + '-status"] .element-popover-text';
   await page.waitForSelector(id);
-  let pubStatusDetail = await page.$eval(id, el => el.innerText.trim());
+  let pubStatusDetail = await page.$eval(id, el => el.innerText.trim()) || "";
   if (pubStatusDetail.startsWith(pubStatus)) {
     pubStatusDetail = pubStatusDetail.substr(pubStatus.length).trim();
   }
@@ -75,12 +75,26 @@ export async function scrape(book, params) {
     debug(verbose, 'Getting pubDate');
     id = '#zme-indie-bookshelf-dual-print-status-release-date-' + book.id;
     await page.waitForSelector(id);
-    const pubDate = await page.$eval(id, el => el.innerText.trim());
+    const pubDate = await page.$eval(id, el => el.innerText.trim()) || "";
     book.pubDate = _formatDate(_stripPrefix(pubDate, 'Submitted on ').trim());
     debug(verbose, `Got pubDate ${book.pubDate} (${pubDate})`);
   } else {
     book.pubDate = '';
   }
+
+  // Get series title.
+  debug(verbose, 'Getting series title');
+  id = '#zme-indie-bookshelf-dual-metadata-series_title-' + book.id + ' > a';
+  await page.waitForSelector(id, { timeout: Timeouts.SEC_2 });
+  const scrapedSeriesTitleLowercase = await page.$eval(id, el => el.innerText.trim()) || "";
+  if (book.seriesTitle.toLowerCase() == scrapedSeriesTitleLowercase) {
+    console.log('Got series title: MATCHING OK');
+    book.scrapedSeriesTitle = 'ok';
+  } else {
+    console.log('Got series title: DIFFERS: ' + scrapedSeriesTitleLowercase);
+    book.scrapedSeriesTitle = 'differs: ' + scrapedSeriesTitleLowercase;
+  }
+
 
   /* We do not close this special page.
   if (!params.keepOpen) {

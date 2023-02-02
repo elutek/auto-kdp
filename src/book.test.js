@@ -47,6 +47,7 @@ test('create book without defaults', () => {
             Keys.SIGNATURE, 'test_signature',
             Keys.TITLE, 'test_title',
             Keys.SERIES_TITLE, 'test_series_title',
+            Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
             Keys.WAS_EVER_PUBLISHED, 'false',
         ),
         makeMap(),
@@ -93,6 +94,7 @@ test('create book without defaults', () => {
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
     expect(book.title).toEqual('test_title');
     expect(book.seriesTitle).toEqual('test_series_title');
+    expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.wasEverPublished).toEqual(false);
     expect(book.signature).toEqual('test_signature');
 });
@@ -147,6 +149,7 @@ test('create book with defaults', () => {
             Keys.SIGNATURE, 'test_signature',
             Keys.TITLE, 'test_title',
             Keys.SERIES_TITLE, 'test_series_title',
+            Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
         ),
         'content/dir');
 
@@ -190,7 +193,7 @@ test('create book with defaults', () => {
     expect(book.pubStatus).toEqual('test_pub_status');
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
     expect(book.title).toEqual('test_title');
-    expect(book.seriesTitle).toEqual('test_series_title');
+    expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.wasEverPublished).toEqual(false);
     expect(book.signature).toEqual('test_signature');
 });
@@ -241,6 +244,7 @@ test('detects missing key', () => {
                 Keys.SIGNATURE, 'test_signature',
                 Keys.TITLE, 'test_title',
                 Keys.SERIES_TITLE, 'test_series_title',
+                Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
             ),
             'content/dir');
     expect(() => createBookWithMissingAuthor()).toThrow(/not found.*author/);
@@ -296,6 +300,7 @@ test('create book with resolution', () => {
             Keys.SIGNATURE, '${prefix}signature',
             Keys.TITLE, '${prefix}title',
             Keys.SERIES_TITLE, '${prefix}series_title',
+            Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
         ),
         'content/dir');
 
@@ -340,6 +345,7 @@ test('create book with resolution', () => {
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
     expect(book.title).toEqual('test_title');
     expect(book.seriesTitle).toEqual('test_series_title');
+    expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.wasEverPublished).toEqual(false);
     expect(book.signature).toEqual('test_signature');
 });
