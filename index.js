@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import * as fs from 'fs';
 import { program } from 'commander';
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
@@ -23,7 +22,9 @@ import { updateBookMetadata } from './src/action/update-book-metadata.js';
 import { updateContentMetadata } from './src/action/update-content-metadata.js';
 import { updateContent } from './src/action/update-content.js';
 import { publish } from './src/action/publish.js';
-import { ActionResult } from './src/action-result.js';
+
+import pkg from 'sleep';
+const { sleep } = pkg;
 
 
 async function executeBookActionCallback(action, book, params) {
@@ -128,6 +129,7 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
     let totalToProcess = bookList.getNumBooksToProcess();
     let numProcessed = 0;
     let totalSeconds = 0;
+    let numConsecutiveFastOperations = 0;
     for (let book of bookList.books) {
       if (book.action != '') {
 
@@ -161,6 +163,21 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
         // Update stats
         totalSeconds += durationSeconds;
         numProcessed++;
+
+        //
+        // Handle many consecutive fast operations
+        //
+        if (durationSeconds <= 2.0) {
+          numConsecutiveFastOperations++;
+          if (numConsecutiveFastOperations > 50) {
+            // Take a little break.
+            console.log("Too many fast operations - sleeping for 30s");
+            await sleep(30);
+            numConsecutiveFastOperations = 0;
+          }
+        } else {
+          numConsecutiveFastOperations = 0;
+        }
       }
     }
   } finally {
