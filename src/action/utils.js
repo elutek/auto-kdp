@@ -17,6 +17,7 @@ export let Timeouts = {
 
 export let Urls = {
     AMAZON_IMAGE_URL: 'https://images-na.ssl-images-amazon.com/images/I/',
+    AMAZON_IMAGE_URL2: 'https://m.media-amazon.com/images/I/',
     AMAZON_PRODUCT_URL: 'https://www.amazon.com/dp/',
     BOOKSHELF_URL: 'https://kdp.amazon.com/en_US/bookshelf?ref_=kdp_kdp_TAC_TN_bs',
     CREATE_PAPERBACK: 'https://kdp.amazon.com/en_US/title-setup/paperback/new/details?ref_=kdp_kdp_BS_D_cr_ti',

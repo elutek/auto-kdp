@@ -1,5 +1,5 @@
 import { ActionResult } from '../action-result.js';
-import { debug } from '../utils.js';
+import { debug, stripPrefix } from '../utils.js';
 import { Timeouts, Urls } from './utils.js';
 
 export async function scrapeAmazonCoverImageUrl(book, params) {
@@ -31,7 +31,8 @@ export async function scrapeAmazonCoverImageUrl(book, params) {
     debug(verbose, "    Matched: " + mainUrls[i]);
   }
   const mainUrl = mainUrls && mainUrls.length > 1 && mainUrls[1] && mainUrls[1] != '' &&
-    mainUrls[1].startsWith(Urls.AMAZON_IMAGE_URL) ? mainUrls[1].substr(Urls.AMAZON_IMAGE_URL.length) : null;
+    mainUrls[1].startsWith(Urls.AMAZON_IMAGE_URL) ? stripPrefix(mainUrls[1], Urls.AMAZON_IMAGE_URL) : (
+    mainUrls[1].startsWith(Urls.AMAZON_IMAGE_URL2) ? stripPrefix(mainUrls[1], Urls.AMAZON_IMAGE_URL2) : null);
 
   const success = mainUrl != null && mainUrl != '';
 
