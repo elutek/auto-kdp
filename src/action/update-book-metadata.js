@@ -1,5 +1,5 @@
 import { ActionResult } from '../action-result.js';
-import { debug, arraysEqual, normalizeText, normalizeSearchQuery } from '../utils.js';
+import { debug, arraysEqual, normalizeText } from '../utils.js';
 import { Timeouts, Urls, clearTextField, waitForElements } from './utils.js';
 
 // This function also creates a book.
@@ -41,7 +41,6 @@ export async function updateBookMetadata(book, params) {
     '#data-print-book-contributors-0-first-name',
     '#data-print-book-contributors-0-last-name',
     '#data-print-book-contributors-0-role-native',
-    '#series_title',
     '#cke_18',
     '#non-public-domain',
     '#data-print-book-keywords-0',
@@ -101,41 +100,6 @@ export async function updateBookMetadata(book, params) {
       // Illustrator's role.
       id = '#data-print-book-contributors-0-role-native';
       await page.select(id, 'illustrator');
-    }
-  }
-
-  // Series title (only for non-new books)
-  if (isNew) {
-    debug(verbose, 'Skipping series title for new books');
-  } else {
-    debug(verbose, 'Getting series title');
-    id = '#series_title';
-    const existingSeriesTitle = (await page.$eval(id, x => x.textContent.trim())) || '';
-    debug(verbose, `Current series title: ${existingSeriesTitle}`);
-
-    if (book.seriesTitle == existingSeriesTitle) {
-      debug(verbose, `Updating series title - not needed, got ${existingSeriesTitle}`);
-    } else if (book.seriesTitle != '' && existingSeriesTitle == '') {
-      debug(verbose, `Updating series title to ${book.seriesTitle}`);
-      wasModified = true;
-      const result = await updateSeriesTitle(page, book, verbose);
-      if (!result) {
-        return new ActionResult(false);
-      }
-    } else if (book.seriesTitle == '' && existingSeriesTitle != '') {
-      debug(verbose, `Removing book from series ${book.seriesTitle}`);
-      wasModified = true;
-      await removeSeriesTitle(page, book, verbose);
-    } else {
-      // The hard case - we need to modify series title.
-      // We cannot modify - we need to remove from the series, and
-      // add to a different one.
-      wasModified = true;
-      await removeSeriesTitle(page, book, verbose);
-      const result = await updateSeriesTitle(page, book, verbose);
-      if (!result) {
-        return new ActionResult(false);
-      }
     }
   }
 
@@ -333,110 +297,4 @@ export async function updateBookMetadata(book, params) {
   console.log("Closed");
 
   return new ActionResult(isSuccess);
-}
-
-async function updateSeriesTitle(page, book, verbose) {
-  if (book.seriesTitle == '') {
-    throw 'Cannot set series title - it is already empty'
-  }
-  let id = '';
-
-  debug(verbose, 'Clicking Add Series');
-  id = '#add_series_button #a-autoid-2-announce';
-  await page.waitForSelector(id);
-  await page.click(id, { timeout: Timeouts.SEC_30 });
-  await page.waitForTimeout(Timeouts.SEC_1);
-
-  debug(verbose, 'Clicking Select Series for Existing series');
-  id = '#react-aui-modal-content-1 span[data-test-id="modal-button-create-or-select-existing"] button';
-  await page.waitForSelector(id);
-  await page.click(id, { timeout: Timeouts.SEC_30 });
-  await page.waitForTimeout(Timeouts.SEC_1);
-
-  let searchQuery = normalizeSearchQuery(book.seriesTitle)
-
-  const maxAttempts = 2;
-
-  for (let attempt = 1; attempt <= maxAttempts; ++attempt) {
-    try {
-      debug(verbose, 'Typing search query: ' + searchQuery);
-      id = '#react-aui-modal-content-1 input[type="search"]';
-      await page.waitForSelector(id);
-      await page.type(id, searchQuery);
-
-      debug(verbose, 'Click Search for the series');
-      id = '#react-aui-modal-content-1 input[type="submit"]';
-      await page.waitForSelector(id);
-      await page.click(id, { timeout: Timeouts.SEC_30 });
-      await page.waitForTimeout(Timeouts.SEC_1);
-
-      debug(verbose, 'Clicking on our series (we assume we have only one as a result of the search)');
-      id = '#react-aui-modal-content-1 .a-list-item button';
-      await page.waitForSelector(id);
-      await page.click(id, { timeout: Timeouts.SEC_30 });
-      await page.waitForTimeout(Timeouts.SEC_1);
-
-      // We are done.
-      attempt = maxAttempts;
-    } catch (e) {
-      // Failure - search results did not return any results.
-      if (attempt < maxAttempts) {
-        debug(verbose, 'Failed - retrying');
-      } else {
-        debug(verbose, 'Failed - failing');
-        return false;
-      }
-    }
-  }
-
-  debug(verbose, 'Clicking Main Content');
-  id = '#react-aui-modal-content-1 span[aria-label="Main content"] button';
-  await page.waitForSelector(id);
-  await page.click(id, { timeout: Timeouts.SEC_30 });
-  await page.waitForTimeout(Timeouts.SEC_1);
-
-  debug(verbose, 'Clicking Confirm and continue');
-  id = '#react-aui-modal-content-1 button';
-  await page.waitForSelector(id);
-  await page.click(id, { timeout: Timeouts.SEC_30 });
-
-  debug(verbose, 'Waiting for the "Saving" message to disappear');
-  await page.waitForTimeout(Timeouts.SEC_5);
-
-  debug(verbose, 'Clicking Done');
-  id = '#react-aui-modal-footer-1 input[type="submit"]';
-  await page.waitForSelector(id);
-  await page.click(id, { timeout: Timeouts.SEC_30 });
-  await page.waitForTimeout(Timeouts.SEC_1);
-
-  debug(verbose, 'Clicking in the page');
-  id = '#a-page';
-  await page.waitForSelector(id);
-  await page.click(id, { timeout: Timeouts.SEC_10 });
-  await page.waitForTimeout(Timeouts.SEC_1);
-  await page.focus(id);
-
-  return true;
-}
-
-async function removeSeriesTitle(page, book, verbose) {
-  let id = '';
-
-  debug(verbose, 'Clicking Remove from Series');
-  id = '#a-autoid-1-announce';
-  await page.waitForSelector(id);
-  await page.click(id, { timeout: Timeouts.SEC_30 });
-  await page.waitForTimeout(Timeouts.SEC_1);
-
-  debug(verbose, 'Clicking Remove from Series (confirmation)');
-  id = '#react-aui-modal-footer-1 span[aria-label="Remove from series"] button';
-  await page.waitForSelector(id);
-  await page.click(id, { timeout: Timeouts.SEC_30 });
-  await page.waitForTimeout(Timeouts.SEC_10);
-
-  debug(verbose, 'Clicking Done');
-  id = '#react-aui-modal-footer-1 input[type="submit"]';
-  await page.waitForSelector(id);
-  await page.click(id, { timeout: Timeouts.SEC_30 });
-  await page.waitForTimeout(Timeouts.SEC_1);
 }
