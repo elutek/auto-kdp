@@ -391,6 +391,10 @@ test('isFullyLive', () => {
 
     book.pubStatusDetail = '';
 
+    expect(book.isFullyLive()).toEqual(false);
+
+    book.scrapedSeriesTitle = 'ok';
+
     expect(book.isFullyLive()).toEqual(true);
 });
 

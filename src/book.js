@@ -102,7 +102,7 @@ export class Book {
 
     // Handle special actions
     if (this.action == 'all') {
-      this.action = 'book-metadata:content-metadata:scrapeIsbn:produceManuscript:content:pricing:set-series-title:scrape:publish:scrape:scrapeAmazonCoverImageUrl';
+      this.action = 'book-metadata:content-metadata:scrape-isbn:produce-manuscript:content:pricing:set-series-title:scrape:publish:scrape:scrape-amazon-image';
     } else if (this.action == 'update-published-book') {
       this.action = 'book-metadata:pricing:publish:scrape';
     }
@@ -114,7 +114,7 @@ export class Book {
   }
 
   isFullyLive() {
-    return this.wasEverPublished && this.pubStatus == 'LIVE' && this.pubStatusDetail == '';
+    return this.wasEverPublished && this.pubStatus == 'LIVE' && this.pubStatusDetail == '' && this.scrapedSeriesTitle.toLowerCase().includes('ok');
   }
 
   numActions() {

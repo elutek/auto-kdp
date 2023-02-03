@@ -119,7 +119,7 @@ export async function scrape(book, params) {
   }
   */
 
-  let nextActions = !book.isFullyLive() && book.numActions() <= 1 ? 'scrape' : '';
+  let nextActions = !book.isFullyLive() && book.numActions() == 1 && book.getFirstAction() == 'scrape' ? 'scrape' : '';
   console.log(`Next actions: ${nextActions}`);
   return new ActionResult(true).setNextActions(nextActions);
 }

@@ -44,12 +44,12 @@ async function executeBookActionCallback(action, book, params) {
   switch (action) {
     case 'book-metadata': return await updateBookMetadata(book, params); break;
     case 'content-metadata': return await updateContentMetadata(book, params); break;
-    case 'scrapeIsbn': return await scrapeIsbn(book, params); break;
-    case 'produceManuscript': return await produceManuscript(book, params); break;
+    case 'scrape-isbn': return await scrapeIsbn(book, params); break;
+    case 'produce-manuscript': return await produceManuscript(book, params); break;
     case 'content': return await updateContent(book, params); break;
     case 'pricing': return await updatePricing(book, params); break;
     case 'publish': return await publish(book, params); break;
-    case 'scrapeAmazonCoverImageUrl': return await scrapeAmazonCoverImageUrl(book, params); break;
+    case 'scrape-amazon-image': return await scrapeAmazonCoverImageUrl(book, params); break;
     case 'set-series-title': return await setSeriesTitle(book, params); break;
   }
   throw new Error('Unknown action: ' + action);
