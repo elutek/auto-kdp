@@ -86,14 +86,20 @@ export async function scrape(book, params) {
   debug(verbose, 'Getting series title');
   id = '#zme-indie-bookshelf-dual-metadata-series_title-' + book.id + ' > a';
   let scrapedSeriesTitle = '';
-  try {
-    await page.waitForSelector(id, { timeout: Timeouts.SEC_1 });
-    await page.waitForTimeout(Timeouts.SEC_1);
-    await page.bringToFront();
-    await page.focus(id);
-    scrapedSeriesTitle = await page.$eval(id, el => el.innerText.trim()) || "";
-    //console.log(await page.content());
-  } catch (e) {
+  for (let attempt = 0; attempt < 3; ++attempt) {
+    try {
+      await page.waitForSelector(id, { timeout: Timeouts.SEC_1 });
+      await page.waitForTimeout(Timeouts.SEC_1);
+      await page.bringToFront();
+      await page.focus(id);
+      scrapedSeriesTitle = await page.$eval(id, el => el.innerText.trim()) || "";
+      //console.log(await page.content());
+    } catch (e) {
+    }
+    if (scrapedSeriesTitle != 'SERIES_TITLE') {
+      // We only repeat if we get that magical "SERIES_TITLE" string, which means the title has not loaded yet.
+      break;
+    }
   }
 
   if (scrapedSeriesTitle == book.seriesTitle.toLowerCase()) {
