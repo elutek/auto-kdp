@@ -24,6 +24,7 @@ import { updateContent } from './src/action/update-content.js';
 import { publish } from './src/action/publish.js';
 
 import pkg from 'sleep';
+import { setSeriesTitle } from './src/action/set-series-title.js';
 const { sleep } = pkg;
 
 
@@ -49,6 +50,7 @@ async function executeBookActionCallback(action, book, params) {
     case 'pricing': return await updatePricing(book, params); break;
     case 'publish': return await publish(book, params); break;
     case 'scrapeAmazonCoverImageUrl': return await scrapeAmazonCoverImageUrl(book, params); break;
+    case 'set-series-title': return await setSeriesTitle(book, params); break;
   }
   throw new Error('Unknown action: ' + action);
 }
