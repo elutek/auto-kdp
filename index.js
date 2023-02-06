@@ -172,7 +172,7 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
         //
         if (durationSeconds <= 2.0) {
           numConsecutiveFastOperations++;
-          if (numConsecutiveFastOperations > 50) {
+          if (numConsecutiveFastOperations > 100) {
             // Take a little break.
             console.log("Too many fast operations - sleeping for 30s");
             await sleep(30);
