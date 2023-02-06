@@ -49,6 +49,7 @@ async function executeBookActionCallback(action, book, params) {
     case 'content': return await updateContent(book, params); break;
     case 'pricing': return await updatePricing(book, params); break;
     case 'publish': return await publish(book, params); break;
+    case 'force-publish': return await publish(book, params, true /*force*/); break;
     case 'scrape-amazon-image': return await scrapeAmazonCoverImageUrl(book, params); break;
     case 'set-series-title': return await setSeriesTitle(book, params); break;
   }

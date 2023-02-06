@@ -2,7 +2,7 @@ import { ActionResult } from '../action-result.js';
 import { debug } from '../utils.js';
 import { Timeouts, Urls, waitForElements } from './utils.js';
 
-export async function publish(book, params) {
+export async function publish(book, params, isForce = false) {
   const verbose = params.verbose;
 
   if (params.dryRun) {
@@ -10,16 +10,21 @@ export async function publish(book, params) {
     return new ActionResult(true);
   }
 
-  if (book.wasEverPublished && book.pubStatus == 'LIVE' && book.pubStatusDetail == '') {
-    debug(verbose, 'Publishing - not needed, already fully published');
-    // Publishing not needed.
-    return new ActionResult(true);
-  }
+  // If we are forcing, just publish. If we are not forcing, run some checks
+  // first. The "forcing" feature is needed for some bug in KDP when the status
+  // does not change soon enough.
+  if (!isForce) {
+    if (book.wasEverPublished && book.pubStatus == 'LIVE' && book.pubStatusDetail == '') {
+      debug(verbose, 'Publishing - not needed, already fully published');
+      // Publishing not needed.
+      return new ActionResult(true);
+    }
 
-  if (book.wasEverPublished && book.pubStatus == 'LIVE' && book.pubStatusDetail == 'Updates publishing') {
-    debug(verbose, 'Publishing - already in progress');
-    // Publishing not needed.
-    return new ActionResult(true);
+    if (book.wasEverPublished && book.pubStatus == 'LIVE' && book.pubStatusDetail == 'Updates publishing') {
+      debug(verbose, 'Publishing - already in progress');
+      // Publishing not needed.
+      return new ActionResult(true);
+    }
   }
 
   const url = Urls.EDIT_PAPERBACK_PRICING.replace('$id', book.id);
