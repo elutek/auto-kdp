@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 
 export let Timeouts = {
-    SEC_HALF: 1 * 1000,
+    SEC_QUARTER: 250,
+    SEC_HALF: 500,
     SEC_1: 1 * 1000,
     SEC_2: 2 * 1000,
     SEC_5: 5 * 1000,
@@ -47,8 +48,8 @@ export function fileExists(path) {
 }
 
 export async function waitForElements(page, ids) {
-  for (const id of ids) {
-    await page.waitForSelector(id);
-  }
-  await page.waitForTimeout(Timeouts.SEC_1); // Just in case.
+    for (const id of ids) {
+        await page.waitForSelector(id);
+    }
+    await page.waitForTimeout(Timeouts.SEC_1); // Just in case.
 }

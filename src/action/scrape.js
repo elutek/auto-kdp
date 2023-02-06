@@ -86,10 +86,11 @@ export async function scrape(book, params) {
   debug(verbose, 'Getting series title');
   id = '#zme-indie-bookshelf-dual-metadata-series_title-' + book.id + ' > a';
   let scrapedSeriesTitle = '';
-  for (let attempt = 0; attempt < 3; ++attempt) {
+  let attempt = 1;
+  for (; attempt < 10; ++attempt) {
     try {
-      await page.waitForSelector(id, { timeout: Timeouts.SEC_1 });
-      await page.waitForTimeout(Timeouts.SEC_1);
+      await page.waitForSelector(id, { timeout: Timeouts.SEC_HALF });
+      await page.waitForTimeout(Timeouts.SEC_HALF);
       await page.bringToFront();
       await page.focus(id);
       scrapedSeriesTitle = await page.$eval(id, el => el.innerText.trim()) || "";
@@ -101,6 +102,7 @@ export async function scrape(book, params) {
       break;
     }
   }
+  console.log("  Attempts: " + attempt)
 
   if (scrapedSeriesTitle == book.seriesTitle.toLowerCase()) {
     book.scrapedSeriesTitle = 'ok';
