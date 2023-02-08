@@ -2,7 +2,7 @@ import { ActionResult } from '../action-result.js';
 import { debug } from '../utils.js';
 import { Timeouts, Urls, clearTextField } from './utils.js';
 
-var globalScrapePage = null;
+var globalBookshelfPage = null;
 
 export async function scrape(book, params) {
   const verbose = params.verbose
@@ -127,13 +127,13 @@ export async function scrape(book, params) {
 }
 
 async function _getScrapePage(url, params) {
-  if (globalScrapePage == null) {
-    globalScrapePage = await params.browser.newPage();
+  if (globalBookshelfPage == null) {
+    globalBookshelfPage = await params.browser.newPage();
 
-    await globalScrapePage.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_3 });
-    await globalScrapePage.waitForTimeout(Timeouts.SEC_1);  // Just in case.
+    await globalBookshelfPage.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_3 });
+    await globalBookshelfPage.waitForTimeout(Timeouts.SEC_1);  // Just in case.
   }
-  return globalScrapePage;
+  return globalBookshelfPage;
 }
 
 function _formatDate(str) {
