@@ -24,21 +24,12 @@ export async function scrapeAmazonCoverImageUrl(book, params) {
 
   // Get raw content
   const text = await response.text();
-  debug(verbose, 'Got response of length ' + text.length);
-  const mainUrlRe = /"mainUrl":"([^"]+?)"/;
-  const mainUrls = text.match(mainUrlRe);
-  for (let i = 0; i < mainUrls.length; ++i) {
-    debug(verbose, "    Matched: " + mainUrls[i]);
-  }
-  const mainUrl = mainUrls && mainUrls.length > 1 && mainUrls[1] && mainUrls[1] != '' &&
-    mainUrls[1].startsWith(Urls.AMAZON_IMAGE_URL) ? stripPrefix(mainUrls[1], Urls.AMAZON_IMAGE_URL) : (
-    mainUrls[1].startsWith(Urls.AMAZON_IMAGE_URL2) ? stripPrefix(mainUrls[1], Urls.AMAZON_IMAGE_URL2) : null);
-
-  const success = mainUrl != null && mainUrl != '';
+  const resultUrl = doScrapeAmazonCoverImageUrl(text, verbose);
+  const success = resultUrl != null && resultUrl != '';
 
   if (success) {
-    debug(verbose, 'Cover image url: ' + mainUrl);
-    book.coverImageUrl = mainUrl;
+    debug(verbose, 'Cover image url: ' + resultUrl);
+    book.coverImageUrl = resultUrl;
   } else {
     console.error("Cover image url not found!");
   }
@@ -48,4 +39,24 @@ export async function scrapeAmazonCoverImageUrl(book, params) {
   }
 
   return new ActionResult(success);
+}
+
+export function doScrapeAmazonCoverImageUrl(text, verbose = false) {
+  if (text == null || text == undefined) {
+    return null;
+  }
+  /* Istanbul skip next */
+  debug(verbose, 'Got response of length ' + text.length);
+  const mainUrlRe = /"mainUrl":"([^"]+?)"/;
+  const mainUrls = text.match(mainUrlRe);
+  if (mainUrls == null) {
+    return null;
+  }
+  /* Istanbul skip next */
+  for (let i = 0; i < mainUrls.length; ++i) {
+    debug(verbose, "    Matched: " + mainUrls[i]);
+  }
+  return mainUrls && mainUrls.length > 1 && mainUrls[1] && mainUrls[1] != '' &&
+    mainUrls[1].startsWith(Urls.AMAZON_IMAGE_URL) ? stripPrefix(mainUrls[1], Urls.AMAZON_IMAGE_URL) : (
+    mainUrls[1].startsWith(Urls.AMAZON_IMAGE_URL2) ? stripPrefix(mainUrls[1], Urls.AMAZON_IMAGE_URL2) : null);
 }
