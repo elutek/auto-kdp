@@ -39,8 +39,11 @@ export async function ExecuteBookActions(book, bookFile, bookList, actionCallbac
                 book.action = mergeActions(result.nextActions, book.action);
             }
         } else {
+            /* Istanbul skip next */
             console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+            /* Istanbul skip next */
             console.log('!!!!     Book processing failed   !!!!!');
+            /* Istanbul skip next */
             console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
         }
 
