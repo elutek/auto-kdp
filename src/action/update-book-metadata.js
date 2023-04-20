@@ -36,6 +36,7 @@ export async function updateBookMetadata(book, params) {
 
   await waitForElements(page, [
     '#data-print-book-title',
+    '#data-print-book-subtitle',
     '#data-print-book-primary-author-first-name',
     '#data-print-book-primary-author-last-name',
     '#data-print-book-contributors-0-first-name',
@@ -71,8 +72,17 @@ export async function updateBookMetadata(book, params) {
     if (!isNew) await clearTextField(page, id);
     await page.type(id, book.title);
 
-    // TODO: Support subtitle
-    // TODO: Support edition number
+    // Subtitle
+    if (book.subtitle != '') {
+      debug(verbose, 'Updating subtitle');
+      id = '#data-print-book-subtitle';
+      if (!isNew) await clearTextField(page, id);
+      await page.type(id, book.subtitle);
+    } else {
+      debug(verbose, 'Updating subtitle - not needed, no subtitle specified')
+    }
+
+    // Edition number - TODO, currently not supported
 
     // Author first name
     debug(verbose, 'Updating author');

@@ -27,6 +27,16 @@ export async function isMetadataUpdateNeeded(book, params) {
       "NEEDS UPDATE: got '" + title + "' but expecting '" + book.title + "'" : "OK"));
   }
 
+  // Subtitle
+  const subtitle = await page.$eval('#data-print-book-subtitle', x => x.value)
+  const subtitleNeedsUpdate = subtitle != book.subtitle;
+  needsUpdate ||= subtitleNeedsUpdate;
+
+  if (params.verbose) {
+    debug(verbose, 'Checking subtitle: ' + (subtitleNeedsUpdate ?
+      "NEEDS UPDATE: got '" + subtitle + "' but expecting '" + book.subtitle + "'" : "OK"));
+  }
+
   // Series title.
   const seriesTitle = (await page.$eval('#series_title', x => x.value)) || '';
   const seriesTitleNeedsUpdate = seriesTitle != book.seriesTitle;

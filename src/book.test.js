@@ -46,6 +46,7 @@ test('create book without defaults', () => {
             Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',
             Keys.SIGNATURE, 'test_signature',
             Keys.TITLE, 'test_title',
+            Keys.SUBTITLE, 'test_subtitle',
             Keys.SERIES_TITLE, 'test_series_title',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
             Keys.WAS_EVER_PUBLISHED, 'false',
@@ -93,6 +94,7 @@ test('create book without defaults', () => {
     expect(book.pubStatus).toEqual('test_pub_status');
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
     expect(book.title).toEqual('test_title');
+    expect(book.subtitle).toEqual('test_subtitle');
     expect(book.seriesTitle).toEqual('test_series_title');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.wasEverPublished).toEqual(false);
@@ -148,6 +150,7 @@ test('create book with defaults', () => {
             Keys.PRICE_USD, '8.1',
             Keys.SIGNATURE, 'test_signature',
             Keys.TITLE, 'test_title',
+            Keys.SUBTITLE, 'test_subtitle',
             Keys.SERIES_TITLE, 'test_series_title',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
         ),
@@ -193,6 +196,7 @@ test('create book with defaults', () => {
     expect(book.pubStatus).toEqual('test_pub_status');
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
     expect(book.title).toEqual('test_title');
+    expect(book.subtitle).toEqual('test_subtitle');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.wasEverPublished).toEqual(false);
     expect(book.signature).toEqual('test_signature');
@@ -243,6 +247,7 @@ test('detects missing key', () => {
                 Keys.PRICE_USD, '8.1',
                 Keys.SIGNATURE, 'test_signature',
                 Keys.TITLE, 'test_title',
+                Keys.SUBTITLE, 'test_subtitle',
                 Keys.SERIES_TITLE, 'test_series_title',
                 Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
             ),
@@ -299,6 +304,7 @@ test('create book with resolution', () => {
             Keys.PRICE_USD, '${price}',
             Keys.SIGNATURE, '${prefix}signature',
             Keys.TITLE, '${prefix}title',
+            Keys.SUBTITLE, '${prefix}subtitle',
             Keys.SERIES_TITLE, '${prefix}series_title',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
         ),
@@ -344,6 +350,7 @@ test('create book with resolution', () => {
     expect(book.pubStatus).toEqual('test_pub_status');
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
     expect(book.title).toEqual('test_title');
+    expect(book.subtitle).toEqual('test_subtitle');
     expect(book.seriesTitle).toEqual('test_series_title');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.wasEverPublished).toEqual(false);

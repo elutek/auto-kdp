@@ -83,6 +83,7 @@ export async function scrape(book, params) {
   }
 
   // Get series title.
+  // TODO: Needs to be update wrt subtitle.
   debug(verbose, 'Getting series title');
   id = '#zme-indie-bookshelf-dual-metadata-series_title-' + book.id + ' > a';
   let scrapedSeriesTitle = '';

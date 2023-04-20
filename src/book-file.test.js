@@ -41,6 +41,7 @@ paperTrim = test_paper_trim
 signature = \${name}
 seriesTitle = My Series
 title = Book for \${name}
+subtitle = My subtitle
 `
 
 afterEach(() => {
@@ -145,6 +146,7 @@ paperColor =
 paperTrim =
 signature =
 title =
+subtitle =
 seriesTitle =
 scrapedSeriesTitle =
 `

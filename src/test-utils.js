@@ -44,6 +44,7 @@ export function makeOkTestBook(action = 'test_action') {
             Keys.PUB_STATUS, 'test_pub_status',
             Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',
             Keys.SIGNATURE, 'test_signature',
+            Keys.SUBTITLE, 'test_subtitle',
             Keys.TITLE, 'test_title',
             Keys.SERIES_TITLE, 'test_series_title',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',

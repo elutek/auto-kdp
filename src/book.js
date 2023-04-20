@@ -94,6 +94,7 @@ export class Book {
     this.seriesTitle = getValue(Keys.SERIES_TITLE);
     this.scrapedSeriesTitle = getValue(Keys.SCRAPED_SERIES_TITLE);
     this.title = getValue(Keys.TITLE);
+    this.subtitle = getValue(Keys.SUBTITLE);
     this.wasEverPublished = getValue(Keys.WAS_EVER_PUBLISHED) == 'true';
     this.signature = getValue(Keys.SIGNATURE);
     this.paperColor = getValue(Keys.PAPER_COLOR);
