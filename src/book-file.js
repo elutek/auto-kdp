@@ -37,8 +37,19 @@ export class BookFile {
                 this.headers[index] = h;
                 return h;
               },
-              mapValues: ({ header, index, value }) =>
-                value.trim().replace('^"', '').replace('"$', ''),
+              mapValues: ({ header, index, value }) => {
+                let newValue = value.trim().replace('^"', '').replace('"$', '');
+                if (newValue.startsWith("file:")) {
+                  // Special value like "file:blah.txt" means: "read me from a file blah.txt"
+                  let fileName = newValue.substring("file:".length);
+                  try {
+                    newValue = fs.readFileSync(fileName, { encoding: 'utf-8' });
+                  } catch (e) {
+                    throw new Exception("Could not read file: " + fileName, e);
+                  }
+                }
+                return newValue;
+              },
               strict: true,
               skipComments: true
             }))

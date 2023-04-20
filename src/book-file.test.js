@@ -265,3 +265,32 @@ test_actionB,true,test_idB,test_isbnB,test_asinB,Belle,test_pub_statusB,test_pub
     let books_new = fs.readFileSync('books.csv.new', { encoding: "utf8", flag: "r" });
     expect(books_new).toEqual(books_csv);
 });
+
+test('can read book file with an embedded file', async () => {
+    const books_csv =
+        `description,action     ,wasEverPublished,id       ,isbn       ,asin       ,name  ,pubStatus        ,pubDate        ,pubStatusDetail         ,coverImageUrl         ,scrapedSeriesTitle
+        description A,test_actionA,false           ,test_idA ,test_isbnA ,test_asinA ,Ava   ,test_pub_statusA ,test_pub_dateA ,test_pub_status_detailA ,test_cover_image_urlA ,scraped_series_titleA
+        file:file.txt,test_actionB,true            ,test_idB ,test_isbnB ,test_asinB ,Belle ,test_pub_statusB ,test_pub_dateB ,test_pub_status_detailB ,test_cover_image_urlB ,scraped_series_titleB`;
+
+    mock({
+        'books.csv': books_csv,
+        'books.csv.lock': '',
+        'books.conf': BOOKS_CONF,
+        'file.txt': 'description B',
+        'content': { dir: {} },
+        'node_modules': mock.load(path.resolve(__dirname, '../node_modules')),
+    });
+
+    let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
+    const bookList = await bookFile.readBooksAsync();
+    const books = bookList.books;
+    expect(books.length).toEqual(2);
+    {
+        let book = books[0];
+        expect(book.description).toEqual('description A')
+    }
+    {
+        let book = books[1];
+        expect(book.description).toEqual('description B')
+    }
+});
