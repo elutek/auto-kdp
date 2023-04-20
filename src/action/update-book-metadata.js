@@ -277,7 +277,7 @@ export async function updateBookMetadata(book, params) {
         book.id = splits[index + 1];
         debug(verbose, 'Got book id: ' + book.id);
       } else {
-        console.error('ERROR: could not get paperback id!!! from url: ' + url);
+        console.error('ERROR: could not get paperback id from url: ' + url);
         isSuccess = false;
       }
     }
