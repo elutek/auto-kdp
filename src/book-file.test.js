@@ -198,7 +198,7 @@ test('detects same id', async () => {
 
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
     expect.assertions(1);
-    await expect(bookFile.readBooksAsync()).rejects.toEqual([new Error('Id not unique: SAMEID')]);
+    await expect(bookFile.readBooksAsync()).rejects.toEqual(new Error('Id not unique: SAMEID'));
 });
 
 test('detects same isbn', async () => {
@@ -217,7 +217,7 @@ test('detects same isbn', async () => {
 
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
     expect.assertions(1);
-    await expect(bookFile.readBooksAsync()).rejects.toEqual([new Error('ISBN not unique: SAMEISBN')]);
+    await expect(bookFile.readBooksAsync()).rejects.toEqual(new Error('ISBN not unique: SAMEISBN'));
 });
 
 test('detects same signature', async () => {
@@ -236,7 +236,7 @@ test('detects same signature', async () => {
 
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
     expect.assertions(1);
-    await expect(bookFile.readBooksAsync()).rejects.toEqual([new Error('Signature not unique: Ava')]);
+    await expect(bookFile.readBooksAsync()).rejects.toEqual(new Error('Signature not unique: Ava'));
 });
 
 test('can read and write the book file', async () => {

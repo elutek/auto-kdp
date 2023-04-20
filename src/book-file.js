@@ -58,21 +58,22 @@ export class BookFile {
               dataMaps.push(new Map(Object.entries(data)));
             })
             .on('end', () => {
+              console.log('Read ' + dataMaps.length + ' rows');
               let bookList = new BookList();
               let errors = [];
+              let rowNumber = 1;
               for (const dataMap of dataMaps) {
                 try {
                   let book = new Book(dataMap, this.bookConfig, this.contentDir, dataMaps);
                   this.addBook(book, bookList);
+                  rowNumber++;
                 } catch (e) {
-                  errors.push(e);
+                  console.error('Problem processing row', rowNumber, 'with data:', dataMap, ': ', e);
+                  reject(e);
+                  return release();
                 }
               }
-              if (errors.length > 0) {
-                reject(errors);
-              } else {
-                resolve(bookList);
-              }
+              resolve(bookList);
               return release();
             })
         })

@@ -33,6 +33,7 @@ export class Book {
     for (const [key, val] of data) {
       mergedDataMap.set(key, val);
     }
+
     let unresolvedKeys = new Set();
     let resolvedDataMap = resolveAllValues(mergedDataMap, unresolvedKeys, allDataMaps);
 
