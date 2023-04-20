@@ -81,3 +81,11 @@ export function stringToIntOrThrow(str) {
     }
     return i;
 }
+
+export function copyMap(inputMap) {
+    let result = new Map();
+    for (const [key, val] of inputMap) {
+        result.set(key, val);
+    }
+    return result;
+}

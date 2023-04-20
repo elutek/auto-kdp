@@ -1,8 +1,10 @@
 import { Keys } from './keys.js';
 import { resolveAllValues } from './resolve.js';
+import { copyMap } from './utils.js';
 
 // List of keys for which there cannot be a "default" value.
 // Reasons are that these field are unique or assigned from Amazon.
+// These are the only keys that AutoKDP can update.
 const _KEYS_WITH_NO_DEFAULT = [
   Keys.ACTION,
   Keys.ID,
@@ -24,6 +26,9 @@ export class Book {
         throw 'Cannot have default for key: ' + k;
       }
     }
+
+    // Save all the original data for later writing it out
+    this.origData = copyMap(data);
 
     // Combine defaults with data.
     let mergedDataMap = new Map();
@@ -56,8 +61,19 @@ export class Book {
       return resolvedDataMap.get(x);
     }
     let parseFloatOrNull = x => x == null || x == '' ? null : parseFloat(x);
+
+    // Fields that AutoKdp is allowed to update
     this.action = getValue(Keys.ACTION);
     this.asin = getValue(Keys.ASIN);
+    this.id = getValue(Keys.ID);
+    this.isbn = getValue(Keys.ISBN);
+    this.pubDate = getValue(Keys.PUB_DATE);
+    this.pubStatus = getValue(Keys.PUB_STATUS);
+    this.pubStatusDetail = getValue(Keys.PUB_STATUS_DETAIL);
+    this.wasEverPublished = getValue(Keys.WAS_EVER_PUBLISHED) == 'true';
+    this.scrapedSeriesTitle = getValue(Keys.SCRAPED_SERIES_TITLE);
+
+    // Fields that AutoKdp is not allowed to update
     this.authorFirstName = getValue(Keys.AUTHOR_FIRST_NAME);
     this.authorLastName = getValue(Keys.AUTHOR_LAST_NAME);
     this.category1 = getValue(Keys.CATEGORY1);
@@ -65,10 +81,8 @@ export class Book {
     this.coverLocalFile = contentDir + '/' + getValue(Keys.COVER_FILE);
     this.coverImageUrl = getValue(Keys.COVER_IMAGE_URL);
     this.description = getValue(Keys.DESCRIPTION);
-    this.id = getValue(Keys.ID);
     this.illustratorFirstName = getValue(Keys.ILLUSTRATOR_FIRST_NAME);
     this.illustratorLastName = getValue(Keys.ILLUSTRATOR_LAST_NAME);
-    this.isbn = getValue(Keys.ISBN);
     this.keyword0 = getValue(Keys.KEYWORD0);
     this.keyword1 = getValue(Keys.KEYWORD1);
     this.keyword2 = getValue(Keys.KEYWORD2);
@@ -88,14 +102,9 @@ export class Book {
     this.pricePl = parseFloatOrNull(getValue(Keys.PRICE_PL));
     this.priceSe = parseFloatOrNull(getValue(Keys.PRICE_SE));
     this.priceUsd = parseFloatOrNull(getValue(Keys.PRICE_USD));
-    this.pubDate = getValue(Keys.PUB_DATE);
-    this.pubStatus = getValue(Keys.PUB_STATUS);
-    this.pubStatusDetail = getValue(Keys.PUB_STATUS_DETAIL);
     this.seriesTitle = getValue(Keys.SERIES_TITLE);
-    this.scrapedSeriesTitle = getValue(Keys.SCRAPED_SERIES_TITLE);
     this.title = getValue(Keys.TITLE);
     this.subtitle = getValue(Keys.SUBTITLE);
-    this.wasEverPublished = getValue(Keys.WAS_EVER_PUBLISHED) == 'true';
     this.signature = getValue(Keys.SIGNATURE);
     this.paperColor = getValue(Keys.PAPER_COLOR);
     this.paperTrim = getValue(Keys.PAPER_TRIM);
@@ -145,6 +154,14 @@ export class Book {
 
   getActionList() {
     return this.action.split(':').filter(x => x);
+  }
+
+  getDataToWrite() {
+    let out = copyMap(this.origData);
+    for (const key of _KEYS_WITH_NO_DEFAULT) {
+      out.set(key, this[key]);
+    }
+    return out;
   }
 }
 

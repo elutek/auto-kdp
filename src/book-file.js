@@ -48,7 +48,6 @@ export class BookFile {
                     throw new Exception("Could not read file: " + fileName, e);
                   }
                 }
-                //console.log("VALUE:", value, "->", newValue);
                 return newValue;
               },
               strict: true,
@@ -60,7 +59,6 @@ export class BookFile {
             .on('end', () => {
               console.log('Read ' + dataMaps.length + ' rows');
               let bookList = new BookList();
-              let errors = [];
               let rowNumber = 1;
               for (const dataMap of dataMaps) {
                 try {
@@ -87,7 +85,9 @@ export class BookFile {
           try {
             const headers = _.map(this.headers, x => ({ id: x, title: x }));
             const writer = CsvWriter.createObjectCsvWriter({ path: this.outputFilePath, header: headers });
-            writer.writeRecords(bookList.books)
+            const records = bookList.books.map(x => x.getDataToWrite());
+            console.log("Wriring " + records.length + " records");
+            writer.writeRecords(records)
               .then(() => resolve())
               .catch(/* istanbul ignore next */
                 (e) => reject(e));
