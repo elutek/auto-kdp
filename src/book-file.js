@@ -48,6 +48,7 @@ export class BookFile {
                     throw new Exception("Could not read file: " + fileName, e);
                   }
                 }
+                //console.log("VALUE:", value, "->", newValue);
                 return newValue;
               },
               strict: true,
