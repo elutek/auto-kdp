@@ -1,6 +1,6 @@
 import { Keys } from './keys.js';
 import { resolveAllValues } from './resolve.js';
-import { copyMap } from './utils.js';
+import { copyMap, clipLen } from './utils.js';
 
 // List of keys for which there cannot be a "default" value.
 // Reasons are that these field are unique or assigned from Amazon.
@@ -165,6 +165,16 @@ export class Book {
     // Override the changed values.
     for (const key of _KEYS_WITH_NO_DEFAULT) {
       result[key] = this[key];
+    }
+    return result;
+  }
+
+  toString(sep) {
+    let result = "";
+    for (const k in Keys) {
+      const key = Keys[k];
+      const val = clipLen(this[key], 200);
+      result += "    " + key + " = " + val + "\n";
     }
     return result;
   }

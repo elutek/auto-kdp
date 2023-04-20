@@ -1,4 +1,4 @@
-import { arraysEqual, isInt, mergeActions, normalizeText, normalizeSearchQuery, stripPrefix, stripQuotes, stringToIntOrThrow } from './utils';
+import { arraysEqual, clipLen, isInt, mergeActions, normalizeText, normalizeSearchQuery, stripPrefix, stripQuotes, stringToIntOrThrow } from './utils';
 
 test('mergeActions', () => {
   expect(mergeActions('a:b', 'c:d')).toEqual('a:b:c:d');
@@ -84,4 +84,15 @@ test('stringToInt', () => {
   expect(stringToIntOrThrow('-102938')).toEqual(-102938);
   expect(() => stringToIntOrThrow('1.1')).toThrow(/cannot parse/)
   expect(() => stringToIntOrThrow('abc')).toThrow(/cannot parse/)
+});
+
+test('clipLen', () => {
+  expect(clipLen(null, 5)).toEqual(null);
+  expect(clipLen('blah', 5)).toEqual('blah');
+  expect(clipLen('blah', 4)).toEqual('blah');
+  expect(clipLen('blah', 3)).toEqual('bla');
+  expect(clipLen('blah', 2)).toEqual('bl');
+  expect(clipLen('blah', 1)).toEqual('b');
+  expect(clipLen('blah', 0)).toEqual('');
+  expect(clipLen(10, 5)).toEqual(10);
 });

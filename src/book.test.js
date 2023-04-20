@@ -451,3 +451,105 @@ test('can handle first action', () => {
         expect(book.action).toEqual('');
     }
 })
+
+test('getDataToWrite', () => {
+    const book = makeOkTestBook('my-action');
+    expect(book.getDataToWrite()).toEqual({
+        "action": "my-action",
+        "asin": "test_asin",
+        "authorFirstName": "test_author_first_name",
+        "authorLastName": "test_author_last_name",
+        "category1": "test_cat1",
+        "category2": "test_cat2",
+        "coverImageUrl": "test_cover_image_url",
+        "coverLocalFile": "test_cover_file",
+        "description": "test_description",
+        "id": "test_id",
+        "illustratorFirstName": "test_illustrator_first_name",
+        "illustratorLastName": "test_illustrator_last_name",
+        "isbn": "test_isbn",
+        "keyword0": "test_keyword0",
+        "keyword1": "test_keyword1",
+        "keyword2": "test_keyword2",
+        "keyword3": "test_keyword3",
+        "keyword4": "test_keyword4",
+        "keyword5": "test_keyword5",
+        "keyword6": "test_keyword6",
+        "language": "test_language",
+        "manuscriptCreationCommand": "test_manuscript_creation_command",
+        "manuscriptLocalFile": "test_manuscript_file",
+        "notes": "test_notes",
+        "paperBleed": "no",
+        "paperColor": "premium-color",
+        "paperCoverFinish": "glossy",
+        "paperTrim": "6x9",
+        "priceAu": "1.1",
+        "priceCa": "2.1",
+        "priceEur": "3.1",
+        "priceGbp": "4.1",
+        "priceJp": "5.1",
+        "pricePl": "6.1",
+        "priceSe": "7.1",
+        "priceUsd": "8.1",
+        "pubDate": "test_pub_date",
+        "pubStatus": "test_pub_status",
+        "pubStatusDetail": "test_pub_status_detail",
+        "scrapedSeriesTitle": "test_scraped_series_title",
+        "seriesTitle": "test_series_title",
+        "signature": "test_signature",
+        "subtitle": "test_subtitle",
+        "title": "test_title",
+        "wasEverPublished": false,
+    });
+});
+
+test('toString', () => {
+    const book = makeOkTestBook('my-action');
+    expect(book.toString().replaceAll(" ", "")).toEqual(
+        `action = my-action
+       signature = test_signature
+       notes = test_notes
+       authorFirstName = test_author_first_name
+       authorLastName = test_author_last_name
+       description = test_description
+       illustratorFirstName = test_illustrator_first_name
+       illustratorLastName = test_illustrator_last_name
+       keyword0 = test_keyword0
+       keyword1 = test_keyword1
+       keyword2 = test_keyword2
+       keyword3 = test_keyword3
+       keyword4 = test_keyword4
+       keyword5 = test_keyword5
+       keyword6 = test_keyword6
+       language = test_language
+       seriesTitle = test_series_title
+       scrapedSeriesTitle = test_scraped_series_title
+       subtitle = test_subtitle
+       title = test_title
+       priceAu = 1.1
+       priceCa = 2.1
+       priceEur = 3.1
+       priceGbp = 4.1
+       priceJp = 5.1
+       pricePl = 6.1
+       priceSe = 7.1
+       priceUsd = 8.1
+       isbn = test_isbn
+       paperColor = premium-color
+       paperTrim = 6x9
+       paperBleed = no
+       paperCoverFinish = glossy
+       category1 = test_cat1
+       category2 = test_cat2
+       coverLocalFile = content/dir/test_cover_file
+       manuscriptCreationCommand = test_manuscript_creation_command
+       manuscriptLocalFile = content/dir/test_manuscript_file
+       asin = test_asin
+       id = test_id
+       coverImageUrl = test_cover_image_url
+       pubDate = test_pub_date
+       pubStatus = test_pub_status
+       pubStatusDetail = test_pub_status_detail
+       wasEverPublished = false
+`.replaceAll(" ", ""));
+});

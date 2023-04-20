@@ -30,7 +30,7 @@ export function makeOkTestBook(action = 'test_action') {
             Keys.NOTES, 'test_notes',
             Keys.PAPER_BLEED, 'no',
             Keys.PAPER_COLOR, 'premium-color',
-            Keys.PAPER_COVER_FINISH, '',
+            Keys.PAPER_COVER_FINISH, 'glossy',
             Keys.PAPER_TRIM, '6x9',
             Keys.PRICE_AU, '1.1',
             Keys.PRICE_CA, '2.1',

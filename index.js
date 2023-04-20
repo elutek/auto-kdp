@@ -151,7 +151,7 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
         // Process one book. Measure how long.
         //
         if (verbose) {
-          console.log(book);
+          console.log(book.toString());
         }
         const startTime = performance.now();
         await _doProcessOneBook(bookFile, bookList, book, params);

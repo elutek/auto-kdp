@@ -89,3 +89,16 @@ export function copyMap(inputMap) {
     }
     return result;
 }
+
+export function clipLen(value, maxLen) {
+    if (typeof value !== "string") {
+        return value
+    }
+    if (value == null || value == undefined) {
+        return null;
+    }
+    if (value.length <= maxLen) {
+        return value;
+    }
+    return value.substring(0, maxLen);
+}

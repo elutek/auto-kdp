@@ -56,7 +56,6 @@ export let Keys = {
     // matte|glossy
     PAPER_COVER_FINISH: 'paperCoverFinish',
 
-
     // BISAC category. Find it on  https://bisg.org/page/BISACEdition.
     // For example on page https://bisg.org/page/JuvenileFiction it shows
     // JUV014000 is JUVENILE FICTION / Girls & Women.
