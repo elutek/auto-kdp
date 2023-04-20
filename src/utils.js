@@ -100,5 +100,8 @@ export function clipLen(value, maxLen) {
     if (value.length <= maxLen) {
         return value;
     }
-    return value.substring(0, maxLen);
+    return value
+        .replaceAll("\n", " ")
+        .replaceAll("  ", " ")
+        .substring(0, maxLen);
 }
