@@ -19,12 +19,12 @@ async function updatePriceIfNeeded(newPrice, currency, id, page, verbose) {
 }
 
 export async function updatePricing(book, params) {
+  const verbose = params.verbose;
+
   if (params.dryRun) {
     debug(verbose, 'Updating pricing (dry run)');
     return new ActionResult(true);
   }
-
-  const verbose = params.verbose;
 
   // Publishing happens on the pricing page.
   const url = Urls.EDIT_PAPERBACK_PRICING.replace('$id', book.id);
