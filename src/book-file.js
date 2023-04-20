@@ -38,17 +38,7 @@ export class BookFile {
                 return h;
               },
               mapValues: ({ header, index, value }) => {
-                let newValue = value.trim().replace('^"', '').replace('"$', '');
-                if (newValue.startsWith("file:")) {
-                  // Special value like "file:blah.txt" means: "read me from a file blah.txt"
-                  let fileName = newValue.substring("file:".length);
-                  try {
-                    newValue = fs.readFileSync(fileName, { encoding: 'utf-8' });
-                  } catch (e) {
-                    throw new Exception("Could not read file: " + fileName, e);
-                  }
-                }
-                return newValue;
+                return value.trim().replace('^"', '').replace('"$', '');
               },
               strict: true,
               skipComments: true
@@ -63,6 +53,21 @@ export class BookFile {
               for (const dataMap of dataMaps) {
                 try {
                   let book = new Book(dataMap, this.bookConfig, this.contentDir, dataMaps);
+
+                  // Handle case when description is stored in a file.
+                  // NOTE: it would be nice to handle it for all fields (e.g. in 'data' or 'mapValues'
+                  // sections above) but it breaks a bunch of other things because the "file:..." value
+                  // does not get stored.
+                  //
+                  if (book.description.startsWith("file:")) {
+                    // Special value like "file:blah.txt" means: "read me from a file blah.txt"
+                    const fileName = book.description.substring("file:".length);
+                    try {
+                      book.description = fs.readFileSync(fileName, { encoding: 'utf-8' });
+                    } catch (e) {
+                      throw new Exception("Could not read file: " + fileName, e);
+                    }
+                  }
                   this.addBook(book, bookList);
                   rowNumber++;
                 } catch (e) {
@@ -86,8 +91,6 @@ export class BookFile {
             const headers = _.map(this.headers, x => ({ id: x, title: x }));
             const writer = CsvWriter.createObjectCsvWriter({ path: this.outputFilePath, header: headers });
             const records = bookList.books.map(x => x.getDataToWrite());
-            console.log("Writing " + records.length + " records");
-            console.log(records);
             writer.writeRecords(records)
               .then(() => resolve())
               .catch(/* istanbul ignore next */

@@ -243,9 +243,9 @@ test('detects same signature', async () => {
 
 test('can read and write the book file', async () => {
     const books_csv =
-        `action,wasEverPublished,id,isbn,asin,name,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
-test_actionA,false,test_idA,test_isbnA,test_asinA,Ava,test_pub_statusA,test_pub_dateA,test_pub_status_detailA,test_cover_image_urlA,title_a
-test_actionB,true,test_idB,test_isbnB,test_asinB,Belle,test_pub_statusB,test_pub_dateB,test_pub_status_detailB,test_cover_image_urlB,title_b
+        `action,wasEverPublished,id,isbn,asin,name,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle,description
+test_actionA,false,test_idA,test_isbnA,test_asinA,Ava,test_pub_statusA,test_pub_dateA,test_pub_status_detailA,test_cover_image_urlA,title_a,descriptionA
+test_actionB,true,test_idB,test_isbnB,test_asinB,Belle,test_pub_statusB,test_pub_dateB,test_pub_status_detailB,test_cover_image_urlB,title_b,file:file.txt
 `;
 
     mock({
@@ -253,6 +253,7 @@ test_actionB,true,test_idB,test_isbnB,test_asinB,Belle,test_pub_statusB,test_pub
         'books.csv.new': '',
         'books.csv.lock': '',
         'books.conf': BOOKS_CONF,
+        'file.txt': 'description B',
         'content': { dir: {} },
         'node_modules': mock.load(path.resolve(__dirname, '../node_modules')),
     });
