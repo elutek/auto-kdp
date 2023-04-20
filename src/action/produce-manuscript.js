@@ -10,7 +10,7 @@ export async function produceManuscript(book, params) {
     debug(verbose, 'Produce manuscript (dry run)');
     return new ActionResult(true);
   }
-  const commandLine = book.manuscriptCreationCommand;
+  const commandLine = book.manuscriptCreationCommand.replace("<ISBN>", book.isbn);
   debug(verbose, `Running command: ${commandLine}`);
   ChildProcess.execSync(commandLine, (error, stdout, stderr) => {
     if (error) throw Error(`error: ${error.message}`);
