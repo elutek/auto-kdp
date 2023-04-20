@@ -157,11 +157,16 @@ export class Book {
   }
 
   getDataToWrite() {
-    let out = copyMap(this.origData);
-    for (const key of _KEYS_WITH_NO_DEFAULT) {
-      out.set(key, this[key]);
+    let result = {};
+    // First return the original values.
+    for (const [key, val] of this.origData) {
+      result[key] = val;
     }
-    return out;
+    // Override the changed values.
+    for (const key of _KEYS_WITH_NO_DEFAULT) {
+      result[key] = this[key];
+    }
+    return result;
   }
 }
 

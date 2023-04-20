@@ -86,7 +86,8 @@ export class BookFile {
             const headers = _.map(this.headers, x => ({ id: x, title: x }));
             const writer = CsvWriter.createObjectCsvWriter({ path: this.outputFilePath, header: headers });
             const records = bookList.books.map(x => x.getDataToWrite());
-            console.log("Wriring " + records.length + " records");
+            console.log("Writing " + records.length + " records");
+            console.log(records);
             writer.writeRecords(records)
               .then(() => resolve())
               .catch(/* istanbul ignore next */
