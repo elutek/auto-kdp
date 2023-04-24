@@ -142,10 +142,8 @@ export async function updateBookMetadata(book, params) {
 
   // Whether public domain
   // TODO: Support public domain case. 
-  if (isNew) {
-    debug(verbose, 'Selecting whether public domain');
-    await page.click('#non-public-domain', { timeout: Timeouts.SEC_5 });
-  }
+  debug(verbose, 'Selecting whether public domain');
+  await page.click('#non-public-domain', { timeout: Timeouts.SEC_5 });
 
   // Keywords - typing is slow so we first  check an update is needed.
   const oldKeyword0 = isNew ? '' : (await page.$eval('#data-print-book-keywords-0', x => x.value)) || '';
@@ -241,12 +239,16 @@ export async function updateBookMetadata(book, params) {
     await page.$eval(id, (el, book) => {
       if (el) {
         el.value = book.category1;
+      } else {
+        throw Error('Could not update category 1');
       }
     }, book);
     id = '#data-print-book-categories-2-bisac';
     await page.$eval(id, (el, book) => {
       if (el) {
         el.value = book.category2;
+      } else {
+        throw Error('Could not update category 2');
       }
     }, book);
     wasModified = true;
@@ -256,9 +258,7 @@ export async function updateBookMetadata(book, params) {
 
   // Whether adult content
   // TODO: We automatically select it is not adult content. Support for adult content would have to be added.
-  if (isNew) {
-    await page.click('#data-print-book-is-adult-content input[value=\'false\']', { timeout: Timeouts.SEC_1 });
-  }
+  await page.click('#data-print-book-is-adult-content input[value=\'false\']', { timeout: Timeouts.SEC_1 });
 
   // Check status of the book metadata
   id = '#book-setup-navigation-bar-details-link .a-alert-content';
