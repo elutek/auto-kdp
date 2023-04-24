@@ -1,5 +1,5 @@
 import { ActionResult } from '../action-result.js';
-import { debug, arraysEqual, normalizeText } from '../utils.js';
+import { debug, arraysEqual, removeSpacesInHtml } from '../utils.js';
 import { Timeouts, Urls, clearTextField, waitForElements } from './utils.js';
 
 // This function also creates a book.
@@ -124,8 +124,8 @@ export async function updateBookMetadata(book, params) {
   id = '#cke_1_contents > textarea';
   console.log(`Waiting for textarea (${id})`)
   await page.waitForSelector(id, { timeout: Timeouts.SEC_5 });
-  const oldDescription = await page.$eval('#cke_1_contents > textarea', x => x.value) || '';
-  const newDescription = normalizeText(book.description);
+  const oldDescription = formatAmazonDescription(await page.$eval('#cke_1_contents > textarea', x => x.value) || '');
+  const newDescription = formatAmazonDescription(book.description);
 
   if (oldDescription != newDescription) {
     // Description needs to be updated.

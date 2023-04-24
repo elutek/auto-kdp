@@ -29,10 +29,13 @@ export function arraysEqual(a, b) {
     return true;
 }
 
-export function normalizeText(str) {
+export function removeSpacesInHtml(str) {
     return str
-        .replaceAll('\n', ' ')
+        .replaceAll('\n', ' ')  // Whitespace -> spaces
+        .replaceAll('\t', ' ')  // Whitespace -> spaces
         .replaceAll(/\s+/g, ' ')
+        .replaceAll(/\s+$/g, '')
+        .replaceAll('<p></p>', '') // Empty paragraphs
         .replaceAll(/\s+$/g, '')
         .replaceAll(' <li>', '<li>').replaceAll('<li> ', '<li>').replaceAll('</li> ', '</li>').replaceAll(' </li>', '</li>')
         .replaceAll(' <ol>', '<ol>').replaceAll('<ol> ', '<ol>').replaceAll('</ol> ', '</ol>').replaceAll(' </ol>', '</ol>')

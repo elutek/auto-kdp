@@ -1,4 +1,4 @@
-import { debug, arraysEqual, normalizeText } from '../utils.js';
+import { debug, arraysEqual, removeSpacesInHtml } from '../utils.js';
 import { Timeouts, Urls } from './utils.js';
 
 export async function isMetadataUpdateNeeded(book, params) {
@@ -86,8 +86,8 @@ export async function isMetadataUpdateNeeded(book, params) {
   // Description.
   await page.click('#cke_18'); // Click button 'source'
   const description = await page.$eval('#cke_1_contents > textarea', x => x.value);
-  const gotDescription = normalizeText(description);
-  const expDescription = normalizeText(book.description);
+  const gotDescription = removeSpacesInHtml(description);
+  const expDescription = removeSpacesInHtml(book.description);
   const descriptionNeedsUpdate = gotDescription != expDescription;
   needsUpdate ||= descriptionNeedsUpdate;
   debug(verbose, 'Checking description: ' + (descriptionNeedsUpdate ?

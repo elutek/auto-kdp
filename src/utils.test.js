@@ -1,4 +1,4 @@
-import { arraysEqual, clipLen, isInt, mergeActions, normalizeText, normalizeSearchQuery, stripPrefix, stripQuotes, stringToIntOrThrow } from './utils';
+import { arraysEqual, clipLen, isInt, mergeActions, removeSpacesInHtml, normalizeSearchQuery, stripPrefix, stripQuotes, stringToIntOrThrow } from './utils';
 
 test('mergeActions', () => {
   expect(mergeActions('a:b', 'c:d')).toEqual('a:b:c:d');
@@ -25,27 +25,27 @@ test('arraysEqual', () => {
   expect(arraysEqual(arr, arr)).toEqual(true);
 });
 
-test('normalizeText', () => {
-  expect(normalizeText('')).toEqual('');
+test('removeSpacesInHtml', () => {
+  expect(removeSpacesInHtml('')).toEqual('');
 
   // Preservation
-  expect(normalizeText('blah blah')).toEqual('blah blah');
+  expect(removeSpacesInHtml('blah blah')).toEqual('blah blah');
 
   // Spaces
-  expect(normalizeText('  \t\nblah\t      ')).toEqual('blah');
-  expect(normalizeText('  blah \n \t blah \n\t \n\n')).toEqual('blah blah');
+  expect(removeSpacesInHtml('  \t\nblah\t      ')).toEqual('blah');
+  expect(removeSpacesInHtml('  blah \n \t blah \n\t \n\n')).toEqual('blah blah');
 
   // Lists 
-  expect(normalizeText(' <li> a </li> ')).toEqual('<li>a</li>');
-  expect(normalizeText(' <ul> <li> a </li> <li> b</li></ul>')).toEqual('<ul><li>a</li><li>b</li></ul>');
-  expect(normalizeText(' <ol> <li> a </li> </ol>')).toEqual('<ol><li>a</li></ol>');
+  expect(removeSpacesInHtml(' <li> a </li> ')).toEqual('<li>a</li>');
+  expect(removeSpacesInHtml(' <ul> <li> a </li> <li> b</li></ul>')).toEqual('<ul><li>a</li><li>b</li></ul>');
+  expect(removeSpacesInHtml(' <ol> <li> a </li> </ol>')).toEqual('<ol><li>a</li></ol>');
 
   // Headers
-  expect(normalizeText(' <h1>h1</h1><h4> a </h4> <p>b</p>')).toEqual('<h1>h1</h1><h4>a</h4><p>b</p>');
+  expect(removeSpacesInHtml(' <h1>h1</h1><h4> a </h4> <p>b</p>')).toEqual('<h1>h1</h1><h4>a</h4><p>b</p>');
 
   // Paragraphs.
-  expect(normalizeText('  <p>abc</p>   <p>def</p>')).toEqual('<p>abc</p><p>def</p>');
-  expect(normalizeText('  <p>abc. </p>')).toEqual('<p>abc.</p>');
+  expect(removeSpacesInHtml('  <p>abc</p>   <p>def</p>')).toEqual('<p>abc</p><p>def</p>');
+  expect(removeSpacesInHtml('  <p>abc. </p>')).toEqual('<p>abc.</p>');
 });
 
 test('normalizeSearchQuery', () => {
