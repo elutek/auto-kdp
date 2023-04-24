@@ -124,18 +124,19 @@ export async function updateBookMetadata(book, params) {
   id = '#cke_1_contents > textarea';
   console.log(`Waiting for textarea (${id})`)
   await page.waitForSelector(id, { timeout: Timeouts.SEC_5 });
-  const oldDescription = normalizeText(await page.$eval('#cke_1_contents > textarea', x => x.value) || '');
+  const oldDescription = await page.$eval('#cke_1_contents > textarea', x => x.value) || '';
+  const newDescription = normalizeText(book.description);
 
-  if (normalizeText(oldDescription) != normalizeText(book.description)) {
+  if (oldDescription != newDescription) {
     // Description needs to be updated.
-    debug(verbose, `Updating description from\n\t${oldDescription}\n\tto\n\t${book.description}`);
+    debug(verbose, `Updating description from \n\t${oldDescription}\n\tto\n\t${newDescription}`);
     wasModified = true;
 
     console.log(`Cleaning textarea`)
     if (!isNew) await clearTextField(page, id);
 
     console.log(`Typing new description`)
-    await page.type(id, book.description);
+    await page.type(id, newDescription);
   } else {
     debug(verbose, 'Updating description - not needed');
   }
