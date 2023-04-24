@@ -30,11 +30,19 @@ export function arraysEqual(a, b) {
 }
 
 export function normalizeText(str) {
-    return str.replaceAll('\n', ' ')
+    return str
+        .replaceAll('\n', ' ')
         .replaceAll(/\s+/g, ' ')
         .replaceAll(/\s+$/g, '')
-        .replaceAll('> <', '><')
-        .replaceAll('. </', '.</')
+        .replaceAll(' <li>', '<li>').replaceAll('<li> ', '<li>').replaceAll('</li> ', '</li>').replaceAll(' </li>', '</li>')
+        .replaceAll(' <ol>', '<ol>').replaceAll('<ol> ', '<ol>').replaceAll('</ol> ', '</ol>').replaceAll(' </ol>', '</ol>')
+        .replaceAll(' <p>', '<p>').replaceAll('<p> ', '<p>').replaceAll('</p> ', '</p>').replaceAll(' </p>', '</p>')
+        .replaceAll(' <h1>', '<h1>').replaceAll('<h1> ', '<h1>').replaceAll('</h1> ', '</h1>').replaceAll(' </h1>', '</h1>')
+        .replaceAll(' <h2>', '<h2>').replaceAll('<h2> ', '<h2>').replaceAll('</h2> ', '</h2>').replaceAll(' </h2>', '</h2>')
+        .replaceAll(' <h3>', '<h3>').replaceAll('<h3> ', '<h3>').replaceAll('</h3> ', '</h3>').replaceAll(' </h3>', '</h3>')
+        .replaceAll(' <h4>', '<h4>').replaceAll('<h4> ', '<h4>').replaceAll('</h4> ', '</h4>').replaceAll(' </h4>', '</h4>')
+        .replaceAll(' <h5>', '<h5>').replaceAll('<h5> ', '<h5>').replaceAll('</h5> ', '</h5>').replaceAll(' </h5>', '</h5>')
+        .replaceAll(' <h6>', '<h6>').replaceAll('<h6> ', '<h6>').replaceAll('</h6> ', '</h6>').replaceAll(' </h6>', '</h6>')
         .trim();
 }
 

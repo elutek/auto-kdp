@@ -27,9 +27,23 @@ test('arraysEqual', () => {
 
 test('normalizeText', () => {
   expect(normalizeText('')).toEqual('');
-  expect(normalizeText('blah')).toEqual('blah');
+
+  // Preservation
+  expect(normalizeText('blah blah')).toEqual('blah blah');
+
+  // Spaces
   expect(normalizeText('  \t\nblah\t      ')).toEqual('blah');
   expect(normalizeText('  blah \n \t blah \n\t \n\n')).toEqual('blah blah');
+
+  // Lists 
+  expect(normalizeText(' <li> a </li> ')).toEqual('<li>a</li>');
+  expect(normalizeText(' <ul> <li> a </li> <li> b</li></ul>')).toEqual('<ul><li>a</li><li>b</li></ul>');
+  expect(normalizeText(' <ol> <li> a </li> </ol>')).toEqual('<ol><li>a</li></ol>');
+
+  // Headers
+  expect(normalizeText(' <h1>h1</h1><h4> a </h4> <p>b</p>')).toEqual('<h1>h1</h1><h4>a</h4><p>b</p>');
+
+  // Paragraphs.
   expect(normalizeText('  <p>abc</p>   <p>def</p>')).toEqual('<p>abc</p><p>def</p>');
   expect(normalizeText('  <p>abc. </p>')).toEqual('<p>abc.</p>');
 });
