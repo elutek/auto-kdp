@@ -240,6 +240,7 @@ export async function updateBookMetadata(book, params) {
       if (el) {
         el.value = book.category1;
       } else {
+        console.error('Could not update category 1');
         throw Error('Could not update category 1');
       }
     }, book);
@@ -248,6 +249,7 @@ export async function updateBookMetadata(book, params) {
       if (el) {
         el.value = book.category2;
       } else {
+        console.error('Could not update category 2');
         throw Error('Could not update category 2');
       }
     }, book);
