@@ -35,9 +35,8 @@ export function removeSpacesInHtml(str) {
         .replaceAll('\t', ' ')  // Whitespace -> spaces
         .replaceAll(/\s+/g, ' ')
         .replaceAll(/\s+$/g, '')
-        .replaceAll('<p></p>', '') // Empty paragraphs
-        .replaceAll(/\s+$/g, '')
         .replaceAll(' <li>', '<li>').replaceAll('<li> ', '<li>').replaceAll('</li> ', '</li>').replaceAll(' </li>', '</li>')
+        .replaceAll(' <ul>', '<ul>').replaceAll('<ul> ', '<ul>').replaceAll('</ul> ', '</ul>').replaceAll(' </ul>', '</ul>')
         .replaceAll(' <ol>', '<ol>').replaceAll('<ol> ', '<ol>').replaceAll('</ol> ', '</ol>').replaceAll(' </ol>', '</ol>')
         .replaceAll(' <p>', '<p>').replaceAll('<p> ', '<p>').replaceAll('</p> ', '</p>').replaceAll(' </p>', '</p>')
         .replaceAll(' <h1>', '<h1>').replaceAll('<h1> ', '<h1>').replaceAll('</h1> ', '</h1>').replaceAll(' </h1>', '</h1>')
@@ -46,7 +45,49 @@ export function removeSpacesInHtml(str) {
         .replaceAll(' <h4>', '<h4>').replaceAll('<h4> ', '<h4>').replaceAll('</h4> ', '</h4>').replaceAll(' </h4>', '</h4>')
         .replaceAll(' <h5>', '<h5>').replaceAll('<h5> ', '<h5>').replaceAll('</h5> ', '</h5>').replaceAll(' </h5>', '</h5>')
         .replaceAll(' <h6>', '<h6>').replaceAll('<h6> ', '<h6>').replaceAll('</h6> ', '</h6>').replaceAll(' </h6>', '</h6>')
+        .replaceAll('<p></p>', '') // Remove empty paragraphs
+        .replaceAll(/\s+$/g, '')
         .trim();
+}
+
+// In string 'str', where the 'locator' is found, prefix the locator with the provided prefix.
+export function addBefore(str, locator, prefixToAddBeforeLocator) {
+    const v = str.split(locator);
+    if (v.length == 1) {
+        return str;
+    }
+    const result = v.join(prefixToAddBeforeLocator + locator);
+    // Now we maybe some preifx is there twice.
+    return result.replaceAll(prefixToAddBeforeLocator + prefixToAddBeforeLocator + locator, prefixToAddBeforeLocator + locator);
+}
+
+// In string 'str', where the 'locator' is found, suffix the locator with the provided prefix.
+export function addAfter(str, locator, suffixToAddAfterLocator) {
+    const v = str.split(locator);
+    if (v.length == 1) {
+        return str;
+    }
+    const result = v.join(locator + suffixToAddAfterLocator);
+    // Now we maybe some suffix is there twice.
+    return result.replaceAll(locator + suffixToAddAfterLocator + suffixToAddAfterLocator, locator + suffixToAddAfterLocator);
+}
+
+// This is needec because Amazon is formatting the HTML in such a way that "<ul></ul>" is treated as a paragraph,
+// even if it is inside a paragraph, so for example Amazon rewrites
+//
+//    <p>blah <ul> <li>abc</li></ul></p>
+// to
+//    <p>blah</p><ul> <li>abc</li></ul>
+//
+export function cleanupHtmlForAmazonDescription(str) {
+    // Need to extract "<ul>" into its own paragraphs.
+    str = removeSpacesInHtml(str);
+    str = addBefore(str, "<ul>", "</p>");
+    str = addAfter(str, "</ul>", "<p>");
+    str = stripPrefix(str, "</p>");
+    str = stripSuffix(str, "<p>");
+    str = removeSpacesInHtml(str); // To remove empty paragraphs.
+    return str;
 }
 
 export function normalizeSearchQuery(str) {
@@ -70,6 +111,10 @@ export function normalizeSearchQuery(str) {
 
 export function stripPrefix(str, prefix) {
     return str.startsWith(prefix) ? str.substring(prefix.length) : str;
+}
+
+export function stripSuffix(str, suffix) {
+    return str.endsWith(suffix) ? str.substring(0, str.length - suffix.length) : str;
 }
 
 export function stripQuotes(str) {

@@ -1,4 +1,4 @@
-import { arraysEqual, clipLen, isInt, mergeActions, removeSpacesInHtml, normalizeSearchQuery, stripPrefix, stripQuotes, stringToIntOrThrow } from './utils';
+import { addAfter, addBefore, arraysEqual, cleanupHtmlForAmazonDescription, clipLen, isInt, mergeActions, removeSpacesInHtml, normalizeSearchQuery, stripPrefix, stripSuffix, stripQuotes, stringToIntOrThrow } from './utils';
 
 test('mergeActions', () => {
   expect(mergeActions('a:b', 'c:d')).toEqual('a:b:c:d');
@@ -39,6 +39,7 @@ test('removeSpacesInHtml', () => {
   expect(removeSpacesInHtml(' <li> a </li> ')).toEqual('<li>a</li>');
   expect(removeSpacesInHtml(' <ul> <li> a </li> <li> b</li></ul>')).toEqual('<ul><li>a</li><li>b</li></ul>');
   expect(removeSpacesInHtml(' <ol> <li> a </li> </ol>')).toEqual('<ol><li>a</li></ol>');
+  expect(removeSpacesInHtml('</ul> <p>')).toEqual('</ul><p>');
 
   // Headers
   expect(removeSpacesInHtml(' <h1>h1</h1><h4> a </h4> <p>b</p>')).toEqual('<h1>h1</h1><h4>a</h4><p>b</p>');
@@ -46,6 +47,36 @@ test('removeSpacesInHtml', () => {
   // Paragraphs.
   expect(removeSpacesInHtml('  <p>abc</p>   <p>def</p>')).toEqual('<p>abc</p><p>def</p>');
   expect(removeSpacesInHtml('  <p>abc. </p>')).toEqual('<p>abc.</p>');
+  expect(removeSpacesInHtml('  <p>   </p>')).toEqual('');
+});
+
+test('addBefore', () => {
+  expect(addBefore("a!!!bc", "b", "!!!")).toEqual("a!!!bc");
+  expect(addBefore("abc", "b", "!!!")).toEqual("a!!!bc");
+  expect(addBefore("abc", "a", "!!!")).toEqual("!!!abc");
+  expect(addBefore("abc", "c", "!!!")).toEqual("ab!!!c");
+  expect(addBefore("abc", "d", "!!!")).toEqual("abc");
+  expect(addBefore("abc", "ab", "!!!")).toEqual("!!!abc");
+  expect(addBefore("abc", "bc", "!!!")).toEqual("a!!!bc");
+  expect(addBefore("abc", "abc", "!!!")).toEqual("!!!abc");
+  expect(addBefore("abc", "abcd", "!!!")).toEqual("abc");
+  expect(addBefore("abac", "a", "!!!")).toEqual("!!!ab!!!ac");
+});
+
+test('addAfter', () => {
+  expect(addAfter("abc", "b", "!!!")).toEqual("ab!!!c");
+  expect(addAfter("abc", "a", "!!!")).toEqual("a!!!bc");
+  expect(addAfter("abc", "c", "!!!")).toEqual("abc!!!");
+  expect(addAfter("abc", "d", "!!!")).toEqual("abc");
+  expect(addAfter("abc", "ab", "!!!")).toEqual("ab!!!c");
+  expect(addAfter("abc", "bc", "!!!")).toEqual("abc!!!");
+  expect(addAfter("abc", "abc", "!!!")).toEqual("abc!!!");
+  expect(addAfter("abc", "abcd", "!!!")).toEqual("abc");
+  expect(addAfter("abac", "a", "!!!")).toEqual("a!!!ba!!!c");
+});
+
+test('cleanupHtmlForAmazonDescription', () => {
+  expect(cleanupHtmlForAmazonDescription('blah <ul> <li>a</li> </ul> test <ul><li>aa</li></ul>')).toEqual('blah</p><ul><li>a</li></ul><p>test</p><ul><li>aa</li></ul>');
 });
 
 test('normalizeSearchQuery', () => {
@@ -63,7 +94,17 @@ test('stripPrefix', () => {
   expect(stripPrefix('test', 'blah')).toEqual('test');
   expect(stripPrefix('test', '')).toEqual('test');
   expect(stripPrefix('test', 't')).toEqual('est');
+  expect(stripPrefix('test', 'te')).toEqual('st');
   expect(stripPrefix('test', 'test')).toEqual('');
+});
+
+test('stripSuffix', () => {
+  expect(stripSuffix('', 'blah')).toEqual('');
+  expect(stripSuffix('test', 'blah')).toEqual('test');
+  expect(stripSuffix('test', '')).toEqual('test');
+  expect(stripSuffix('test', 't')).toEqual('tes');
+  expect(stripSuffix('test', 'st')).toEqual('te');
+  expect(stripSuffix('test', 'test')).toEqual('');
 });
 
 test('stripQuotes', () => {

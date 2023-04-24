@@ -1,5 +1,5 @@
 import { ActionResult } from '../action-result.js';
-import { debug, arraysEqual, removeSpacesInHtml } from '../utils.js';
+import { debug, arraysEqual, cleanupHtmlForAmazonDescription } from '../utils.js';
 import { Timeouts, Urls, clearTextField, waitForElements } from './utils.js';
 
 // This function also creates a book.
@@ -58,7 +58,6 @@ export async function updateBookMetadata(book, params) {
   ]);
 
   let id = '';
-  let wasModified = isNew;
 
   if (!book.wasEverPublished) {
 
@@ -67,56 +66,88 @@ export async function updateBookMetadata(book, params) {
     // are set in stone.
 
     // Title
-    debug(verbose, 'Updating title');
-    id = '#data-print-book-title';
-    if (!isNew) await clearTextField(page, id);
-    await page.type(id, book.title);
+    const title = await page.$eval('#data-print-book-title', x => x.value)
+    if (title != book.title) {
+      debug(verbose, 'Updating title');
+      id = '#data-print-book-title';
+      if (!isNew) await clearTextField(page, id);
+      await page.type(id, book.title);
+    } else {
+      debug(verbose, 'Updating title - not needed, got ' + title);
+    }
 
     // Subtitle
-    if (book.subtitle != '') {
+    const subtitle = await page.$eval('#data-print-book-subtitle', x => x.value)
+    if (subtitle != book.subtitle) {
       debug(verbose, 'Updating subtitle');
       id = '#data-print-book-subtitle';
       if (!isNew) await clearTextField(page, id);
-      await page.type(id, book.subtitle);
+      if (book.subtitle != '') {
+        await page.type(id, book.subtitle);
+      }
     } else {
-      debug(verbose, 'Updating subtitle - not needed, no subtitle specified')
+      debug(verbose, 'Updating subtitle - not needed, got ' + subtitle)
     }
 
     // Edition number - TODO, currently not supported
 
     // Author first name
-    debug(verbose, 'Updating author');
     id = '#data-print-book-primary-author-first-name';
-    if (!isNew) await clearTextField(page, id);
-    await page.type(id, book.authorFirstName);
+    const authorFirstName = await page.$eval(id, x => x.value);
+    if (authorFirstName != book.authorFirstName) {
+      debug(verbose, 'Updating author\'s first name');
+      if (!isNew) await clearTextField(page, id);
+      await page.type(id, book.authorFirstName);
+    } else {
+      debug(verbose, 'Updating author\'s first name - not needed, got ' + authorFirstName);
+    }
 
     // Author last name
     id = '#data-print-book-primary-author-last-name';
-    if (!isNew) await clearTextField(page, id);
-    await page.type(id, book.authorLastName);
+    const authorLastName = await page.$eval(id, x => x.value);
+    if (authorLastName != book.authorLastName) {
+      debug(verbose, 'Updating author\'s last name');
+      if (!isNew) await clearTextField(page, id);
+      await page.type(id, book.authorLastName);
+    } else {
+      debug(verbose, 'Updating author\'s last name - not needed, got ' + authorLastName);
+    }
 
     // Illustrator's first name
-    if (book.illustratorFirstName != '' && book.illustratorLastName != '') {
-      debug(verbose, 'Updating illustrator');
-      id = '#data-print-book-contributors-0-first-name';
+    id = '#data-print-book-contributors-0-first-name';
+    const illustratorFirstName = await page.$eval(id, x => x.value);
+    if (illustratorFirstName != book.illustratorFirstName) {
+      debug(verbose, 'Updating illustrator\'s first name');
       if (!isNew) await clearTextField(page, id);
-      await page.type(id, book.illustratorFirstName);
+      if (book.illustratorFirstName != '') {
+        await page.type(id, book.illustratorFirstName);
+      }
+    } else {
+      debug(verbose, 'Updating illustrator\'s first name - not needed, got ' + illustratorFirstName);
+    }
 
-      // Illustrator's last name
-      id = '#data-print-book-contributors-0-last-name';
+    // Illustrator's last name
+    id = '#data-print-book-contributors-0-last-name';
+    const illustratorLastName = await page.$eval('#data-print-book-contributors-0-last-name', x => x.value);
+    if (illustratorLastName != book.illustratorLastName) {
+      debug(verbose, 'Updating illustrator\'s last name');
       if (!isNew) await clearTextField(page, id);
-      await page.type(id, book.illustratorLastName);
+      if (book.illustratorLastName != '') {
+        await page.type(id, book.illustratorLastName);
+      }
+    } else {
+      debug(verbose, 'Updating illustrator\'s last name - not needed, got ' + illustratorLastName);
+    }
 
-      // Illustrator's role.
+    // Illustrator's role.
+    if (book.illustratorFirstName != '' || book.illustratorLastName != '') {
       id = '#data-print-book-contributors-0-role-native';
       await page.select(id, 'illustrator');
     }
   }
 
-  // Description - first check if update is needed. The typing
-  // is pretty slow so we avoid it if not necessary.
+  // Description
   id = '#cke_18'; // Button 'Source' to switch to HTML editing.
-
   console.log(`Waiting for Source button (${id})`)
   await page.waitForSelector(id);
   console.log(`Clicking Source button`);
@@ -124,13 +155,11 @@ export async function updateBookMetadata(book, params) {
   id = '#cke_1_contents > textarea';
   console.log(`Waiting for textarea (${id})`)
   await page.waitForSelector(id, { timeout: Timeouts.SEC_5 });
-  const oldDescription = formatAmazonDescription(await page.$eval('#cke_1_contents > textarea', x => x.value) || '');
-  const newDescription = formatAmazonDescription(book.description);
-
+  const oldDescription = cleanupHtmlForAmazonDescription(await page.$eval('#cke_1_contents > textarea', x => x.value) || '');
+  const newDescription = cleanupHtmlForAmazonDescription(book.description);
   if (oldDescription != newDescription) {
     // Description needs to be updated.
     debug(verbose, `Updating description from \n\t${oldDescription}\n\tto\n\t${newDescription}`);
-    wasModified = true;
 
     console.log(`Cleaning textarea`)
     if (!isNew) await clearTextField(page, id);
@@ -138,7 +167,7 @@ export async function updateBookMetadata(book, params) {
     console.log(`Typing new description`)
     await page.type(id, newDescription);
   } else {
-    debug(verbose, 'Updating description - not needed');
+    debug(verbose, 'Updating description - not needed, got ' + oldDescription);
   }
 
   // Whether public domain
@@ -160,7 +189,6 @@ export async function updateBookMetadata(book, params) {
     id = '#data-print-book-keywords-0';
     if (!isNew) await clearTextField(page, id);
     await page.type(id, book.keyword0);
-    wasModified = true;
   } else {
     debug(verbose, `Updating keyword0 - not needed, got ${oldKeyword0}`);
   }
@@ -171,7 +199,6 @@ export async function updateBookMetadata(book, params) {
     id = '#data-print-book-keywords-1';
     if (!isNew) await clearTextField(page, id);
     await page.type(id, book.keyword1);
-    wasModified = true;
   } else {
     debug(verbose, `Updating keyword1 - not needed, got ${oldKeyword1}`);
   }
@@ -181,7 +208,6 @@ export async function updateBookMetadata(book, params) {
     id = '#data-print-book-keywords-2';
     if (!isNew) await clearTextField(page, id);
     await page.type(id, book.keyword2);
-    wasModified = true;
   } else {
     debug(verbose, `Updating keyword2 - not needed, got ${oldKeyword2}`);
   }
@@ -192,7 +218,6 @@ export async function updateBookMetadata(book, params) {
     id = '#data-print-book-keywords-3';
     if (!isNew) await clearTextField(page, id);
     await page.type(id, book.keyword3);
-    wasModified = true;
   } else {
     debug(verbose, `Updating keyword3 - not needed, got ${oldKeyword3}`);
   }
@@ -202,7 +227,6 @@ export async function updateBookMetadata(book, params) {
     id = '#data-print-book-keywords-4';
     if (!isNew) await clearTextField(page, id);
     await page.type(id, book.keyword4);
-    wasModified = true;
   } else {
     debug(verbose, `Updating keyword4 - not needed, got ${oldKeyword4}`);
   }
@@ -212,7 +236,6 @@ export async function updateBookMetadata(book, params) {
     id = '#data-print-book-keywords-5';
     if (!isNew) await clearTextField(page, id);
     await page.type(id, book.keyword5);
-    wasModified = true;
   } else {
     debug(verbose, `Updating keyword5 - not needed, got ${oldKeyword5}`);
   }
@@ -222,7 +245,6 @@ export async function updateBookMetadata(book, params) {
     id = '#data-print-book-keywords-6';
     if (!isNew) await clearTextField(page, id);
     await page.type(id, book.keyword6);
-    wasModified = true;
   } else {
     debug(verbose, `Updating keyword6 - not needed, got ${oldKeyword6}`);
   }
@@ -254,7 +276,6 @@ export async function updateBookMetadata(book, params) {
         throw Error('Could not update category 2');
       }
     }, book);
-    wasModified = true;
   } else {
     debug(verbose, `Selecting categories - not needed, got ${category1}, ${category2}`);
   }
@@ -271,31 +292,27 @@ export async function updateBookMetadata(book, params) {
 
   // Save
   let isSuccess = true;
-  if (wasModified || !isMetadataStatusOk) {
-    debug(verbose, 'Saving');
-    await page.click('#save-announce', { timeout: Timeouts.SEC_30 });
-    if (isNew) {
-      await page.waitForNavigation();
-    } else {
-      await page.waitForSelector('#potter-success-alert-bottom div div', { visible: true });
-      await page.waitForTimeout(Timeouts.SEC_2);
-    }
-
-    if (isNew) {
-      // Get id.
-      const url = page.url();
-      const splits = url.split('/');
-      let index = splits.indexOf('paperback');
-      if (index >= 0 && index + 1 < splits.length) {
-        book.id = splits[index + 1];
-        debug(verbose, 'Got book id: ' + book.id);
-      } else {
-        console.error('ERROR: could not get paperback id from url: ' + url);
-        isSuccess = false;
-      }
-    }
+  debug(verbose, 'Saving');
+  await page.click('#save-announce', { timeout: Timeouts.SEC_30 });
+  if (isNew) {
+    await page.waitForNavigation();
   } else {
-    debug(verbose, 'Saving - not needed');
+    await page.waitForSelector('#potter-success-alert-bottom div div', { visible: true });
+    await page.waitForTimeout(Timeouts.SEC_2);
+  }
+
+  if (isNew) {
+    // Get id.
+    const url = page.url();
+    const splits = url.split('/');
+    let index = splits.indexOf('paperback');
+    if (index >= 0 && index + 1 < splits.length) {
+      book.id = splits[index + 1];
+      debug(verbose, 'Got book id: ' + book.id);
+    } else {
+      console.error('ERROR: could not get paperback id from url: ' + url);
+      isSuccess = false;
+    }
   }
 
   if (!params.keepOpen) {
