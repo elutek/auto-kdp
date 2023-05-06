@@ -143,16 +143,18 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
           etaHrs = Math.floor(etaMin / 60);
           etaMin -= etaHrs * 60;
         }
+
         if (verbose) {
-          console.log(`\n=== Processed ${numProcessed}/${totalToProcess} (${progressPerc}%), ETA: ${etaHrs}h ${etaMin}m ===`);
+          console.log('----------------------------------------');
+          console.log('--- Processing: ' + book.signature + ' with actions: ' + book.action);
+          console.log(`--- Progress: ${progressPerc}% (${numProcessed}/${totalToProcess}), ETA: ${etaHrs}h ${etaMin}m`);
+          console.log('----------------------------------------');
+          console.log(book.toString());
         }
 
         //
         // Process one book. Measure how long.
         //
-        if (verbose) {
-          console.log(book.toString());
-        }
         const startTime = performance.now();
         await _doProcessOneBook(bookFile, bookList, book, params);
         const durationSeconds = (performance.now() - startTime) / 1000;
@@ -170,7 +172,7 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
           if (numConsecutiveFastOperations > 200) {
             // Take a little break.
             console.log("Too many fast operations - sleeping for 30s");
-            await sleep(30);
+            sleep(30);
             numConsecutiveFastOperations = 0;
           }
         } else {

@@ -65,7 +65,7 @@ export class BookFile {
                     try {
                       book.description = fs.readFileSync(fileName, { encoding: 'utf-8' });
                     } catch (e) {
-                      throw new Exception("Could not read file: " + fileName, e);
+                      throw new Error("Could not read file: " + fileName, e);
                     }
                   }
                   this.addBook(book, bookList);
