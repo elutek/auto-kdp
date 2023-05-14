@@ -1,5 +1,5 @@
 import { ActionResult } from '../action-result.js';
-import { debug } from '../utils.js';
+import { debug, maybeClosePage } from '../utils.js';
 import { Timeouts, Urls, waitForElements } from './utils.js';
 
 export async function publish(book, params, isForce = false) {
@@ -67,9 +67,6 @@ export async function publish(book, params, isForce = false) {
     isSuccess = false;
   }
 
-  if (!params.keepOpen) {
-    await page.close();
-  }
-
+  await maybeClosePage(params, page);
   return new ActionResult(isSuccess);
 }

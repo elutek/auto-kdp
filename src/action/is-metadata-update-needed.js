@@ -1,5 +1,5 @@
 import { debug, arraysEqual, removeSpacesInHtml } from '../utils.js';
-import { Timeouts, Urls } from './utils.js';
+import { Timeouts, Urls, maybeClosePage } from './utils.js';
 
 export async function isMetadataUpdateNeeded(book, params) {
   const verbose = params.verbose;
@@ -151,10 +151,7 @@ export async function isMetadataUpdateNeeded(book, params) {
 
   debug(verbose, 'Needs update: ' + needsUpdate);
 
-  if (!params.keepOpen) {
-    await page.close();
-  }
-
+  await maybeClosePage(params, page);
   return new ActionResult(true).setNextActions('book-metadata:pricing:publish:scrape');
 }
 

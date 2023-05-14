@@ -1,6 +1,6 @@
 import { ActionResult } from '../action-result.js';
 import { debug } from '../utils.js';
-import { Timeouts, Urls } from './utils.js';
+import { Timeouts, Urls, maybeClosePage } from './utils.js';
 
 export async function scrapeIsbn(book, params) {
   const verbose = params.verbose;
@@ -34,9 +34,6 @@ export async function scrapeIsbn(book, params) {
   debug(verbose, 'Got ISBN: ' + isbn);
   book.isbn = isbn;
 
-  if (!params.keepOpen) {
-    await page.close();
-  }
-
+  await maybeClosePage(params, page);
   return new ActionResult(isbn != '');
 }

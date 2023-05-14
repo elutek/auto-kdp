@@ -1,6 +1,6 @@
 import { ActionResult } from '../action-result.js';
 import { debug } from '../utils.js'
-import { Timeouts, Urls, clearTextField, waitForElements } from './utils.js';
+import { Timeouts, Urls, clearTextField, maybeClosePage, waitForElements } from './utils.js';
 
 async function updatePriceIfNeeded(newPrice, currency, id, page, verbose) {
   const oldPriceStr = (await page.$eval(id, x => x.value)) || '';
@@ -83,9 +83,6 @@ export async function updatePricing(book, params) {
     debug(verbose, 'Saving - not needed, prices were not updated')
   }
 
-  if (!params.keepOpen) {
-    await page.close();
-  }
-
+  await maybeClosePage(params, page);
   return new ActionResult(true);
 }

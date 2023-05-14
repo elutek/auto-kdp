@@ -1,6 +1,6 @@
 import { ActionResult } from '../action-result.js';
 import { debug } from '../utils.js'
-import { Timeouts, Urls, fileExists } from './utils.js';
+import { Timeouts, Urls, fileExists, maybeClosePage } from './utils.js';
 
 export async function updateContent(book, params) {
     const verbose = params.verbose;
@@ -81,9 +81,6 @@ export async function updateContent(book, params) {
     await page.waitForSelector('#potter-success-alert-bottom div div', { visible: true });
     await page.waitForTimeout(500);  // Just in case.
 
-    if (!params.keepOpen) {
-        await page.close();
-    }
-
+    await maybeClosePage(params, page);
     return new ActionResult(true);
 }

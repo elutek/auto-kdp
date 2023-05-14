@@ -1,5 +1,5 @@
 import { debug } from '../utils.js';
-import { Timeouts, Urls, waitForElements } from './utils.js';
+import { Timeouts, Urls, maybeClosePage, waitForElements } from './utils.js';
 
 async function priceNeedsUpdate(newPrice, currency, id, page, verbose) {
   const oldPriceStr = (await page.$eval(id, x => x.value)) || '';
@@ -61,10 +61,7 @@ export async function isPricingUpdateNeeded(book, params) {
 
   debug(verbose, 'Needs update: ' + needsUpdate);
 
-  if (!params.keepOpen) {
-    await page.close();
-  }
-
+  await maybeClosePage(params, page);
   return new ActionResult(true).setNextActions('pricing:publish:scrape');
 }
 

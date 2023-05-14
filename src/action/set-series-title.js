@@ -1,7 +1,7 @@
 
 import { ActionResult } from '../action-result.js';
 import { debug, normalizeSearchQuery } from '../utils.js';
-import { Timeouts, Urls } from './utils.js';
+import { Timeouts, Urls, maybeClosePage } from './utils.js';
 
 // This function also creates a book.
 export async function setSeriesTitle(book, params) {
@@ -26,9 +26,7 @@ export async function setSeriesTitle(book, params) {
 
     if (response.status() == 500) {
         console.log('KDP returned internal erorr (500).');
-        if (!params.keepOpen) {
-            await page.close();
-        }
+        await maybeClosePage(params, page);
         return new ActionResult(false).doNotRetry();
     }
 
@@ -66,17 +64,7 @@ export async function setSeriesTitle(book, params) {
 
     debug(verbose, 'Saving - not needed for series title');
 
-    if (!params.keepOpen) {
-        try {
-            console.log("Closing");
-            await page.close();
-        } catch (e) {
-            console.log('Could not close page: ', e);
-        }
-    }
-
-    console.log("Closed");
-
+    await maybeClosePage(params, page);
     return new ActionResult(true);
 }
 

@@ -1,6 +1,6 @@
 import { ActionResult } from '../action-result.js';
 import { debug } from '../utils.js'
-import { Timeouts, Urls } from './utils.js';
+import { Timeouts, Urls, maybeClosePage } from './utils.js';
 
 export async function updateContentMetadata(book, params) {
   const verbose = params.verbose;
@@ -134,9 +134,6 @@ export async function updateContentMetadata(book, params) {
   await page.waitForSelector('#potter-success-alert-bottom div div', { visible: true });
   await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
-  if (!params.keepOpen) {
-    await page.close();
-  }
-
+  await maybeClosePage(params, page);
   return new ActionResult(true);
 }

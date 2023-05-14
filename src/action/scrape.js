@@ -117,9 +117,7 @@ export async function scrape(book, params) {
 
 
   /* We do not close this special page.
-  if (!params.keepOpen) {
-    await page.close();
-  }
+    await maybeClosePage(params, page);
   */
 
   let nextActions = !book.isFullyLive() && book.numActions() == 1 && book.getFirstAction() == 'scrape' ? 'scrape' : '';

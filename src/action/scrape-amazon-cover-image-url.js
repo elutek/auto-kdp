@@ -1,6 +1,6 @@
 import { ActionResult } from '../action-result.js';
 import { debug, stripPrefix } from '../utils.js';
-import { Timeouts, Urls } from './utils.js';
+import { Timeouts, Urls, maybeClosePage } from './utils.js';
 
 export async function scrapeAmazonCoverImageUrl(book, params) {
   const verbose = params.verbose;
@@ -34,10 +34,7 @@ export async function scrapeAmazonCoverImageUrl(book, params) {
     console.error("Cover image url not found!");
   }
 
-  if (!params.keepOpen) {
-    await page.close();
-  }
-
+  await maybeClosePage(params, page);
   return new ActionResult(success);
 }
 

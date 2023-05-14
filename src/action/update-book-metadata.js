@@ -1,6 +1,6 @@
 import { ActionResult } from '../action-result.js';
 import { debug, arraysEqual, cleanupHtmlForAmazonDescription } from '../utils.js';
-import { Timeouts, Urls, clearTextField, waitForElements } from './utils.js';
+import { Timeouts, Urls, clearTextField, maybeClosePage, waitForElements } from './utils.js';
 
 // This function also creates a book.
 export async function updateBookMetadata(book, params) {
@@ -26,9 +26,7 @@ export async function updateBookMetadata(book, params) {
 
   if (response.status() == 500) {
     console.log('KDP returned internal erorr (500).');
-    if (!params.keepOpen) {
-      await page.close();
-    }
+    await maybeClosePage(params, page);
     return new ActionResult(false).doNotRetry();
   }
 
@@ -315,16 +313,6 @@ export async function updateBookMetadata(book, params) {
     }
   }
 
-  if (!params.keepOpen) {
-    try {
-      console.log("Closing");
-      await page.close();
-    } catch (e) {
-      console.log('Could not close page: ', e);
-    }
-  }
-
-  console.log("Closed");
-
+  await maybeClosePage(params, page);
   return new ActionResult(isSuccess);
 }

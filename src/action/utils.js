@@ -53,3 +53,14 @@ export async function waitForElements(page, ids) {
     }
     await page.waitForTimeout(Timeouts.SEC_1); // Just in case.
 }
+
+export async function maybeClosePage(params, page) {
+    if (!params.keepOpen || numOpenTabs(params.browser) > 20) {
+        console.log("Closing page");
+        await page.close();
+    }
+}
+
+async function numOpenTabs(browser) {
+    return (await browser.pages()).length;
+}
