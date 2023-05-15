@@ -1,5 +1,5 @@
 import { ActionResult } from '../action-result.js';
-import { debug, error, arraysEqual, cleanupHtmlForAmazonDescription } from '../utils.js';
+import { debug, error, arraysEqual, cleanupHtmlForAmazonDescription, clipLen } from '../utils.js';
 import { Timeouts, Urls, clearTextField, maybeClosePage, waitForElements } from './utils.js';
 
 // This function also creates a book.
@@ -165,7 +165,7 @@ export async function updateBookMetadata(book, params) {
     debug(book, verbose, `Typing new description`)
     await page.type(id, newDescription);
   } else {
-    debug(book, verbose, 'Updating description - not needed, got ' + oldDescription);
+    debug(book, verbose, 'Updating description - not needed, got ' + clipLen(oldDescription));
   }
 
   // Whether public domain

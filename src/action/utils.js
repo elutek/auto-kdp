@@ -55,14 +55,13 @@ export async function waitForElements(page, ids) {
 }
 
 export async function maybeClosePage(params, page) {
-    if (!params.keepOpen || await numOpenTabs(params.browser) > 20) {
-        console.log("Closing page");
+    const n = numOpenTabs(params.browser);
+    if (!params.keepOpen || (params.keepOpen && n > 20)) {
         await page.close();
     }
 }
 
 async function numOpenTabs(browser) {
     const n = (await browser.pages()).length;
-    console.log("Number of open tabs = " + n);
     return n;
 }

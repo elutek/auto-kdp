@@ -151,7 +151,7 @@ export function copyMap(inputMap) {
     return result;
 }
 
-export function clipLen(value, maxLen) {
+export function clipLen(value, maxLen = 100) {
     if (typeof value !== "string") {
         return value
     }

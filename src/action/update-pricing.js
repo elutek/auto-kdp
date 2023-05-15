@@ -2,7 +2,7 @@ import { ActionResult } from '../action-result.js';
 import { debug } from '../utils.js'
 import { Timeouts, Urls, clearTextField, maybeClosePage, waitForElements } from './utils.js';
 
-async function updatePriceIfNeeded(newPrice, currency, id, page, verbose) {
+async function updatePriceIfNeeded(newPrice, currency, id, page, book, verbose) {
   const oldPriceStr = (await page.$eval(id, x => x.value)) || '';
   const newPriceStr = '' + newPrice;
   if (newPriceStr != oldPriceStr) {
@@ -55,20 +55,20 @@ export async function updatePricing(book, params) {
   let wasUpdated = false;
 
 
-  wasUpdated |= await updatePriceIfNeeded(book.priceUsd, 'USD', '#data-pricing-print-us-price-input input', page, verbose);
+  wasUpdated |= await updatePriceIfNeeded(book.priceUsd, 'USD', '#data-pricing-print-us-price-input input', page, book, verbose);
   await page.waitForTimeout(Timeouts.SEC_5);
 
-  wasUpdated |= await updatePriceIfNeeded(book.priceGbp, 'GBP', '#data-pricing-print-uk-price-input input', page, verbose);
-  wasUpdated |= await updatePriceIfNeeded(book.priceEur, 'DE/EUR', '#data-pricing-print-de-price-input input', page, verbose);
-  wasUpdated |= await updatePriceIfNeeded(book.priceEur, 'FR/EUR', '#data-pricing-print-fr-price-input input', page, verbose);
-  wasUpdated |= await updatePriceIfNeeded(book.priceEur, 'ES/EUR', '#data-pricing-print-es-price-input input', page, verbose);
-  wasUpdated |= await updatePriceIfNeeded(book.priceEur, 'IT/EUR', '#data-pricing-print-it-price-input input', page, verbose);
-  wasUpdated |= await updatePriceIfNeeded(book.priceEur, 'NL/EUR', '#data-pricing-print-nl-price-input input', page, verbose);
-  wasUpdated |= await updatePriceIfNeeded(book.pricePl, 'PL', '#data-pricing-print-pl-price-input input', page, verbose);
-  wasUpdated |= await updatePriceIfNeeded(book.priceSe, 'PL', '#data-pricing-print-se-price-input input', page, verbose);
-  wasUpdated |= await updatePriceIfNeeded(book.priceJp, 'JP', '#data-pricing-print-jp-price-input input', page, verbose);
-  wasUpdated |= await updatePriceIfNeeded(book.priceCa, 'CA', '#data-pricing-print-ca-price-input input', page, verbose);
-  wasUpdated |= await updatePriceIfNeeded(book.priceAu, 'AU', '#data-pricing-print-au-price-input input', page, verbose);
+  wasUpdated |= await updatePriceIfNeeded(book.priceGbp, 'GBP', '#data-pricing-print-uk-price-input input', page, book, verbose);
+  wasUpdated |= await updatePriceIfNeeded(book.priceEur, 'DE/EUR', '#data-pricing-print-de-price-input input', page, book, verbose);
+  wasUpdated |= await updatePriceIfNeeded(book.priceEur, 'FR/EUR', '#data-pricing-print-fr-price-input input', page, book, verbose);
+  wasUpdated |= await updatePriceIfNeeded(book.priceEur, 'ES/EUR', '#data-pricing-print-es-price-input input', page, book, verbose);
+  wasUpdated |= await updatePriceIfNeeded(book.priceEur, 'IT/EUR', '#data-pricing-print-it-price-input input', page, book, verbose);
+  wasUpdated |= await updatePriceIfNeeded(book.priceEur, 'NL/EUR', '#data-pricing-print-nl-price-input input', page, book, verbose);
+  wasUpdated |= await updatePriceIfNeeded(book.pricePl, 'PL', '#data-pricing-print-pl-price-input input', page, book, verbose);
+  wasUpdated |= await updatePriceIfNeeded(book.priceSe, 'PL', '#data-pricing-print-se-price-input input', page, book, verbose);
+  wasUpdated |= await updatePriceIfNeeded(book.priceJp, 'JP', '#data-pricing-print-jp-price-input input', page, book, verbose);
+  wasUpdated |= await updatePriceIfNeeded(book.priceCa, 'CA', '#data-pricing-print-ca-price-input input', page, book, verbose);
+  wasUpdated |= await updatePriceIfNeeded(book.priceAu, 'AU', '#data-pricing-print-au-price-input input', page, book, verbose);
 
   await page.waitForTimeout(Timeouts.SEC_2);
 

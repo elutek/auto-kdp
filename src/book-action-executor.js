@@ -1,20 +1,21 @@
 import { ActionResult } from './action-result.js';
 import { ActionsResult } from './actions-result.js';
-import { mergeActions } from './utils.js';
+import { mergeActions, debug, error } from './utils.js';
 
 // If successful returns next actions; if failed, returns null.
 async function doExecuteBookActionWithRetries(action, book, actionCallback, params) {
+    const verbose = params.verbose;
     let err = null;
     for (let attempt = 1; attempt <= 3; ++attempt) {
         try {
-            console.log(`\nBook action ${action} #${attempt} start`);
+            debug(book, verbose, `Book action ${action} #${attempt} start`);
             let result = await actionCallback(action, book, params);
-            console.log(`Book action ${action} #${attempt} result : ` + (result.success ? 'OK' : 'FAILED'));
+            debug(book, verbose, `Book action ${action} #${attempt} done: ` + (result.success ? 'OK' : 'FAILED'));
             if (result.success || !result.shouldRetry) {
                 return result;
             }
         } catch (e) {
-            console.log(`Book action ${action} #${attempt} done: throws: ` + e);
+            error(book, `Book action ${action} #${attempt} done: throws: ` + e);
         }
     }
     return new ActionResult(false).doNotRetry();
@@ -24,6 +25,7 @@ async function doExecuteBookActionWithRetries(action, book, actionCallback, para
 // If this procedure fails, actions remain unchanged.
 // Returns whether any action succeeded.
 export async function ExecuteBookActions(book, bookFile, bookList, actionCallback, params) {
+    const verbose = params.verbose;
     // Process actions until the first action fails.
     // The book.actions field is only modified in this function, not in ExecuteBookAction().
     let actionsResult = new ActionsResult();
@@ -40,18 +42,12 @@ export async function ExecuteBookActions(book, bookFile, bookList, actionCallbac
             }
         } else {
             /* Istanbul skip next */
-            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-            /* Istanbul skip next */
-            console.log('!!!!     Book processing failed   !!!!!');
-            /* Istanbul skip next */
-            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+            error(book, 'Book processing FAILED');
         }
 
         // Write out the books to preserve current state.
         if (bookFile != null && bookList != null) {
-            if (params.verbose) {
-                console.log(`Writing ${bookList.size()} books`);
-            }
+            debug(book, verbose, `Writing ${bookList.size()} books`);
             await bookFile.writeBooksAsync(bookList);
         }
     }

@@ -102,7 +102,6 @@ export async function scrape(book, params) {
       break;
     }
   }
-  debug(book, verbose, "  Attempts: " + attempt)
 
   if (scrapedSeriesTitle == book.seriesTitle.toLowerCase()) {
     book.scrapedSeriesTitle = 'ok';

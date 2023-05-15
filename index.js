@@ -8,6 +8,7 @@ puppeteer.use(StealthPlugin());
 
 import { BookFile } from './src/book-file.js';
 import { ExecuteBookActions } from './src/book-action-executor.js';
+import { debug } from './src/utils.js';
 
 // Action
 import { scrapeAmazonCoverImageUrl } from './src/action/scrape-amazon-cover-image-url.js';
@@ -29,9 +30,7 @@ const { sleep } = pkg;
 
 
 async function executeBookActionCallback(action, book, params) {
-  if (params.verbose) {
-    console.log('Executing book action: ' + action);
-  }
+  debug(book, params.verbose, 'Executing book action: ' + action);
 
   switch (action) {
     case 'book-metadata': return await updateBookMetadata(book, params); break;
@@ -64,23 +63,21 @@ async function _startBrowser(bookList, headlessOverride, userDataDir, verbose) {
 }
 
 async function processOneBook(bookFile, bookList, book, params) {
-  const prefix = book.signature + ":: ";
-
-  console.log(prefix + "START");
-  console.log(prefix + book.toString());
+  const verbose = params.verbose;
+  debug(book, verbose, "");
+  debug(book, verbose, "START");
 
   const startTime = performance.now();
   await ExecuteBookActions(book, bookFile, bookList, (a, b, p) => executeBookActionCallback(a, b, p), params);
   const durationSeconds = (performance.now() - startTime) / 1000;
 
-  console.log(prefix + `DONE took ${Math.round(durationSeconds)} secs`);
-
+  debug(book, verbose, `DONE took ${Math.round(durationSeconds)} secs`);
   return durationSeconds;
 }
 
 
 async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDataDir, keepOpen, headlessOverride, dryRun, verbose) {
-  if (verbose && dryRun) {
+  if (dryRun) {
     console.log('This is DRY RUN');
   }
 
