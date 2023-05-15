@@ -1,19 +1,19 @@
 import { ActionResult } from '../action-result.js';
-import { debug, stripPrefix } from '../utils.js';
+import { debug, error, stripPrefix } from '../utils.js';
 import { Timeouts, Urls, maybeClosePage } from './utils.js';
 
 export async function scrapeAmazonCoverImageUrl(book, params) {
   const verbose = params.verbose;
 
   if (params.dryRun) {
-    debug(verbose, 'Scraping cover (dry run)');
+    debug(book, verbose, 'Scraping cover (dry run)');
     return new ActionResult(true);
   }
   const url = Urls.AMAZON_PRODUCT_URL + book.asin;
-  debug(verbose, 'Scraping cover at product url: ' + url);
+  debug(book, verbose, 'Scraping cover at product url: ' + url);
 
   if (book.asin == '') {
-    debug(verbose, 'NOT scraping cover: no ASIN');
+    debug(book, verbose, 'NOT scraping cover: no ASIN');
     return new ActionResult(false).doNotRetry();
   }
 
@@ -24,26 +24,26 @@ export async function scrapeAmazonCoverImageUrl(book, params) {
 
   // Get raw content
   const text = await response.text();
-  const resultUrl = doScrapeAmazonCoverImageUrl(text, verbose);
+  const resultUrl = doScrapeAmazonCoverImageUrl(text, book, verbose);
   const success = resultUrl != null && resultUrl != '';
 
   if (success) {
-    debug(verbose, 'Cover image url: ' + resultUrl);
+    debug(book, verbose, 'Cover image url: ' + resultUrl);
     book.coverImageUrl = resultUrl;
   } else {
-    console.error("Cover image url not found!");
+    error(book, "Cover image url not found!");
   }
 
   await maybeClosePage(params, page);
   return new ActionResult(success);
 }
 
-export function doScrapeAmazonCoverImageUrl(text, verbose = false) {
+export function doScrapeAmazonCoverImageUrl(text, book, verbose) {
   if (text == null || text == undefined) {
     return null;
   }
   /* Istanbul skip next */
-  debug(verbose, 'Got response of length ' + text.length);
+  debug(book, verbose, 'Got response of length ' + text.length);
   const mainUrlRe = /"mainUrl":"([^"]+?)"/;
   const mainUrls = text.match(mainUrlRe);
   if (mainUrls == null) {
@@ -51,7 +51,7 @@ export function doScrapeAmazonCoverImageUrl(text, verbose = false) {
   }
   /* Istanbul skip next */
   for (let i = 0; i < mainUrls.length; ++i) {
-    debug(verbose, "    Matched: " + mainUrls[i]);
+    debug(book, verbose, "    Matched: " + mainUrls[i]);
   }
   return mainUrls && mainUrls.length > 1 && mainUrls[1] && mainUrls[1] != '' &&
     mainUrls[1].startsWith(Urls.AMAZON_IMAGE_URL) ? stripPrefix(mainUrls[1], Urls.AMAZON_IMAGE_URL) : (

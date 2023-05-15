@@ -5,10 +5,15 @@ export function mergeActions(action1, action2) {
 }
 
 /* istanbul ignore next */
-export function debug(verbose, message) {
+export function debug(book, verbose, message) {
     if (verbose) {
-        console.debug(message);
+        console.debug(book.prefix() + message);
     }
+}
+
+/* istanbul ignore next */
+export function error(book, message) {
+    console.error(book.prefix() + message);
 }
 
 export function arraysEqual(a, b) {

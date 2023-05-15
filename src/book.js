@@ -169,7 +169,11 @@ export class Book {
     return result;
   }
 
-  toString(sep) {
+  prefix() {
+    return this.signature + ":: ";
+  }
+
+  toString() {
     let result = "";
     for (const k in Keys) {
       const key = Keys[k];

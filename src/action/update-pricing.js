@@ -6,14 +6,14 @@ async function updatePriceIfNeeded(newPrice, currency, id, page, verbose) {
   const oldPriceStr = (await page.$eval(id, x => x.value)) || '';
   const newPriceStr = '' + newPrice;
   if (newPriceStr != oldPriceStr) {
-    debug(verbose, `Updating price ${currency}: from ${oldPriceStr} to ${newPriceStr}`);
+    debug(book, verbose, `Updating price ${currency}: from ${oldPriceStr} to ${newPriceStr}`);
     await clearTextField(page, id, true);
     await page.waitForTimeout(Timeouts.SEC_1);
     await page.type(id, newPriceStr);
     await page.waitForTimeout(Timeouts.SEC_1);
     return true;
   } else {
-    debug(verbose, `Updating price ${currency} - not needed (got price ${newPriceStr})`);
+    debug(book, verbose, `Updating price ${currency} - not needed (got price ${newPriceStr})`);
     return false;
   }
 }
@@ -22,14 +22,14 @@ export async function updatePricing(book, params) {
   const verbose = params.verbose;
 
   if (params.dryRun) {
-    debug(verbose, 'Updating pricing (dry run)');
+    debug(book, verbose, 'Updating pricing (dry run)');
     return new ActionResult(true);
   }
 
   // Publishing happens on the pricing page.
   const url = Urls.EDIT_PAPERBACK_PRICING.replace('$id', book.id);
   if (verbose) {
-    debug(verbose, 'Updating pricing at url:' + url);
+    debug(book, verbose, 'Updating pricing at url:' + url);
   }
   const page = await params.browser.newPage();
 
@@ -74,13 +74,13 @@ export async function updatePricing(book, params) {
 
   // Save
   if (wasUpdated) {
-    debug(verbose, 'Saving');
+    debug(book, verbose, 'Saving');
     await page.click('#save-announce');
     await page.waitForSelector(
       '#potter-success-alert-bottom div div', { visible: true });
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
   } else {
-    debug(verbose, 'Saving - not needed, prices were not updated')
+    debug(book, verbose, 'Saving - not needed, prices were not updated')
   }
 
   await maybeClosePage(params, page);

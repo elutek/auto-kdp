@@ -8,15 +8,15 @@ export async function scrape(book, params) {
   const verbose = params.verbose
 
   if (params.dryRun) {
-    debug(verbose, 'Scraping (dry run)');
+    debug(book, verbose, 'Scraping (dry run)');
     return new ActionResult(true);
   }
 
   const url = Urls.BOOKSHELF_URL;
-  debug(verbose, 'Scraping at url: ' + url);
+  debug(book, verbose, 'Scraping at url: ' + url);
 
   if (book.id == '') {
-    debug(verbose, 'NOT scraping - need book id for that');
+    debug(book, verbose, 'NOT scraping - need book id for that');
     return new ActionResult(false).doNotRetry();
   }
 
@@ -26,14 +26,14 @@ export async function scrape(book, params) {
   await page.bringToFront();
 
   // Type the search query.
-  debug(verbose, 'Querying for the book');
+  debug(book, verbose, 'Querying for the book');
   let id = '#podbookshelftable-search-input';
   await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
   await clearTextField(page, id, true);
   await page.type(id, book.id);
 
   // Click search button.
-  debug(verbose, 'Clicking Search');
+  debug(book, verbose, 'Clicking Search');
   id = '#podbookshelftable-search-button-submit .a-button-input';
   await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
   await page.focus(id);
@@ -41,26 +41,26 @@ export async function scrape(book, params) {
 
   // Get ASIN from the search result.
   if (book.asin == '') {
-    debug(verbose, 'Getting ASIN');
+    debug(book, verbose, 'Getting ASIN');
     id = '#zme-indie-bookshelf-dual-print-price-asin-' + book.id;
     await page.waitForSelector(id, { timeout: Timeouts.SEC_5 });
     const rawAsin = await page.$eval(id, el => el.innerText) || "";
     const asin = _stripPrefix(rawAsin.trim(), 'ASIN:').trim();
-    debug(verbose, 'Got ASIN: ' + asin);
+    debug(book, verbose, 'Got ASIN: ' + asin);
     book.asin = asin;
   }
 
   // Get pubStatus from the search result.
-  debug(verbose, 'Getting pubStatus');
+  debug(book, verbose, 'Getting pubStatus');
   id = '[id="' + book.id + '-status"] .element-popover-text > span';
   await page.waitForSelector(id);
   const pubStatus = await page.$eval(id, el => el.innerText.trim());
   book.pubStatus = pubStatus.trim();
-  debug(verbose, 'Got pubStatus: ' + pubStatus);
+  debug(book, verbose, 'Got pubStatus: ' + pubStatus);
 
   // Get pubStatusDetail from the search result (it's right after
   // the pubStatus).
-  debug(verbose, 'Getting pubStatusDetail');
+  debug(book, verbose, 'Getting pubStatusDetail');
   id = '[id="' + book.id + '-status"] .element-popover-text';
   await page.waitForSelector(id);
   let pubStatusDetail = await page.$eval(id, el => el.innerText.trim()) || "";
@@ -68,23 +68,23 @@ export async function scrape(book, params) {
     pubStatusDetail = pubStatusDetail.substr(pubStatus.length).trim();
   }
   book.pubStatusDetail = pubStatusDetail;
-  debug(verbose, 'Got pubStatusDetail: ' + pubStatusDetail);
+  debug(book, verbose, 'Got pubStatusDetail: ' + pubStatusDetail);
 
   // Get publication date
   if (pubStatus == 'LIVE') {
-    debug(verbose, 'Getting pubDate');
+    debug(book, verbose, 'Getting pubDate');
     id = '#zme-indie-bookshelf-dual-print-status-release-date-' + book.id;
     await page.waitForSelector(id);
     const pubDate = await page.$eval(id, el => el.innerText.trim()) || "";
-    book.pubDate = _formatDate(_stripPrefix(pubDate, 'Submitted on ').trim());
-    debug(verbose, `Got pubDate ${book.pubDate} (${pubDate})`);
+    book.pubDate = _formatDate(_stripPrefix(pubDate, 'Submitted on ').trim(), book);
+    debug(book, verbose, `Got pubDate ${book.pubDate} (${pubDate})`);
   } else {
     book.pubDate = '';
   }
 
   // Get series title.
   // TODO: Needs to be update wrt subtitle.
-  debug(verbose, 'Getting series title');
+  debug(book, verbose, 'Getting series title');
   id = '#zme-indie-bookshelf-dual-metadata-series_title-' + book.id + ' > a';
   let scrapedSeriesTitle = '';
   let attempt = 1;
@@ -95,7 +95,6 @@ export async function scrape(book, params) {
       await page.bringToFront();
       await page.focus(id);
       scrapedSeriesTitle = await page.$eval(id, el => el.innerText.trim()) || "";
-      //console.log(await page.content());
     } catch (e) {
     }
     if (scrapedSeriesTitle != 'SERIES_TITLE') {
@@ -103,7 +102,7 @@ export async function scrape(book, params) {
       break;
     }
   }
-  console.log("  Attempts: " + attempt)
+  debug(book, verbose, "  Attempts: " + attempt)
 
   if (scrapedSeriesTitle == book.seriesTitle.toLowerCase()) {
     book.scrapedSeriesTitle = 'ok';
@@ -113,7 +112,7 @@ export async function scrape(book, params) {
     book.scrapedSeriesTitle = 'mismatch - got ' + scrapedSeriesTitle + ' but expecting ' + book.seriesTitle.toLowerCase();
   }
 
-  console.log('Got scraped series title: ' + scrapedSeriesTitle + ' - ' + book.scrapedSeriesTitle);
+  debug(book, verbose, 'Got scraped series title: ' + scrapedSeriesTitle + ' - ' + book.scrapedSeriesTitle);
 
 
   /* We do not close this special page.
@@ -121,7 +120,7 @@ export async function scrape(book, params) {
   */
 
   let nextActions = !book.isFullyLive() && book.numActions() == 1 && book.getFirstAction() == 'scrape' ? 'scrape' : '';
-  console.log(`Next actions: ${nextActions}`);
+  debug(book, verbose, `Next actions: ${nextActions}`);
   return new ActionResult(true).setNextActions(nextActions);
 }
 
@@ -135,11 +134,11 @@ async function _getScrapePage(url, params) {
   return globalBookshelfPage;
 }
 
-function _formatDate(str) {
+function _formatDate(str, book) {
   try {
     return new Date(str).toDateString();
   } catch (e) {
-    console.error('Cannot parse date: ' + str, e);
+    error(book, 'Cannot parse date: ' + str, e);
     return '';
   }
 }

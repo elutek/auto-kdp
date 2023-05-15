@@ -7,9 +7,9 @@ async function priceNeedsUpdate(newPrice, currency, id, page, verbose) {
   let needsUpdate = newPriceStr != oldPriceStr;
   if (verbose) {
     if (needsUpdate) {
-      console.log(`Price ${currency} - needs update from ${oldPriceStr} to ${newPriceStr}`);
+      debug(book, verbose, `Price ${currency} - needs update from ${oldPriceStr} to ${newPriceStr}`);
     } else {
-      console.log(`Price ${currency} - ok, got ${oldPriceStr}`);
+      debug(book, verbose, `Price ${currency} - ok, got ${oldPriceStr}`);
     }
   }
   return needsUpdate;
@@ -19,12 +19,12 @@ export async function isPricingUpdateNeeded(book, params) {
   const verbose = params.verbose;
 
   if (params.dryRun) {
-    debug(verbose, 'Checking if pricing needs update (dry run)');
+    debug(book, verbose, 'Checking if pricing needs update (dry run)');
     return new ActionResult(true);
   }
 
   const url = Urls.EDIT_PAPERBACK_PRICING.replace('$id', book.id);
-  debug(verbose, 'Checking if pricing needs update at url: ' + url);
+  debug(book, verbose, 'Checking if pricing needs update at url: ' + url);
   const page = await params.browser.newPage();
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_1 });
   await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
@@ -59,7 +59,7 @@ export async function isPricingUpdateNeeded(book, params) {
     (await priceNeedsUpdate(book.priceCa, 'CA', '#data-pricing-print-ca-price-input input', page, verbose)) ||
     (await priceNeedsUpdate(book.priceAu, 'AU', '#data-pricing-print-au-price-input input', page, verbose));
 
-  debug(verbose, 'Needs update: ' + needsUpdate);
+  debug(book, verbose, 'Needs update: ' + needsUpdate);
 
   await maybeClosePage(params, page);
   return new ActionResult(true).setNextActions('pricing:publish:scrape');

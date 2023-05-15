@@ -51,10 +51,6 @@ async function executeBookActionCallback(action, book, params) {
   throw new Error('Unknown action: ' + action);
 }
 
-async function _doProcessOneBook(bookFile, bookList, book, params) {
-  await ExecuteBookActions(book, bookFile, bookList, (a, b, p) => executeBookActionCallback(a, b, p), params);
-}
-
 async function _startBrowser(bookList, headlessOverride, userDataDir, verbose) {
   let headless = headlessOverride != null ? headlessOverride :
     // Headless is not overriden: the default is whether there is a "content" action
@@ -66,6 +62,22 @@ async function _startBrowser(bookList, headlessOverride, userDataDir, verbose) {
 
   return browser;
 }
+
+async function processOneBook(bookFile, bookList, book, params) {
+  const prefix = book.signature + ":: ";
+
+  console.log(prefix + "START");
+  console.log(prefix + book.toString());
+
+  const startTime = performance.now();
+  await ExecuteBookActions(book, bookFile, bookList, (a, b, p) => executeBookActionCallback(a, b, p), params);
+  const durationSeconds = (performance.now() - startTime) / 1000;
+
+  console.log(prefix + `DONE took ${Math.round(durationSeconds)} secs`);
+
+  return durationSeconds;
+}
+
 
 async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDataDir, keepOpen, headlessOverride, dryRun, verbose) {
   if (verbose && dryRun) {
@@ -102,14 +114,14 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
     console.debug('Browser started');
   }
 
-  try {
-    let params = {
-      browser: browser,
-      keepOpen: keepOpen,
-      dryRun: dryRun,
-      verbose: verbose
-    }
+  const params = {
+    browser: browser,
+    keepOpen: keepOpen,
+    dryRun: dryRun,
+    verbose: verbose
+  }
 
+  try {
     //
     // Login.
     // 
@@ -124,45 +136,10 @@ async function mainWithOptions(booksCsvFile, booksConfigFile, contentDir, userDa
     //
     // Process all books, write useful stats.
     //
-    let totalToProcess = bookList.getNumBooksToProcess();
-    let numProcessed = 0;
-    let totalSeconds = 0;
     let numConsecutiveFastOperations = 0;
     for (let book of bookList.books) {
       if (book.action != '') {
-
-        console.log('-------------------------------------------------------------------------');
-
-        //
-        // Print current stats
-        //
-        let progressPerc = Math.round(10 * 100 * numProcessed / totalToProcess) / 10;
-        let etaMin = numProcessed == 0 ? 0 : Math.round(((totalToProcess - numProcessed) * totalSeconds / numProcessed) / 60);
-        let etaHrs = 0;
-        if (etaMin >= 60) {
-          etaHrs = Math.floor(etaMin / 60);
-          etaMin -= etaHrs * 60;
-        }
-
-        if (verbose) {
-          console.log('----------------------------------------');
-          console.log('--- Processing: ' + book.signature + ' with actions: ' + book.action);
-          console.log(`--- Progress: ${progressPerc}% (${numProcessed}/${totalToProcess}), ETA: ${etaHrs}h ${etaMin}m`);
-          console.log('----------------------------------------');
-          console.log(book.toString());
-        }
-
-        //
-        // Process one book. Measure how long.
-        //
-        const startTime = performance.now();
-        await _doProcessOneBook(bookFile, bookList, book, params);
-        const durationSeconds = (performance.now() - startTime) / 1000;
-        console.log(`Book processing took ${Math.round(durationSeconds)} secs`);
-
-        // Update stats
-        totalSeconds += durationSeconds;
-        numProcessed++;
+        const durationSeconds = await processOneBook(bookFile, bookList, book, params);
 
         //
         // Handle many consecutive fast operations
