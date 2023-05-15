@@ -62,5 +62,7 @@ export async function maybeClosePage(params, page) {
 }
 
 async function numOpenTabs(browser) {
-    return (await browser.pages()).length;
+    const n = (await browser.pages()).length;
+    console.log("Number of open tabs = " + n);
+    return n;
 }
