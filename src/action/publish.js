@@ -56,9 +56,9 @@ export async function publish(book, params, isForce = false) {
   if (ok) {
     debug(book, verbose, 'Metadata, content and pricing status: OK');
     debug(book, verbose, 'Clicking publish');
-    await page.waitForSelector('#save-and-publish-announce', { timeout: Timeouts.MIN_1 });
-    await page.click('#save-and-publish-announce', { timeout: Timeouts.MIN_1 });
-    await page.waitForNavigation({ timeout: Timeouts.MIN_1 });
+    await page.waitForSelector('#save-and-publish-announce', { timeout: Timeouts.SEC_30 });
+    await page.click('#save-and-publish-announce', { timeout: Timeouts.SEC_30 });
+    await page.waitForNavigation({ timeout: Timeouts.SEC_30 });
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
     book.wasEverPublished = 'true';
