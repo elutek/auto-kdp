@@ -10,7 +10,7 @@ async function updatePriceIfNeeded(newPrice, currency, id, page, book, verbose) 
     await clearTextField(page, id, true);
     await page.waitForTimeout(Timeouts.SEC_1);
     await page.type(id, newPriceStr);
-    await page.waitForTimeout(Timeouts.SEC_1);
+    await page.waitForTimeout(Timeouts.SEC_2);
     if (id == '#data-pricing-print-' + book.primaryMarketplace + '-price-input input') {
       await page.waitForTimeout(Timeouts.SEC_10);
     }
