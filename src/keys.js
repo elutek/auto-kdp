@@ -32,6 +32,7 @@ export let Keys = {
     PRICE_PL: 'pricePl',
     PRICE_SE: 'priceSe',
     PRICE_USD: 'priceUsd',
+    PRIMARY_MARKETPLACE: 'primaryMarketplace',
 
     //
     // Content selections

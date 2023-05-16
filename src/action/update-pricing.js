@@ -11,6 +11,9 @@ async function updatePriceIfNeeded(newPrice, currency, id, page, book, verbose) 
     await page.waitForTimeout(Timeouts.SEC_1);
     await page.type(id, newPriceStr);
     await page.waitForTimeout(Timeouts.SEC_1);
+    if (id == '#data-pricing-print-' + book.primaryMarketplace + '-price-input input') {
+      await page.waitForTimeout(Timeouts.SEC_10);
+    }
     return true;
   } else {
     debug(book, verbose, `Updating price ${currency} - not needed (got price ${newPriceStr})`);
@@ -54,10 +57,22 @@ export async function updatePricing(book, params) {
 
   let wasUpdated = false;
 
+  // Primary marketplace.
+  let id = '#data-print-book-home-marketplace .a-native-dropdown';
+  await page.waitForSelector(id);
+  const primaryMarketplace = await page.$eval(id, x => x.value);
+  if (primaryMarketplace != book.primaryMarketplace) {
+    debug(book, verbose, "Primary marketplace: from " + primaryMarketplace + ' to: ' + book.primaryMarketplace);
+    await page.select(id, book.primaryMarketplace);
+    await page.waitForTimeout(Timeouts.SEC_2);
+  } else {
+    debug(book, verbose, "Primary marketplace - update needed");
+  }
 
+  // Prices
+  // TODO: Update the primary marketplace's price first..
   wasUpdated |= await updatePriceIfNeeded(book.priceUsd, 'USD', '#data-pricing-print-us-price-input input', page, book, verbose);
   await page.waitForTimeout(Timeouts.SEC_5);
-
   wasUpdated |= await updatePriceIfNeeded(book.priceGbp, 'GBP', '#data-pricing-print-uk-price-input input', page, book, verbose);
   wasUpdated |= await updatePriceIfNeeded(book.priceEur, 'DE/EUR', '#data-pricing-print-de-price-input input', page, book, verbose);
   wasUpdated |= await updatePriceIfNeeded(book.priceEur, 'FR/EUR', '#data-pricing-print-fr-price-input input', page, book, verbose);

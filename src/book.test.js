@@ -41,6 +41,7 @@ test('create book without defaults', () => {
             Keys.PRICE_PL, '6.1',
             Keys.PRICE_SE, '7.1',
             Keys.PRICE_USD, '8.1',
+            Keys.PRIMARY_MARKETPLACE, 'Amazon.pl',
             Keys.PUB_DATE, 'test_pub_date',
             Keys.PUB_STATUS, 'test_pub_status',
             Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',
@@ -90,6 +91,7 @@ test('create book without defaults', () => {
     expect(book.pricePl).toEqual(6.1);
     expect(book.priceSe).toEqual(7.1);
     expect(book.priceUsd).toEqual(8.1);
+    expect(book.primaryMarketplace).toEqual('Amazon.pl');
     expect(book.pubDate).toEqual('test_pub_date');
     expect(book.pubStatus).toEqual('test_pub_status');
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
@@ -148,6 +150,7 @@ test('create book with defaults', () => {
             Keys.PRICE_PL, '6.1',
             Keys.PRICE_SE, '7.1',
             Keys.PRICE_USD, '8.1',
+            Keys.PRIMARY_MARKETPLACE, 'Amazon.pl',
             Keys.SIGNATURE, 'test_signature',
             Keys.TITLE, 'test_title',
             Keys.SUBTITLE, 'test_subtitle',
@@ -192,6 +195,7 @@ test('create book with defaults', () => {
     expect(book.pricePl).toEqual(6.1);
     expect(book.priceSe).toEqual(7.1);
     expect(book.priceUsd).toEqual(8.1);
+    expect(book.primaryMarketplace).toEqual('Amazon.pl');
     expect(book.pubDate).toEqual('test_pub_date');
     expect(book.pubStatus).toEqual('test_pub_status');
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
@@ -245,6 +249,7 @@ test('detects missing key', () => {
                 Keys.PRICE_PL, '6.1',
                 Keys.PRICE_SE, '7.1',
                 Keys.PRICE_USD, '8.1',
+                Keys.PRIMARY_MARKETPLACE, 'test_marketplace',
                 Keys.SIGNATURE, 'test_signature',
                 Keys.TITLE, 'test_title',
                 Keys.SUBTITLE, 'test_subtitle',
@@ -302,6 +307,7 @@ test('create book with resolution', () => {
             Keys.PRICE_PL, '${price}',
             Keys.PRICE_SE, '${price}',
             Keys.PRICE_USD, '${price}',
+            Keys.PRIMARY_MARKETPLACE, '${prefix}marketplace',
             Keys.SIGNATURE, '${prefix}signature',
             Keys.TITLE, '${prefix}title',
             Keys.SUBTITLE, '${prefix}subtitle',
@@ -346,6 +352,7 @@ test('create book with resolution', () => {
     expect(book.pricePl).toEqual(2.17);
     expect(book.priceSe).toEqual(2.17);
     expect(book.priceUsd).toEqual(2.17);
+    expect(book.primaryMarketplace).toEqual('test_marketplace');
     expect(book.pubDate).toEqual('test_pub_date');
     expect(book.pubStatus).toEqual('test_pub_status');
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
@@ -491,6 +498,7 @@ test('getDataToWrite', () => {
         "pricePl": "6.1",
         "priceSe": "7.1",
         "priceUsd": "8.1",
+        "primaryMarketplace": "test_marketplace",
         "pubDate": "test_pub_date",
         "pubStatus": "test_pub_status",
         "pubStatusDetail": "test_pub_status_detail",
@@ -534,6 +542,7 @@ test('toString', () => {
        pricePl = 6.1
        priceSe = 7.1
        priceUsd = 8.1
+       primaryMarketplace = test_marketplace
        isbn = test_isbn
        paperColor = premium-color
        paperTrim = 6x9

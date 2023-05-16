@@ -66,6 +66,7 @@ async function processOneBook(bookFile, bookList, book, params) {
   const verbose = params.verbose;
   debug(book, verbose, "");
   debug(book, verbose, "START");
+  debug(book, verbose, "\n" + book.toString());
 
   const startTime = performance.now();
   await ExecuteBookActions(book, bookFile, bookList, (a, b, p) => executeBookActionCallback(a, b, p), params);

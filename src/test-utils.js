@@ -40,6 +40,7 @@ export function makeOkTestBook(action = 'test_action') {
             Keys.PRICE_PL, '6.1',
             Keys.PRICE_SE, '7.1',
             Keys.PRICE_USD, '8.1',
+            Keys.PRIMARY_MARKETPLACE, 'test_marketplace',
             Keys.PUB_DATE, 'test_pub_date',
             Keys.PUB_STATUS, 'test_pub_status',
             Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',

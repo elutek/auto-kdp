@@ -102,6 +102,7 @@ export class Book {
     this.pricePl = parseFloatOrNull(getValue(Keys.PRICE_PL));
     this.priceSe = parseFloatOrNull(getValue(Keys.PRICE_SE));
     this.priceUsd = parseFloatOrNull(getValue(Keys.PRICE_USD));
+    this.primaryMarketplace = getValue(Keys.PRIMARY_MARKETPLACE);
     this.seriesTitle = getValue(Keys.SERIES_TITLE);
     this.title = getValue(Keys.TITLE);
     this.subtitle = getValue(Keys.SUBTITLE);
