@@ -7,14 +7,15 @@ import { copyMap, clipLen } from './utils.js';
 // These are the only keys that AutoKDP can update.
 const _KEYS_WITH_NO_DEFAULT = [
   Keys.ACTION,
+  Keys.ASIN,
+  Keys.COVER_IMAGE_URL,
   Keys.ID,
   Keys.ISBN,
-  Keys.ASIN,
-  Keys.WAS_EVER_PUBLISHED,
+  Keys.PUB_DATE,
   Keys.PUB_STATUS,
   Keys.PUB_STATUS_DETAIL,
-  Keys.PUB_DATE,
-  Keys.COVER_IMAGE_URL,
+  Keys.TITLE_ID,
+  Keys.WAS_EVER_PUBLISHED,
 ];
 
 export class Book {
@@ -66,6 +67,7 @@ export class Book {
     this.action = getValue(Keys.ACTION);
     this.asin = getValue(Keys.ASIN);
     this.id = getValue(Keys.ID);
+    this.titleId = getValue(Keys.TITLE_ID);
     this.isbn = getValue(Keys.ISBN);
     this.pubDate = getValue(Keys.PUB_DATE);
     this.pubStatus = getValue(Keys.PUB_STATUS);

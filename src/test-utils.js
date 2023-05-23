@@ -14,6 +14,7 @@ export function makeOkTestBook(action = 'test_action') {
             Keys.COVER_IMAGE_URL, 'test_cover_image_url',
             Keys.DESCRIPTION, 'test_description',
             Keys.ID, 'test_id',
+            Keys.TITLE_ID, 'test_title_id',
             Keys.ILLUSTRATOR_FIRST_NAME, 'test_illustrator_first_name',
             Keys.ILLUSTRATOR_LAST_NAME, 'test_illustrator_last_name',
             Keys.ISBN, 'test_isbn',

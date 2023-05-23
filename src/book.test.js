@@ -15,6 +15,7 @@ test('create book without defaults', () => {
             Keys.COVER_FILE, 'test_cover_file',
             Keys.DESCRIPTION, 'test_description',
             Keys.ID, 'test_id',
+            Keys.TITLE_ID, 'test_title_id',
             Keys.ILLUSTRATOR_FIRST_NAME, 'test_illustrator_first_name',
             Keys.ILLUSTRATOR_LAST_NAME, 'test_illustrator_last_name',
             Keys.ISBN, 'test_isbn',
@@ -65,6 +66,7 @@ test('create book without defaults', () => {
     expect(book.coverImageUrl).toEqual('test_cover_image_url');
     expect(book.description).toEqual('test_description');
     expect(book.id).toEqual('test_id');
+    expect(book.titleId).toEqual('test_title_id');
     expect(book.illustratorFirstName).toEqual('test_illustrator_first_name');
     expect(book.illustratorLastName).toEqual('test_illustrator_last_name');
     expect(book.isbn).toEqual('test_isbn');
@@ -112,6 +114,7 @@ test('create book with defaults', () => {
             Keys.AUTHOR_LAST_NAME, 'test_author_last_name',
             Keys.COVER_IMAGE_URL, 'test_cover_image_url',
             Keys.ID, 'test_id',
+            Keys.TITLE_ID, 'test_title_id',
             Keys.ISBN, 'test_isbn',
             Keys.PUB_DATE, 'test_pub_date',
             Keys.PUB_STATUS, 'test_pub_status',
@@ -169,6 +172,7 @@ test('create book with defaults', () => {
     expect(book.coverImageUrl).toEqual('test_cover_image_url');
     expect(book.description).toEqual('test_description');
     expect(book.id).toEqual('test_id');
+    expect(book.titleId).toEqual('test_title_id');
     expect(book.illustratorFirstName).toEqual('test_illustrator_first_name');
     expect(book.illustratorLastName).toEqual('test_illustrator_last_name');
     expect(book.isbn).toEqual('test_isbn');
@@ -214,6 +218,7 @@ test('detects missing key', () => {
                 Keys.ASIN, 'test_asin',
                 Keys.COVER_IMAGE_URL, 'test_cover_image_url',
                 Keys.ID, 'test_id',
+                Keys.TITLE_ID, 'test_title_id',
                 Keys.ISBN, 'test_isbn',
                 Keys.PUB_DATE, 'test_pub_date',
                 Keys.PUB_STATUS, 'test_pub_status',
@@ -269,6 +274,7 @@ test('create book with resolution', () => {
             Keys.AUTHOR_LAST_NAME, '${prefix}author_last_name',
             Keys.COVER_IMAGE_URL, '${prefix}cover_image_url',
             Keys.ID, '${prefix}id',
+            Keys.TITLE_ID, 'test_title_id',
             Keys.ILLUSTRATOR_FIRST_NAME, '${prefix}illustrator_first_name',
             Keys.ILLUSTRATOR_LAST_NAME, '${prefix}illustrator_last_name',
             Keys.MANUSCRIPT_CREATION_COMMAND, 'make ${title}',
@@ -472,6 +478,7 @@ test('getDataToWrite', () => {
         "coverLocalFile": "test_cover_file",
         "description": "test_description",
         "id": "test_id",
+        "titleId": "test_title_id",
         "illustratorFirstName": "test_illustrator_first_name",
         "illustratorLastName": "test_illustrator_last_name",
         "isbn": "test_isbn",
@@ -555,6 +562,7 @@ test('toString', () => {
        manuscriptLocalFile = content/dir/test_manuscript_file
        asin = test_asin
        id = test_id
+       titleId = test_title_id
        coverImageUrl = test_cover_image_url
        pubDate = test_pub_date
        pubStatus = test_pub_status

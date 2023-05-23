@@ -77,6 +77,9 @@ export let Keys = {
 
     // Another unique assigned by KDP.
     ID: 'id',
+    // Yet another ID used by KDP and shows up in some minor 
+    // contexts.
+    TITLE_ID: 'titleId',
 
     // Link to cover image scraped. Can be used to create an affiliate
     // link to the book.
