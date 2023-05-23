@@ -69,7 +69,7 @@ export async function archive(book, params) {
     await page.waitForSelector(id, { timeout: Timeouts.SEC_30 });
     await page.focus(id);
     await page.click(id, { timeout: Timeouts.SEC_10 });
-    await page.waitForTimeout(Timeouts.SEC_10);
+    await page.waitForTimeout(Timeouts.SEC_5);
 
     debug(book, verbose, 'Archiving done');
 
