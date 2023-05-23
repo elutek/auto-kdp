@@ -26,13 +26,16 @@ import { publish } from './src/action/publish.js';
 
 import pkg from 'sleep';
 import { setSeriesTitle } from './src/action/set-series-title.js';
+import { unpublish } from './src/action/unpublish.js';
+import { archive } from './src/action/archive.js';
 const { sleep } = pkg;
 
 
 async function executeBookActionCallback(action, book, params) {
-  debug(book, params.verbose, 'Executing book action: ' + action);
+  debug(book, params.verbose, '@@@@@@ Action: ' + action);
 
   switch (action) {
+    case 'archive': return await archive(book, params); break;
     case 'book-metadata': return await updateBookMetadata(book, params); break;
     case 'content': return await updateContent(book, params); break;
     case 'content-metadata': return await updateContentMetadata(book, params); break;
@@ -40,12 +43,14 @@ async function executeBookActionCallback(action, book, params) {
     case 'pricing': return await updatePricing(book, params); break;
     case 'produce-manuscript': return await produceManuscript(book, params); break;
     case 'publish': return await publish(book, params); break;
+    case 'remove-series-title': return await setSeriesTitle(book, params, true); break;
     case 'scrape': return await scrape(book, params);
     case 'scrape-amazon-image': return await scrapeAmazonCoverImageUrl(book, params); break;
     case 'scrape-isbn': return await scrapeIsbn(book, params); break;
     case 'set-series-title': return await setSeriesTitle(book, params); break;
     case 'updateMetadataIfNeeded': return await isMetadataUpdateNeeded(book, params);
     case 'updatePricingIfNeeded': return await isPricingUpdateNeeded(book, params);
+    case 'unpublish': return await unpublish(book, params); break;
   }
   throw new Error('Unknown action: ' + action);
 }
@@ -65,7 +70,7 @@ async function _startBrowser(bookList, headlessOverride, userDataDir, verbose) {
 async function processOneBook(bookFile, bookList, book, params) {
   const verbose = params.verbose;
   debug(book, verbose, "");
-  debug(book, verbose, "START");
+  debug(book, verbose, "--- START ----------------------- ");
   debug(book, verbose, "\n" + book.toString());
 
   const startTime = performance.now();

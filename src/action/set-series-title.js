@@ -4,7 +4,7 @@ import { debug, normalizeSearchQuery } from '../utils.js';
 import { Timeouts, Urls, maybeClosePage } from './utils.js';
 
 // This function also creates a book.
-export async function setSeriesTitle(book, params) {
+export async function setSeriesTitle(book, params, forceRemoval = false) {
     const verbose = params.verbose;
 
     if (params.dryRun) {
@@ -40,7 +40,10 @@ export async function setSeriesTitle(book, params) {
     const existingSeriesTitle = (await page.$eval(id, x => x.textContent.trim())) || '';
     debug(book, verbose, `Current series title: ${existingSeriesTitle}`);
 
-    if (book.seriesTitle == existingSeriesTitle) {
+    if (forceRemoval && existingSeriesTitle != '') {
+        debug(book, verbose, `Removing book from series ${book.seriesTitle}`);
+        await removeSeriesTitle(page, book, verbose);
+    } else if (book.seriesTitle == existingSeriesTitle) {
         debug(book, verbose, `Updating series title - not needed, got ${existingSeriesTitle}`);
     } else if (book.seriesTitle != '' && existingSeriesTitle == '') {
         debug(book, verbose, `Updating series title to ${book.seriesTitle}`);

@@ -55,9 +55,15 @@ export async function waitForElements(page, ids) {
 }
 
 export async function maybeClosePage(params, page) {
-    const n = numOpenTabs(params.browser);
-    if (!params.keepOpen || (params.keepOpen && n > 20)) {
+    if (!params.keepOpen) {
         await page.close();
+    } else {
+        const n = await numOpenTabs(params.browser);
+        if (n > 20) {
+            await page.close();
+        } else {
+            // console.log(`Not closing: have ${n} tab`);
+        }
     }
 }
 
