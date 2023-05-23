@@ -21,6 +21,8 @@ export class BookFile {
     this.headers = [];
     this.isbns = {};
     this.ids = {};
+    this.titleIds = {};
+    this.asins = {};
     this.signatures = {};
     PropertiesReader(bookConfigFilePath).each((k, v) => this.bookConfig.set(k, v));
   }
@@ -114,8 +116,24 @@ export class BookFile {
       this.ids[book.id] = book;
     }
 
+    // Check titleId uniqueness.
+    if (book.titleId != '') {
+      if (book.titleId in this.titleIds) {
+        throw new Error('TitleId not unique: ' + book.titleId);
+      }
+      this.titleIds[book.titleId] = book;
+    }
+
+    // Check asin uniqueness.
+    if (book.asin != '') {
+      if (book.asin in this.asins) {
+        throw new Error('Asin not unique: ' + book.asin);
+      }
+      this.asins[book.asin] = book;
+    }
+
     // Check isbn uniqueness.
-    if (book.isbn != "") {
+    if (book.isbn != '') {
       if (book.isbn in this.isbns) {
         throw new Error('ISBN not unique: ' + book.isbn);
       }
