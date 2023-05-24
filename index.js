@@ -196,7 +196,11 @@ async function main() {
     throw error;
   });
 
+  const startTime = performance.now();
   await mainWithOptions(opts.books, opts.config, opts.contentDir, opts.userData, keepOpen, headlessOverride, dryRun, verbose);
+  const durationSeconds = (performance.now() - startTime) / 1000;
+  const durationMinutes = Math.round(10 * durationSeconds / 60) / 10;
+  console.log("Whole thing took " + durationMinutes + " minutes")
 }
 
 (async () => { main() })();
