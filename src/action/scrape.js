@@ -86,15 +86,20 @@ export async function scrape(book, params) {
   {
     debug(book, verbose, 'Getting title id');
     id = `img[id="${book.id}"]`;
-    await page.waitForSelector(id);
-    const imgDataSource = await page.$eval(id, el => el.getAttribute('data-source').trim()) || "";
-    const regexp = /amazon[^\\]*\/CAPS-SSE\/kdp_print\/[a-zA-Z0-9]{1,5}\/([a-zA-Z0-9]{1,20})\/KDP/m;
-    const match = imgDataSource.match(regexp);
-    if (match == null || match.length <= 1) {
-      debug(book, verbose, 'Could not match img data-source: ' + imgDataSource);
+    if (book.pubStatus.toLowerCase() == 'draft') {
+      book.titleId = '';
+      debug(book, verbose, 'Title id is empty because the book is not published');
     } else {
-      book.titleId = match[1];
-      debug(book, verbose, 'Got title id: ' + book.titleId);
+      await page.waitForSelector(id);
+      const imgDataSource = await page.$eval(id, el => el.getAttribute('data-source').trim()) || "";
+      const regexp = /amazon[^\\]*\/CAPS-SSE\/kdp_print\/[a-zA-Z0-9]{1,5}\/([a-zA-Z0-9]{1,20})\/KDP/m;
+      const match = imgDataSource.match(regexp);
+      if (match == null || match.length <= 1) {
+        debug(book, verbose, 'Could not match img data-source: ' + imgDataSource);
+      } else {
+        book.titleId = match[1];
+        debug(book, verbose, 'Got title id: ' + book.titleId);
+      }
     }
   }
 
