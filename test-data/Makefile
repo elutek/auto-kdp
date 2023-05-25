@@ -1,10 +1,12 @@
 FLAGS := --books books.csv --config books.conf --content-dir=. --user-data ./user-data --verbose --headless=no --keep-open
 
+BIN = ts-node ../src/index.ts
+
 dryrun:
-	node ../index.js $(FLAGS) --dry-run
+	$(BIN) $(FLAGS) --dry-run
 
 run:
-	node ../index.js $(FLAGS)
+	$(BIN) $(FLAGS)
 
 book-Abby.pdf: book.tex
 	pdflatex -jobname book-Abby "\def\MyName{Abby}\input{book.tex}"

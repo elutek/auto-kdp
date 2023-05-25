@@ -1,5 +1,5 @@
-action,wasEverPublished,id,isbn,asin,name,pubStatus,pubDate,pubStatusDetail,coverImageUrl
-all,false,,,,Abby,,,,
-,false,4GXRPVVXJ3S,9798846611924,,Amy,,,,
-,false,,9999999999999,,Bobby,,,,
-,false,AMHN0CAP40X,9798846623521,,Zenu,,,,
+action,wasEverPublished,id,titleId,isbn,asin,name,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle,
+book-metadata:content-metadata:scrape-isbn:produce-manuscript:content:pricing:set-series-title:scrape,false,,,,,Abby,,,,,,
+,false,4GXRPVVXJ3S,,9798846611924,,Amy,,,,,,
+,false,,,9999999999999,,Bobby,,,,,,
+,false,AMHN0CAP40X,,9798846623521,,Zenu,,,,,,
