@@ -1,6 +1,6 @@
 import { ActionResult } from '../action-result.js';
 import { debug, error } from '../utils.js'
-import { Timeouts, Urls, fileExists, maybeClosePage } from './utils.js';
+import { Timeouts, Urls, fileExists, maybeClosePage } from './action-utils.js';
 
 export async function updateContent(book, params) {
     const verbose = params.verbose;

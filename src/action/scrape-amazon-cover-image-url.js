@@ -1,6 +1,6 @@
 import { ActionResult } from '../action-result.js';
 import { debug, error, stripPrefix } from '../utils.js';
-import { Timeouts, Urls, maybeClosePage } from './utils.js';
+import { Timeouts, Urls, maybeClosePage } from './action-utils.js';
 
 export async function scrapeAmazonCoverImageUrl(book, params) {
   const verbose = params.verbose;

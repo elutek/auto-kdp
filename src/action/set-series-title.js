@@ -1,7 +1,7 @@
 
 import { ActionResult } from '../action-result.js';
 import { debug, normalizeSearchQuery } from '../utils.js';
-import { Timeouts, Urls, maybeClosePage } from './utils.js';
+import { Timeouts, Urls, maybeClosePage } from './action-utils.js';
 
 // This function also creates a book.
 export async function setSeriesTitle(book, params, forceRemoval = false) {

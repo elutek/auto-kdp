@@ -1,6 +1,6 @@
 import { ActionResult } from '../action-result.js';
 import { debug } from '../utils.js';
-import { Timeouts, Urls, clearTextField, maybeClosePage } from './utils.js';
+import { Timeouts, Urls, clearTextField, maybeClosePage } from './action-utils.js';
 
 export async function archive(book, params) {
     const verbose = params.verbose;

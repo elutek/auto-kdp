@@ -1,6 +1,6 @@
 import { ActionResult } from '../action-result.js';
 import { debug, error, arraysEqual, cleanupHtmlForAmazonDescription, clipLen } from '../utils.js';
-import { Timeouts, Urls, clearTextField, maybeClosePage, waitForElements } from './utils.js';
+import { Timeouts, Urls, clearTextField, maybeClosePage, waitForElements } from './action-utils.js';
 
 // This function also creates a book.
 export async function updateBookMetadata(book, params) {

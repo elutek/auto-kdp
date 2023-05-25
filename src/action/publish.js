@@ -1,6 +1,6 @@
 import { ActionResult } from '../action-result.js';
 import { debug } from '../utils.js';
-import { Timeouts, Urls, waitForElements, maybeClosePage } from './utils.js';
+import { Timeouts, Urls, waitForElements, maybeClosePage } from './action-utils.js';
 
 export async function publish(book, params, isForce = false) {
   const verbose = params.verbose;

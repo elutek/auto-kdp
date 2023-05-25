@@ -1,5 +1,5 @@
 import { debug, arraysEqual, removeSpacesInHtml } from '../utils.js';
-import { Timeouts, Urls, maybeClosePage } from './utils.js';
+import { Timeouts, Urls, maybeClosePage } from './action-utils.js';
 
 export async function isMetadataUpdateNeeded(book, params) {
   const verbose = params.verbose;
