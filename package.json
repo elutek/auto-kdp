@@ -58,6 +58,6 @@
     "child_process": false
   },
   "bin": {
-    "auto-kdp": "./index.js"
+    "auto-kdp": "./src/index.js"
   }
 }

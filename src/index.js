@@ -6,28 +6,28 @@ import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 puppeteer.use(StealthPlugin());
 
-import { BookFile } from './src/book-file.js';
-import { ExecuteBookActions } from './src/book-action-executor.js';
-import { debug } from './src/utils.js';
+import { BookFile } from './book-file.js';
+import { ExecuteBookActions } from './book-action-executor.js';
+import { debug } from './utils.js';
 
 // Action
-import { scrapeAmazonCoverImageUrl } from './src/action/scrape-amazon-cover-image-url.js';
-import { scrapeIsbn } from './src/action/scrape-isbn.js';
-import { isMetadataUpdateNeeded } from './src/action/is-metadata-update-needed.js';
-import { isPricingUpdateNeeded } from './src/action/is-pricing-update-needed.js';
-import { scrape } from './src/action/scrape.js';
-import { produceManuscript } from './src/action/produce-manuscript.js';
-import { ensureLoggedIn } from './src/action/ensure-logged-in.js';
-import { updatePricing } from './src/action/update-pricing.js';
-import { updateBookMetadata } from './src/action/update-book-metadata.js';
-import { updateContentMetadata } from './src/action/update-content-metadata.js';
-import { updateContent } from './src/action/update-content.js';
-import { publish } from './src/action/publish.js';
+import { scrapeAmazonCoverImageUrl } from './action/scrape-amazon-cover-image-url.js';
+import { scrapeIsbn } from './action/scrape-isbn.js';
+import { isMetadataUpdateNeeded } from './action/is-metadata-update-needed.js';
+import { isPricingUpdateNeeded } from './action/is-pricing-update-needed.js';
+import { scrape } from './action/scrape.js';
+import { produceManuscript } from './action/produce-manuscript.js';
+import { ensureLoggedIn } from './action/ensure-logged-in.js';
+import { updatePricing } from './action/update-pricing.js';
+import { updateBookMetadata } from './action/update-book-metadata.js';
+import { updateContentMetadata } from './action/update-content-metadata.js';
+import { updateContent } from './action/update-content.js';
+import { publish } from './action/publish.js';
 
 import pkg from 'sleep';
-import { setSeriesTitle } from './src/action/set-series-title.js';
-import { unpublish } from './src/action/unpublish.js';
-import { archive } from './src/action/archive.js';
+import { setSeriesTitle } from './action/set-series-title.js';
+import { unpublish } from './action/unpublish.js';
+import { archive } from './action/archive.js';
 const { sleep } = pkg;
 
 

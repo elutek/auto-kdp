@@ -8,7 +8,7 @@ export default {
     mode: "development",
     devtool: "inline-source-map",
     entry: {
-        main: "./index.js",
+        main: "./src/index.js",
     },
     output: {
         path: path.resolve(__dirname, './dist'),
