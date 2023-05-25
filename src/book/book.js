@@ -1,6 +1,6 @@
 import { Keys } from './keys.js';
 import { resolveAllValues } from './resolve.js';
-import { copyMap, clipLen } from './utils.js';
+import { copyMap, clipLen } from '../util/utils.js';
 
 // List of keys for which there cannot be a "default" value.
 // Reasons are that these field are unique or assigned from Amazon.

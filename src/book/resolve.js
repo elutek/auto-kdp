@@ -1,4 +1,4 @@
-import { stripPrefix, stringToIntOrThrow, isInt } from "./utils.js";
+import { stripPrefix, stringToIntOrThrow, isInt } from "../util/utils.js";
 
 export function resolveAllValues(data, unresolvedKeys, allData) {
     // Init already resolved keys.

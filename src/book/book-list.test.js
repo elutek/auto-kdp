@@ -1,5 +1,5 @@
 import { BookList } from './book-list';
-import { makeOkTestBook } from './test-utils';
+import { makeOkTestBook } from '../util/test-utils';
 
 test('size', () => {
   {

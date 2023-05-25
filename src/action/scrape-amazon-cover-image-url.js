@@ -1,5 +1,5 @@
-import { ActionResult } from '../action-result.js';
-import { debug, error, stripPrefix } from '../utils.js';
+import { ActionResult } from '../util/action-result.js';
+import { debug, error, stripPrefix } from '../util/utils.js';
 import { Timeouts, Urls, maybeClosePage } from './action-utils.js';
 
 export async function scrapeAmazonCoverImageUrl(book, params) {

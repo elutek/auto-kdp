@@ -1,7 +1,9 @@
-import { ActionResult } from '../action-result.js';
 import ChildProcess from 'child_process';
-import { debug, error } from '../utils.js';
+
+import { ActionResult } from '../util/action-result.js';
+import { debug, error } from '../util/utils.js';
 import { fileExists } from './action-utils.js';
+
 
 export async function produceManuscript(book, params) {
   const verbose = params.verbose;

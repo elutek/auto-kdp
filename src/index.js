@@ -6,9 +6,9 @@ import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 puppeteer.use(StealthPlugin());
 
-import { BookFile } from './book-file.js';
-import { ExecuteBookActions } from './book-action-executor.js';
-import { debug } from './utils.js';
+import { BookFile } from './book/book-file.js';
+import { ExecuteBookActions } from './util/book-action-executor.js';
+import { debug } from './util/utils.js';
 
 // Action
 import { scrapeAmazonCoverImageUrl } from './action/scrape-amazon-cover-image-url.js';
@@ -23,11 +23,11 @@ import { updateBookMetadata } from './action/update-book-metadata.js';
 import { updateContentMetadata } from './action/update-content-metadata.js';
 import { updateContent } from './action/update-content.js';
 import { publish } from './action/publish.js';
-
-import pkg from 'sleep';
-import { setSeriesTitle } from './action/set-series-title.js';
 import { unpublish } from './action/unpublish.js';
 import { archive } from './action/archive.js';
+import { setSeriesTitle } from './action/set-series-title.js';
+
+import pkg from 'sleep';
 const { sleep } = pkg;
 
 

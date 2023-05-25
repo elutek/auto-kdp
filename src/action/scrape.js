@@ -1,5 +1,5 @@
-import { ActionResult } from '../action-result.js';
-import { debug } from '../utils.js';
+import { ActionResult } from '../util/action-result.js';
+import { debug } from '../util/utils.js';
 import { Timeouts, Urls, clearTextField } from './action-utils.js';
 
 var globalBookshelfPage = null;

@@ -1,5 +1,5 @@
-import { ActionResult } from '../action-result.js';
-import { debug } from '../utils.js'
+import { ActionResult } from '../util/action-result.js';
+import { debug } from '../util/utils.js'
 import { Timeouts, Urls, clearTextField, maybeClosePage, waitForElements } from './action-utils.js';
 
 async function updatePriceIfNeeded(newPrice, currency, id, page, book, verbose) {

@@ -1,5 +1,5 @@
-import { ActionResult } from '../action-result.js';
-import { debug, error, arraysEqual, cleanupHtmlForAmazonDescription, clipLen } from '../utils.js';
+import { ActionResult } from '../util/action-result.js';
+import { debug, error, arraysEqual, cleanupHtmlForAmazonDescription, clipLen } from '../util/utils.js';
 import { Timeouts, Urls, clearTextField, maybeClosePage, waitForElements } from './action-utils.js';
 
 // This function also creates a book.

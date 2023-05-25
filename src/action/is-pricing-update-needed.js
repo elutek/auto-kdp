@@ -1,4 +1,4 @@
-import { debug } from '../utils.js';
+import { debug } from '../util/utils.js';
 import { Timeouts, Urls, maybeClosePage, waitForElements } from './action-utils.js';
 
 async function priceNeedsUpdate(newPrice, currency, id, page, verbose) {

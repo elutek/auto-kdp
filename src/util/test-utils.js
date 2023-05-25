@@ -1,5 +1,5 @@
-import { Book } from './book';
-import { Keys } from './keys';
+import { Book } from '../book/book';
+import { Keys } from '../book/keys';
 
 export function makeOkTestBook(action = 'test_action') {
     return new Book(

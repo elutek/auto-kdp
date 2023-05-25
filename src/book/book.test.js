@@ -1,6 +1,6 @@
 import { Keys } from './keys';
 import { Book } from './book';
-import { makeOkTestBook, makeMap } from './test-utils';
+import { makeOkTestBook, makeMap } from '../util/test-utils';
 
 test('create book without defaults', () => {
     let book = new Book(

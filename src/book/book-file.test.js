@@ -60,7 +60,7 @@ test('can read book file', async () => {
         'books.csv.lock': '',
         'books.conf': BOOKS_CONF,
         'content': { dir: {} },
-        'node_modules': mock.load(path.resolve(__dirname, '../node_modules')),
+        'node_modules': mock.load(path.resolve(__dirname, '../../node_modules')),
     });
 
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
@@ -157,7 +157,7 @@ scrapedSeriesTitle =
         'books.csv.lock': '',
         'books.conf': empty_books_conf,
         'content': { dir: {} },
-        'node_modules': mock.load(path.resolve(__dirname, '../node_modules')),
+        'node_modules': mock.load(path.resolve(__dirname, '../../node_modules')),
     });
 
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
@@ -197,7 +197,7 @@ test('detects same id', async () => {
         'books.csv.lock': '',
         'books.conf': BOOKS_CONF,
         'content': { dir: {} },
-        'node_modules': mock.load(path.resolve(__dirname, '../node_modules')),
+        'node_modules': mock.load(path.resolve(__dirname, '../../node_modules')),
     });
 
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
@@ -216,7 +216,7 @@ test('detects same isbn', async () => {
         'books.csv.lock': '',
         'books.conf': BOOKS_CONF,
         'content': { dir: {} },
-        'node_modules': mock.load(path.resolve(__dirname, '../node_modules')),
+        'node_modules': mock.load(path.resolve(__dirname, '../../node_modules')),
     });
 
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
@@ -235,7 +235,7 @@ test('detects same signature', async () => {
         'books.csv.lock': '',
         'books.conf': BOOKS_CONF,
         'content': { dir: {} },
-        'node_modules': mock.load(path.resolve(__dirname, '../node_modules')),
+        'node_modules': mock.load(path.resolve(__dirname, '../../node_modules')),
     });
 
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
@@ -257,7 +257,7 @@ test_actionB,true,test_idB,test_title_idB,test_isbnB,test_asinB,Belle,test_pub_s
         'books.conf': BOOKS_CONF,
         'file.txt': 'description B',
         'content': { dir: {} },
-        'node_modules': mock.load(path.resolve(__dirname, '../node_modules')),
+        'node_modules': mock.load(path.resolve(__dirname, '../../node_modules')),
     });
 
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
@@ -283,7 +283,7 @@ test('can read book file with an embedded file', async () => {
         'books.conf': BOOKS_CONF,
         'file.txt': 'description B',
         'content': { dir: {} },
-        'node_modules': mock.load(path.resolve(__dirname, '../node_modules')),
+        'node_modules': mock.load(path.resolve(__dirname, '../../node_modules')),
     });
 
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');

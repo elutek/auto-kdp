@@ -1,5 +1,5 @@
 import { resolveAllValues } from './resolve';
-import { makeMap } from './test-utils';
+import { makeMap } from '../util/test-utils';
 
 test('resolve_nochange', () => {
   expect(resolveAllValues(makeMap(), null, null)).toEqual(makeMap());

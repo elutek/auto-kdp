@@ -1,4 +1,4 @@
-import { debug, arraysEqual, removeSpacesInHtml } from '../utils.js';
+import { debug, arraysEqual, removeSpacesInHtml } from '../util/utils.js';
 import { Timeouts, Urls, maybeClosePage } from './action-utils.js';
 
 export async function isMetadataUpdateNeeded(book, params) {

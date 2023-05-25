@@ -1,6 +1,6 @@
 
-import { ActionResult } from '../action-result.js';
-import { debug, normalizeSearchQuery } from '../utils.js';
+import { ActionResult } from '../util/action-result.js';
+import { debug, normalizeSearchQuery } from '../util/utils.js';
 import { Timeouts, Urls, maybeClosePage } from './action-utils.js';
 
 // This function also creates a book.
