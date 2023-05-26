@@ -10,7 +10,7 @@ export async function ensureLoggedIn(params: ActionParams): Promise<ActionResult
   // This is a fake creation, just to trigger signin (bookshelf is not enough)
   await page.waitForSelector('#data-print-book-title');
 
-  await maybeClosePage(params, page);
+  await maybeClosePage(params, page, true);
 
   return new ActionResult(true);
 }

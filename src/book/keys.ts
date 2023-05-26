@@ -1,3 +1,5 @@
+export const ALL_MARKETPLACES = ["us", "uk", "de", "fr", "es", "it", "nl", "pl", "se", "jp", "ca", "au"];
+
 export var Keys = {
     // Directive about what to do with the book, e.g create it or click publish.
     ACTION: 'action',

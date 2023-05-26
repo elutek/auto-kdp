@@ -2,6 +2,8 @@ import * as fs from 'fs';
 import { Browser, Page } from 'puppeteer';
 
 import { ActionParams } from '../util/action-params.js';
+import { Book } from '../book/book.js';
+import { clipLen, debug } from '../util/utils.js';
 
 export let Timeouts = {
     SEC_QUARTER: 250,
@@ -57,8 +59,8 @@ export async function waitForElements(page: Page, ids: string[]) {
     await page.waitForTimeout(Timeouts.SEC_1); // Just in case.
 }
 
-export async function maybeClosePage(params: ActionParams, page: Page) {
-    if (!params.keepOpen) {
+export async function maybeClosePage(params: ActionParams, page: Page, force: boolean = false) {
+    if (!params.keepOpen || force) {
         await page.close();
     } else {
         const n = await numOpenTabs(params.browser);
@@ -72,4 +74,63 @@ export async function maybeClosePage(params: ActionParams, page: Page) {
 
 async function numOpenTabs(browser: Browser): Promise<number> {
     return (await browser.pages()).length;
+}
+
+export async function updateTextFieldIfChanged(id: string, value: string, fieldHumanName: string, page: Page, book: Book, verbose: boolean): Promise<boolean> {
+    // debug(book, verbose, `Waiting for the text element (${id})`);
+    await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
+
+    // Read the old value.
+    const oldValue = await page.$eval(id, x => (x as HTMLInputElement).value) || '';
+
+    // If they are the same, we are done.
+    if (oldValue == value) {
+        debug(book, verbose, `No need to update ${fieldHumanName}, got ${oldValue}`);
+        return false;
+    }
+    // Otherwise, update the value.
+    debug(book, verbose, `Updating ${fieldHumanName} from ${oldValue} to ${value}`);
+    await clearTextField(page, id);
+    if (value != '') {
+        await page.type(id, value);
+    }
+
+    return true;
+}
+
+export async function selectValue(id: string, value: string, fieldHumanName: string, page: Page, book: Book, verbose: boolean) {
+    //debug(book, verbose, `Waiting for the element to select (${id})`);
+    await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
+    const oldValue = await page.$eval(id, x => (x as HTMLSelectElement).value);
+    if (oldValue != value) {
+        debug(book, verbose, `Selecting ${value} for ${fieldHumanName}`);
+        await page.select(id, value);
+    } else {
+        debug(book, verbose, `No need to update ${fieldHumanName}, got ${oldValue}`);
+    }
+}
+
+export async function clickSomething(id: string, fieldHumanName: string, page: Page, book: Book, verbose: boolean) {
+    //debug(book, verbose, `Waiting for the element to click (${id})`);
+    await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
+    debug(book, verbose, `Clicking ${fieldHumanName}`);
+    await page.click(id);
+}
+
+export async function updateTextAreaIfChanged(id: string, value: string, processor: (str: string) => string, fieldHumanName: string, page: Page, book: Book, verbose: boolean) {
+    //debug(book, verbose, `Waiting for the text area element (${id})`)
+    await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
+    const oldValue = processor(await page.$eval('#cke_1_contents > textarea', x => (x as HTMLTextAreaElement).value) || '');
+    const newValue = processor(value);
+    if (oldValue != newValue) {
+        // Description needs to be updated.
+        debug(book, verbose, `Updating ${fieldHumanName} from \n\t${oldValue}\n\tto\n\t${newValue}`);
+
+        debug(book, verbose, `Cleaning textarea`)
+        await clearTextField(page, id);
+        debug(book, verbose, `Typing new description`)
+        await page.type(id, newValue);
+    } else {
+        debug(book, verbose, `Updating ${fieldHumanName}- not needed, got ${clipLen(oldValue)}`);
+    }
 }

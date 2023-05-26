@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 
-import { Keys } from './keys.js';
+import { Keys, ALL_MARKETPLACES } from './keys.js';
 import { resolveAllValues } from './resolve.js';
 import { copyMap, clipLen } from '../util/utils.js';
 
@@ -170,6 +170,9 @@ export class Book {
     this.priceSe = parseFloatOrNull(getValue(Keys.PRICE_SE));
     this.priceUsd = parseFloatOrNull(getValue(Keys.PRICE_USD));
     this.primaryMarketplace = getValue(Keys.PRIMARY_MARKETPLACE);
+    if (!ALL_MARKETPLACES.includes(this.primaryMarketplace)) {
+      throw new Error("Unrecognized primary marketplace: " + this.primaryMarketplace)
+    }
     this.seriesTitle = getValue(Keys.SERIES_TITLE);
     this.title = getValue(Keys.TITLE);
     this.subtitle = getValue(Keys.SUBTITLE);
@@ -182,9 +185,36 @@ export class Book {
     // Handle special actions
     if (this.action == 'all') {
       this.action = 'book-metadata:content-metadata:scrape-isbn:produce-manuscript:content:pricing:set-series-title:scrape:publish:scrape:scrape-amazon-image';
+    } else if (this.action == 'all-but-no-publish') {
+      this.action = 'book-metadata:content-metadata:scrape-isbn:produce-manuscript:content:pricing:set-series-title:scrape';
     } else if (this.action == 'update-published-book') {
       this.action = 'book-metadata:pricing:publish:scrape';
     }
+  }
+
+  getPriceForMarketplace(marketplace: string): number {
+    switch (marketplace) {
+      case "us": return this.priceUsd;
+      case "uk": return this.priceGbp;
+      case "de":
+      case "fr":
+      case "fr":
+      case "es":
+      case "it":
+      case "nl":
+        return this.priceEur;
+      case "pl":
+        return this.pricePl;
+      case "se":
+        return this.priceSe;
+      case "jp":
+        return this.priceJp;
+      case "ca":
+        return this.priceCa;
+      case "au":
+        return this.priceAu;
+    }
+    throw new Error("Unrecognized marketplace: " + marketplace);
   }
 
   getPreservedKey(key: string): string {
@@ -242,7 +272,7 @@ export class Book {
   }
 
   prefix() {
-    return this.signature + ":: ";
+    return this.signature;
   }
 
   toString() {

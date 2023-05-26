@@ -1,7 +1,7 @@
 import { Book } from '../book/book.js';
 import { ActionResult } from '../util/action-result.js';
 import { debug, error } from '../util/utils.js';
-import { Timeouts, Urls, clearTextField, maybeClosePage } from './action-utils.js';
+import { Timeouts, Urls, clearTextField, clickSomething, maybeClosePage } from './action-utils.js';
 import { ActionParams } from '../util/action-params.js';
 
 export async function archive(book: Book, params: ActionParams): Promise<ActionResult> {
@@ -48,27 +48,21 @@ export async function archive(book: Book, params: ActionParams): Promise<ActionR
     await page.focus(id);
     await page.click(id);
 
+    await page.waitForTimeout(Timeouts.SEC_1);
+
     // Opening menu
     debug(book, verbose, 'Opening menu');
     id = `#zme-indie-bookshelf-dual-print-actions-draft-book-actions-${book.id}-other-actions-announce`;
     await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
-    await page.focus(id);
-    await page.hover(id);
     await page.tap(id);
-    await page.waitForTimeout(Timeouts.SEC_1);
 
     // Click archive.
-    debug(book, verbose, 'Clicking Archive');
-    id = `#print_archive_title-${book.titleId}`;
-    await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
-    await page.focus(id);
-    await page.click(id);
-    await page.waitForTimeout(Timeouts.SEC_1);
+    await clickSomething(`#print_archive_title-${book.titleId}`, 'Archive', page, book, verbose);
 
     // Click confimration
     debug(book, verbose, 'Clicking confirmation');
     id = '#archive-title-ok-announce';
-    await page.waitForSelector(id, { timeout: Timeouts.SEC_30 });
+    await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
     await page.focus(id);
     await page.click(id);
     await page.waitForTimeout(Timeouts.SEC_5);

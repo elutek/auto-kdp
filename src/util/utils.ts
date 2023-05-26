@@ -9,16 +9,20 @@ export function mergeActions(action1: string, action2: string): string {
 /* istanbul ignore next */
 export function debug(book: Book, verbose: boolean, message: string) {
     if (verbose) {
-        console.debug(book.prefix() + message);
+        const datePrefix = new Date().toLocaleString();
+        const wholePrefix = datePrefix + " " + book.prefix() + ":: ";
+        console.debug(wholePrefix + message);
     }
 }
 
 /* istanbul ignore next */
 export function error(book: Book, message: string, e: Error | null = null) {
+    const datePrefix = new Date().toLocaleString();
+    const wholePrefix = datePrefix + " " + book.prefix() + ":: ";
     if (e) {
-        console.error(book.prefix() + message, e);
+        console.error(wholePrefix + message, e);
     } else {
-        console.error(book.prefix() + message);
+        console.error(wholePrefix + message);
     }
 }
 

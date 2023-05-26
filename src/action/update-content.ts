@@ -4,7 +4,7 @@ import { Timeouts, Urls, fileExists, maybeClosePage } from './action-utils.js';
 import { Book } from '../book/book.js';
 import { ActionParams } from '../util/action-params.js';
 
-export async function updateContent(book:Book, params:ActionParams): Promise<ActionResult> {
+export async function updateContent(book: Book, params: ActionParams): Promise<ActionResult> {
     const verbose = params.verbose;
     if (params.dryRun) {
         debug(book, verbose, 'Updating content (dry run)');
@@ -27,35 +27,43 @@ export async function updateContent(book:Book, params:ActionParams): Promise<Act
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_1 });
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
-    // Manuscript
-    debug(book, verbose, 'Uploading manuscript');
-    const futureManuscriptFileChooser = page.waitForFileChooser();
-    await page.click('#data-print-book-publisher-interior-file-upload-browse-button-announce');
-    const manuscriptFileChooser = await futureManuscriptFileChooser;
-    await manuscriptFileChooser.accept([book.manuscriptLocalFile]);
-    debug(book, verbose, 'Waiting for manuscript file chooser');
-    await page.waitForSelector('#data-print-book-publisher-interior-file-upload-success',
-        { visible: true, timeout: Timeouts.MIN_5 });
-
     // Select self-uploaded cover.
-    debug(book, verbose, 'Selecting PDF cover');
-    let id = '#data-print-book-publisher-cover-choice-accordion';
-    let selector = id + ' [data-a-accordion-row-name=\'UPLOAD\'] a[data-action=\'a-accordion\']';
-    await page.waitForSelector(selector);
-    await page.click(selector);
-    await page.waitForTimeout(Timeouts.SEC_1);
+    // We upload cover first becasue the manuscript will take a very long time.
+    {
+        debug(book, verbose, 'Selecting PDF cover option');
+        let id = '#data-print-book-publisher-cover-choice-accordion';
+        let selector = id + ' [data-a-accordion-row-name=\'UPLOAD\'] a[data-action=\'a-accordion\']';
+        await page.waitForSelector(selector);
+        await page.click(selector);
+        await page.waitForTimeout(Timeouts.SEC_1);
+    }
 
     // Cover
-    debug(book, verbose, 'Uploading cover');
-    const futureCoverFileChooser = page.waitForFileChooser();
-    await page.click('#data-print-book-publisher-cover-file-upload-browse-button-announce');
-    const coverFileChooser = await futureCoverFileChooser;
-    await coverFileChooser.accept([book.coverLocalFile]);
-    debug(book, verbose, 'Waiting for cover file chooser');
-    await page.waitForSelector('#data-print-book-publisher-cover-file-upload-success',
-        { visible: true, timeout: Timeouts.MIN_10 });
-    await page.waitForTimeout(Timeouts.SEC_2);
-    debug(book, verbose, 'Upload done');
+    {
+        debug(book, verbose, 'Uploading cover');
+        const futureCoverFileChooser = page.waitForFileChooser({ timeout: Timeouts.MIN_3 });
+        await page.click('#data-print-book-publisher-cover-file-upload-browse-button-announce');
+        const coverFileChooser = await futureCoverFileChooser;
+        await coverFileChooser.accept([book.coverLocalFile]);
+        debug(book, verbose, 'Waiting for cover file chooser');
+        await page.waitForSelector('#data-print-book-publisher-cover-file-upload-success',
+            { visible: true, timeout: Timeouts.MIN_15 });
+        await page.waitForTimeout(Timeouts.SEC_2);
+        debug(book, verbose, 'Cover upload done');
+    }
+
+
+    // Manuscript
+    {
+        debug(book, verbose, 'Uploading manuscript');
+        const futureManuscriptFileChooser = page.waitForFileChooser({ timeout: Timeouts.MIN_3 });
+        await page.click('#data-print-book-publisher-interior-file-upload-browse-button-announce');
+        const manuscriptFileChooser = await futureManuscriptFileChooser;
+        await manuscriptFileChooser.accept([book.manuscriptLocalFile]);
+        debug(book, verbose, 'Waiting for manuscript file chooser');
+        await page.waitForSelector('#data-print-book-publisher-interior-file-upload-success',
+            { visible: true, timeout: Timeouts.MIN_15 });
+    }
 
     // Click Launch previewer
     debug(book, verbose, 'Clicking Launch Previewer (typically takes 3.5min)');
