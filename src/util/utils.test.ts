@@ -1,4 +1,4 @@
-import { addAfter, addBefore, arraysEqual, cleanupHtmlForAmazonDescription, clipLen, isInt, mergeActions, removeSpacesInHtml, normalizeSearchQuery, stripPrefix, stripSuffix, stripQuotes, stringToIntOrThrow } from './utils.js';
+import { addAfter, addBefore, arraysEqual, cleanupHtmlForAmazonDescription, clipLen, isInt, mergeActions, removeSpacesInHtml, normalizeSearchQuery, stripPrefix, stripSuffix, stripQuotes, stringToIntOrThrow, removeComment } from './utils.js';
 
 test('mergeActions', () => {
   expect(mergeActions('a:b', 'c:d')).toEqual('a:b:c:d');
@@ -149,4 +149,10 @@ test('clipLen', () => {
   expect(clipLen('blah', 2)).toEqual('bl');
   expect(clipLen('blah', 1)).toEqual('b');
   expect(clipLen('blah', 0)).toEqual('');
+});
+
+test('removeComment', () => {
+  expect(removeComment('a bc')).toEqual('a bc');
+  expect(removeComment('a bc ## blah')).toEqual('a bc ');
+  expect(removeComment('a bc## blah ## blah')).toEqual('a bc');
 });

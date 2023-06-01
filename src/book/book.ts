@@ -107,12 +107,6 @@ export class Book {
       throw 'Could not resolve keys: ' + Array.from(unresolvedKeys);
     }
 
-    // // Preserve all keys in this record as they are
-    // // so that CSV writer can get them.
-    // for (const [key, val] of data) {
-    //   this.preservedKeyValues.set(key, val);
-    // }
-
     // Retrieve all required values.
     let getValue = (x: string) => {
       if (!resolvedDataMap.has(x)) {
@@ -224,13 +218,13 @@ export class Book {
   }
 
   getPreservedKey(key: string): string {
-    return this.origData[key];
+    return this.origData.get(key);
   }
 
   canBeCreated() {
     return this.title != '' && this.authorFirstName != '' && this.authorLastName != '' &&
       this.description != '' && ((this.category1 != '' && this.category2 != '') ||
-      (this.newCategory1 != '' && this.newCategory2 != '' && this.newCategory3 != ''));
+        (this.newCategory1 != '' && this.newCategory2 != '' && this.newCategory3 != ''));
   }
 
   isFullyLive() {
@@ -290,6 +284,10 @@ export class Book {
       if (val != null && typeof val === "string") {
         val = clipLen(val as string, 200);
       }
+      result += "    " + key + " = " + val + "\n";
+    }
+    result += `Preserved keys (${this.origData.size})\n`;
+    for (const [key, val] of this.origData) {
       result += "    " + key + " = " + val + "\n";
     }
     return result;

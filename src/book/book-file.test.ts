@@ -2,7 +2,6 @@ import mock from 'mock-fs';
 import path from 'path';
 import * as fs from 'fs';
 import { fileURLToPath } from 'url';
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 import { BookFile } from './book-file.js';
 
@@ -121,9 +120,9 @@ authorFirstName =
 authorLastName =
 category1 =
 category2 =
-newCategory1
-newCategory2
-newCategory3
+newCategory1 =
+newCategory2 =
+newCategory3 =
 coverLocalFile =
 description =
 illustratorFirstName =
@@ -147,16 +146,15 @@ priceJp =
 pricePl = 
 priceSe = 
 priceUsd =
-primaryMarketplace =
+primaryMarketplace = us
 paperBleed =
 paperCoverFinish =
 paperColor =
 paperTrim =
-signature =
+signature = \${name}
 title =
 subtitle =
 seriesTitle =
-scrapedSeriesTitle =
 `
     mock({
         'books.csv': empty_books_csv,
@@ -194,9 +192,9 @@ scrapedSeriesTitle =
 
 test('detects same id', async () => {
     const books_csv =
-        `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
-        a      ,false           ,SAMEID,a,a   ,a   ,Ava  ,a        ,a      ,a              ,a        ,A
-        a      ,true            ,SAMEID,b,b   ,b   ,Belle,b        ,b      ,b              ,b        ,B`;
+        `action,wasEverPublished,id     ,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
+         a     ,false           ,SAMEID,a       ,a   ,a   ,Ava  ,a        ,a      ,a              ,a        ,A
+         a     ,true            ,SAMEID,b       ,b   ,b   ,Belle,b        ,b      ,b              ,b        ,B`;
 
     mock({
         'books.csv': books_csv,
@@ -207,15 +205,14 @@ test('detects same id', async () => {
     });
 
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
-    expect.assertions(1);
     await expect(bookFile.readBooksAsync()).rejects.toEqual(new Error('Id not unique: SAMEID'));
 });
 
 test('detects same isbn', async () => {
     const books_csv =
         `action,wasEverPublished,id,titleId,isbn     ,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
-        a      ,false           ,a ,a      ,SAMEISBN,a   ,Ava  ,a        ,a      ,a              ,a            ,A
-        a      ,true            ,b ,b      ,SAMEISBN,b   ,Belle,b        ,b      ,b              ,b            ,B`;
+         a      ,false           ,a ,a      ,SAMEISBN,a   ,Ava  ,a        ,a      ,a              ,a            ,A
+         a      ,true            ,b ,b      ,SAMEISBN,b   ,Belle,b        ,b      ,b              ,b            ,B`;
 
     mock({
         'books.csv': books_csv,
@@ -226,15 +223,32 @@ test('detects same isbn', async () => {
     });
 
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
-    expect.assertions(1);
     await expect(bookFile.readBooksAsync()).rejects.toEqual(new Error('ISBN not unique: SAMEISBN'));
+});
+
+test('detects same titleId', async () => {
+    const books_csv =
+        `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
+         a     ,false           ,a ,SAME   ,a   ,a   ,Ava  ,a        ,a      ,a              ,a            ,A
+         a     ,true            ,b ,SAME   ,b   ,b   ,Belle,b        ,b      ,b              ,b            ,B`;
+
+    mock({
+        'books.csv': books_csv,
+        'books.csv.lock': '',
+        'books.conf': BOOKS_CONF,
+        'content': { dir: {} },
+        'node_modules': mock.load(path.resolve(__dirname, '../../node_modules')),
+    });
+
+    let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
+    await expect(bookFile.readBooksAsync()).rejects.toEqual(new Error('TitleId not unique: SAME'));
 });
 
 test('detects same signature', async () => {
     const books_csv =
         `action,wasEverPublished,id,titleId,isbn,asin,name,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
-        a      ,false           ,a ,a      ,a  ,a   ,Ava ,a        ,a      ,a              ,a            ,A
-        a      ,true            ,b ,b      ,b  ,b   ,Ava ,b        ,b      ,b              ,b            ,B`;
+         a      ,false           ,a ,a      ,a  ,a   ,Ava ,a        ,a      ,a              ,a            ,A
+         a      ,true            ,b ,b      ,b  ,b   ,Ava ,b        ,b      ,b              ,b            ,B`;
 
     mock({
         'books.csv': books_csv,
@@ -279,15 +293,14 @@ test_actionB,true,test_idB,test_title_idB,test_isbnB,test_asinB,Belle,test_pub_s
 
 test('can read book file with an embedded file', async () => {
     const books_csv =
-        `description ,action      ,wasEverPublished,id      ,titleId ,isbn       ,asin       ,name  ,pubStatus        ,pubDate        ,pubStatusDetail         ,coverImageUrl         ,scrapedSeriesTitle
-        description A,test_actionA,false           ,test_idA,titleIdB,test_isbnA ,test_asinA ,Ava   ,test_pub_statusA ,test_pub_dateA ,test_pub_status_detailA ,test_cover_image_urlA ,scraped_series_titleA
-        file:file.txt,test_actionB,true            ,test_idB,titleIdA,test_isbnB ,test_asinB ,Belle ,test_pub_statusB ,test_pub_dateB ,test_pub_status_detailB ,test_cover_image_urlB ,scraped_series_titleB`;
+        `description ,action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
+        file:file.txt,      ,                ,b ,b      ,b   ,b   ,Belle,         ,       ,               ,             ,`;
 
     mock({
         'books.csv': books_csv,
         'books.csv.lock': '',
         'books.conf': BOOKS_CONF,
-        'file.txt': 'description B',
+        'file.txt': 'xxx',
         'content': { dir: {} },
         'node_modules': mock.load(path.resolve(__dirname, '../../node_modules')),
     });
@@ -295,13 +308,69 @@ test('can read book file with an embedded file', async () => {
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
     const bookList = await bookFile.readBooksAsync();
     const books = bookList.getBooks();
-    expect(books.length).toEqual(2);
-    {
-        let book = books[0];
-        expect(book.description).toEqual('description A')
-    }
-    {
-        let book = books[1];
-        expect(book.description).toEqual('description B')
-    }
+    expect(books.length).toEqual(1);
+    expect(books[0].description).toEqual('xxx');
+});
+
+test('can read book file with line comments', async () => {
+    const books_csv =
+        `description,action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
+        xxx ## blah ,      ,                ,b ,b      ,b   ,b   ,Belle,         ,       ,               ,             ,`;
+
+    const BOOKS_CONF_WITH_COMMENTS = `
+authorFirstName = Belle ## lalalalal lalal
+authorLastName = test_author_last_name
+category1 = test_cat1
+category2 = test_cat2
+newCategory1 = test_new_cat1
+newCategory2 = test_new_cat2
+newCategory3 = test_new_cat3
+coverLocalFile = test_cover_file_\${name}
+description = test_description for \${name}
+illustratorFirstName = test_illustrator_first_name
+illustratorLastName = test_illustrator_last_name
+keyword0 = test \${name}
+keyword1 = 
+keyword2 =
+keyword3 =
+keyword4 =
+keyword5 =
+keyword6 = 
+language = test_language
+manuscriptCreationCommand = make book_\${name}
+manuscriptLocalFile = manuscript/file/\${name}.pdf
+notes = test notes
+priceAu = 
+priceCa = 
+priceEur =
+priceGbp =
+priceJp = 
+pricePl = 
+priceSe = 
+priceUsd = 1.2
+primaryMarketplace = pl
+paperBleed = test_paper_bleed
+paperCoverFinish = test_paper_cover_finish
+paperColor = test_paper_color
+paperTrim = test_paper_trim
+signature = \${name}
+seriesTitle = My Series
+title = Book for \${name}
+subtitle = My subtitle
+`
+
+    mock({
+        'books.csv': books_csv,
+        'books.csv.lock': '',
+        'books.conf': BOOKS_CONF_WITH_COMMENTS,
+        'content': { dir: {} },
+        'node_modules': mock.load(path.resolve(__dirname, '../../node_modules')),
+    });
+
+    let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
+    const bookList = await bookFile.readBooksAsync();
+    const books = bookList.getBooks();
+    expect(books.length).toEqual(1);
+    expect(books[0].description).toEqual('xxx');
+    expect(books[0].authorFirstName).toEqual('Belle');
 });

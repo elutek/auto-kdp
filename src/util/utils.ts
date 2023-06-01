@@ -173,3 +173,11 @@ export function clipLen(value: string, maxLen: number = 100): string {
         .replaceAll("  ", " ")
         .substring(0, maxLen);
 }
+
+export function removeComment(value: string): string {
+    const i = value.indexOf("##");
+    if (i >= 0) {
+        value = value.substring(0, i);
+    }
+    return value;
+}

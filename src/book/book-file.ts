@@ -8,6 +8,7 @@ import PropertiesReader from 'properties-reader';
 
 import { Book } from './book.js';
 import { BookList } from './book-list.js';
+import { removeComment } from '../util/utils.js';
 
 // We protect  file with a lock, because it will be updated in-place.
 export class BookFile {
@@ -29,7 +30,7 @@ export class BookFile {
     this.lockFilePath = bookFilePath + '.lock';
     this.outputFilePath = bookFilePath + '.new';
     PropertiesReader(bookConfigFilePath).each(
-      (k, v) => this.bookConfig.set(k, v as string));
+      (k, v) => this.bookConfig.set(k, removeComment(v as string).trim()));
   }
 
   async readBooksAsync(): Promise<BookList> {
@@ -45,7 +46,7 @@ export class BookFile {
                 return h;
               },
               mapValues: ({ header, index, value }) => {
-                return value.trim().replace('^"', '').replace('"$', '');
+                return removeComment(value).trim().replace('^"', '').replace('"$', '');
               },
               strict: true,
               skipComments: true
@@ -54,7 +55,7 @@ export class BookFile {
               dataMaps.push(new Map(Object.entries(data)));
             })
             .on('end', () => {
-              console.log('Read ' + dataMaps.length + ' rows');
+              // console.log('Read ' + dataMaps.length + ' rows');
               let bookList = new BookList();
               let rowNumber = 1;
               for (const dataMap of dataMaps) {

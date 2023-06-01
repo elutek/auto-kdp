@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "es2022",
     "target": "es2022",
-    "moduleResolution": "node", /*was nodenext */
+    "moduleResolution": "Node",
     "esModuleInterop": true,
     "sourceMap": true,
     "outDir": "build",
