@@ -11,6 +11,9 @@ test('create book without defaults', () => {
             Keys.AUTHOR_LAST_NAME, 'test_author_last_name',
             Keys.CATEGORY1, 'test_cat1',
             Keys.CATEGORY2, 'test_cat2',
+            Keys.NEW_CATEGORY1, 'test_new_cat1',
+            Keys.NEW_CATEGORY2, 'test_new_cat2',
+            Keys.NEW_CATEGORY3, 'test_new_cat3',
             Keys.COVER_IMAGE_URL, 'test_cover_image_url',
             Keys.COVER_FILE, 'test_cover_file',
             Keys.DESCRIPTION, 'test_description',
@@ -42,7 +45,7 @@ test('create book without defaults', () => {
             Keys.PRICE_PL, '6.1',
             Keys.PRICE_SE, '7.1',
             Keys.PRICE_USD, '8.1',
-            Keys.PRIMARY_MARKETPLACE, 'Amazon.pl',
+            Keys.PRIMARY_MARKETPLACE, 'pl',
             Keys.PUB_DATE, 'test_pub_date',
             Keys.PUB_STATUS, 'test_pub_status',
             Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',
@@ -63,6 +66,9 @@ test('create book without defaults', () => {
     expect(book.authorLastName).toEqual('test_author_last_name');
     expect(book.category1).toEqual('test_cat1');
     expect(book.category2).toEqual('test_cat2');
+    expect(book.newCategory1).toEqual('test_new_cat1');
+    expect(book.newCategory2).toEqual('test_new_cat2');
+    expect(book.newCategory3).toEqual('test_new_cat3');
     expect(book.coverLocalFile).toEqual('content/dir/test_cover_file');
     expect(book.coverImageUrl).toEqual('test_cover_image_url');
     expect(book.description).toEqual('test_description');
@@ -94,7 +100,7 @@ test('create book without defaults', () => {
     expect(book.pricePl).toEqual(6.1);
     expect(book.priceSe).toEqual(7.1);
     expect(book.priceUsd).toEqual(8.1);
-    expect(book.primaryMarketplace).toEqual('Amazon.pl');
+    expect(book.primaryMarketplace).toEqual('pl');
     expect(book.pubDate).toEqual('test_pub_date');
     expect(book.pubStatus).toEqual('test_pub_status');
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
@@ -128,6 +134,9 @@ test('create book with defaults', () => {
             Keys.AUTHOR_LAST_NAME, 'bad bad very bad',
             Keys.CATEGORY1, 'test_cat1',
             Keys.CATEGORY2, 'test_cat2',
+            Keys.NEW_CATEGORY1, 'test_new_cat1',
+            Keys.NEW_CATEGORY2, 'test_new_cat2',
+            Keys.NEW_CATEGORY3, 'test_new_cat3',
             Keys.COVER_FILE, 'test_cover_file',
             Keys.DESCRIPTION, 'test_description',
             Keys.ILLUSTRATOR_FIRST_NAME, 'test_illustrator_first_name',
@@ -155,7 +164,7 @@ test('create book with defaults', () => {
             Keys.PRICE_PL, '6.1',
             Keys.PRICE_SE, '7.1',
             Keys.PRICE_USD, '8.1',
-            Keys.PRIMARY_MARKETPLACE, 'Amazon.pl',
+            Keys.PRIMARY_MARKETPLACE, 'pl',
             Keys.SIGNATURE, 'test_signature',
             Keys.TITLE, 'test_title',
             Keys.SUBTITLE, 'test_subtitle',
@@ -170,6 +179,9 @@ test('create book with defaults', () => {
     expect(book.authorLastName).toEqual('test_author_last_name');
     expect(book.category1).toEqual('test_cat1');
     expect(book.category2).toEqual('test_cat2');
+    expect(book.newCategory1).toEqual('test_new_cat1');
+    expect(book.newCategory2).toEqual('test_new_cat2');
+    expect(book.newCategory3).toEqual('test_new_cat3');
     expect(book.coverLocalFile).toEqual('content/dir/test_cover_file');
     expect(book.coverImageUrl).toEqual('test_cover_image_url');
     expect(book.description).toEqual('test_description');
@@ -201,7 +213,7 @@ test('create book with defaults', () => {
     expect(book.pricePl).toEqual(6.1);
     expect(book.priceSe).toEqual(7.1);
     expect(book.priceUsd).toEqual(8.1);
-    expect(book.primaryMarketplace).toEqual('Amazon.pl');
+    expect(book.primaryMarketplace).toEqual('pl');
     expect(book.pubDate).toEqual('test_pub_date');
     expect(book.pubStatus).toEqual('test_pub_status');
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
@@ -231,6 +243,9 @@ test('detects missing key', () => {
             makeMap(
                 Keys.CATEGORY1, 'test_cat1',
                 Keys.CATEGORY2, 'test_cat2',
+                Keys.NEW_CATEGORY1, 'test_new_cat1',
+                Keys.NEW_CATEGORY2, 'test_new_cat2',
+                Keys.NEW_CATEGORY3, 'test_new_cat3',
                 Keys.COVER_FILE, 'test_cover_file',
                 Keys.DESCRIPTION, 'test_description',
                 Keys.ILLUSTRATOR_FIRST_NAME, 'test_illustrator_first_name',
@@ -257,7 +272,7 @@ test('detects missing key', () => {
                 Keys.PRICE_PL, '6.1',
                 Keys.PRICE_SE, '7.1',
                 Keys.PRICE_USD, '8.1',
-                Keys.PRIMARY_MARKETPLACE, 'test_marketplace',
+                Keys.PRIMARY_MARKETPLACE, 'pl',
                 Keys.SIGNATURE, 'test_signature',
                 Keys.TITLE, 'test_title',
                 Keys.SUBTITLE, 'test_subtitle',
@@ -293,6 +308,9 @@ test('create book with resolution', () => {
             'price', "2.17",
             Keys.CATEGORY1, '${prefix}cat1',
             Keys.CATEGORY2, '${prefix}cat2',
+            Keys.NEW_CATEGORY1, 'test_new_cat1',
+            Keys.NEW_CATEGORY2, 'test_new_cat2',
+            Keys.NEW_CATEGORY3, 'test_new_cat3',
             Keys.COVER_FILE, '${prefix}cover_file',
             Keys.DESCRIPTION, '${prefix}description',
             Keys.KEYWORD0, '${prefix}keyword0',
@@ -317,7 +335,7 @@ test('create book with resolution', () => {
             Keys.PRICE_PL, '${price}',
             Keys.PRICE_SE, '${price}',
             Keys.PRICE_USD, '${price}',
-            Keys.PRIMARY_MARKETPLACE, '${prefix}marketplace',
+            Keys.PRIMARY_MARKETPLACE, 'de',
             Keys.SIGNATURE, '${prefix}signature',
             Keys.TITLE, '${prefix}title',
             Keys.SUBTITLE, '${prefix}subtitle',
@@ -332,6 +350,9 @@ test('create book with resolution', () => {
     expect(book.authorLastName).toEqual('test_author_last_name');
     expect(book.category1).toEqual('test_cat1');
     expect(book.category2).toEqual('test_cat2');
+    expect(book.newCategory1).toEqual('test_new_cat1');
+    expect(book.newCategory2).toEqual('test_new_cat2');
+    expect(book.newCategory3).toEqual('test_new_cat3');
     expect(book.coverLocalFile).toEqual('content/dir/test_cover_file');
     expect(book.coverImageUrl).toEqual('test_cover_image_url');
     expect(book.description).toEqual('test_description');
@@ -362,7 +383,7 @@ test('create book with resolution', () => {
     expect(book.pricePl).toEqual(2.17);
     expect(book.priceSe).toEqual(2.17);
     expect(book.priceUsd).toEqual(2.17);
-    expect(book.primaryMarketplace).toEqual('test_marketplace');
+    expect(book.primaryMarketplace).toEqual('de');
     expect(book.pubDate).toEqual('test_pub_date');
     expect(book.pubStatus).toEqual('test_pub_status');
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
@@ -472,6 +493,9 @@ test('getDataToWrite', () => {
         "authorLastName": "test_author_last_name",
         "category1": "test_cat1",
         "category2": "test_cat2",
+        "newCategory1": "test_new_cat1",
+        "newCategory2": "test_new_cat2",
+        "newCategory3": "test_new_cat3",
         "coverImageUrl": "test_cover_image_url",
         "coverLocalFile": "test_cover_file",
         "description": "test_description",
@@ -503,7 +527,7 @@ test('getDataToWrite', () => {
         "pricePl": "6.1",
         "priceSe": "7.1",
         "priceUsd": "8.1",
-        "primaryMarketplace": "test_marketplace",
+        "primaryMarketplace": "pl",
         "pubDate": "test_pub_date",
         "pubStatus": "test_pub_status",
         "pubStatusDetail": "test_pub_status_detail",
@@ -547,7 +571,7 @@ test('toString', () => {
        pricePl = 6.1
        priceSe = 7.1
        priceUsd = 8.1
-       primaryMarketplace = test_marketplace
+       primaryMarketplace = pl 
        isbn = test_isbn
        paperColor = premium-color
        paperTrim = 6x9
@@ -555,6 +579,9 @@ test('toString', () => {
        paperCoverFinish = glossy
        category1 = test_cat1
        category2 = test_cat2
+       newCategory1 = test_new_cat1
+       newCategory2 = test_new_cat2
+       newCategory3 = test_new_cat3
        coverLocalFile = content/dir/test_cover_file
        manuscriptCreationCommand = test_manuscript_creation_command
        manuscriptLocalFile = content/dir/test_manuscript_file

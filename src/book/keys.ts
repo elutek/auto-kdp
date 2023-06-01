@@ -66,6 +66,9 @@ export var Keys = {
     // at most two.
     CATEGORY1: 'category1',
     CATEGORY2: 'category2',
+    NEW_CATEGORY1: 'newCategory1',
+    NEW_CATEGORY2: 'newCategory2',
+    NEW_CATEGORY3: 'newCategory3',
 
     // Local files containing the manuscript and cover, and a command
     // to automatically genertate them.

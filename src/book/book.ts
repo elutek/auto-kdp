@@ -43,6 +43,9 @@ export class Book {
   readonly authorLastName: string;
   readonly category1: string;
   readonly category2: string;
+  readonly newCategory1: string;
+  readonly newCategory2: string;
+  readonly newCategory3: string;
   readonly coverLocalFile: string;
   readonly description: string;
   readonly illustratorFirstName: string;
@@ -145,6 +148,9 @@ export class Book {
     this.authorLastName = getValue(Keys.AUTHOR_LAST_NAME);
     this.category1 = getValue(Keys.CATEGORY1);
     this.category2 = getValue(Keys.CATEGORY2);
+    this.newCategory1 = getValue(Keys.NEW_CATEGORY1);
+    this.newCategory2 = getValue(Keys.NEW_CATEGORY2);
+    this.newCategory3 = getValue(Keys.NEW_CATEGORY3);
     this.coverLocalFile = contentDir + '/' + getValue(Keys.COVER_FILE);
     this.coverImageUrl = getValue(Keys.COVER_IMAGE_URL);
     this.description = getValue(Keys.DESCRIPTION);
@@ -223,7 +229,8 @@ export class Book {
 
   canBeCreated() {
     return this.title != '' && this.authorFirstName != '' && this.authorLastName != '' &&
-      this.description != '' && this.category1 != '' && this.category2 != '';
+      this.description != '' && ((this.category1 != '' && this.category2 != '') ||
+      (this.newCategory1 != '' && this.newCategory2 != '' && this.newCategory3 != ''));
   }
 
   isFullyLive() {

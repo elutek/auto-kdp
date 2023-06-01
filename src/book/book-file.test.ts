@@ -11,6 +11,9 @@ authorFirstName = test_author_first_name
 authorLastName = test_author_last_name
 category1 = test_cat1
 category2 = test_cat2
+newCategory1 = test_new_cat1
+newCategory2 = test_new_cat2
+newCategory3 = test_new_cat3
 coverLocalFile = test_cover_file_\${name}
 description = test_description for \${name}
 illustratorFirstName = test_illustrator_first_name
@@ -34,7 +37,7 @@ priceJp =
 pricePl = 
 priceSe = 
 priceUsd = 1.2
-primaryMarketplace = Amazon.pl
+primaryMarketplace = pl
 paperBleed = test_paper_bleed
 paperCoverFinish = test_paper_cover_finish
 paperColor = test_paper_color
@@ -118,6 +121,9 @@ authorFirstName =
 authorLastName =
 category1 =
 category2 =
+newCategory1
+newCategory2
+newCategory3
 coverLocalFile =
 description =
 illustratorFirstName =
