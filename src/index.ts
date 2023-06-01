@@ -14,8 +14,6 @@ import { debug } from './util/utils.js';
 // Action
 import { scrapeAmazonCoverImageUrl } from './action/scrape-amazon-cover-image-url.js';
 import { scrapeIsbn } from './action/scrape-isbn.js';
-import { isMetadataUpdateNeeded } from './action/is-metadata-update-needed.js';
-import { isPricingUpdateNeeded } from './action/is-pricing-update-needed.js';
 import { scrape } from './action/scrape.js';
 import { produceManuscript } from './action/produce-manuscript.js';
 import { ensureLoggedIn } from './action/ensure-logged-in.js';
@@ -51,8 +49,6 @@ async function executeBookActionCallback(action: string, book: Book, params: Act
     case 'scrape-amazon-image': return await scrapeAmazonCoverImageUrl(book, params); break;
     case 'scrape-isbn': return await scrapeIsbn(book, params); break;
     case 'set-series-title': return await setSeriesTitle(book, params); break;
-    case 'updateMetadataIfNeeded': return await isMetadataUpdateNeeded(book, params);
-    case 'updatePricingIfNeeded': return await isPricingUpdateNeeded(book, params);
     case 'unpublish': return await unpublish(book, params); break;
   }
   throw new Error('Unknown action: ' + action);
