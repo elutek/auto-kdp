@@ -39,6 +39,8 @@ export async function updatePricing(book: Book, params: ActionParams): Promise<A
     }
   }
 
+  await page.waitForTimeout(Timeouts.SEC_5);
+
   // Save
   if (wasUpdated) {
     clickSomething('#save-announce', 'Save', page, book, verbose);
