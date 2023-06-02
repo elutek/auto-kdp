@@ -33,7 +33,7 @@ const { sleep } = pkg;
 
 
 async function executeBookActionCallback(action: string, book: Book, params: ActionParams) {
-  debug(book, params.verbose, '@@@@ ' + action + ' @@@@');
+  debug(book, params.verbose, '----- ' + action + '-----'; 
 
   switch (action) {
     case 'archive': return await archive(book, params); break;
