@@ -1,8 +1,9 @@
 import { Book } from '../book/book.js';
 import { ActionResult } from '../util/action-result.js';
-import { Timeouts, Urls, waitForElements, maybeClosePage } from './action-utils.js';
+import { Urls, maybeClosePage } from './action-utils.js';
 import { ActionParams } from '../util/action-params.js';
 import { debug } from '../util/utils.js';
+import { Timeouts } from '../util/timeouts.js';
 
 export async function publish(book: Book, params: ActionParams, isForce: boolean = false): Promise<ActionResult> {
   const verbose = params.verbose;
@@ -22,7 +23,8 @@ export async function publish(book: Book, params: ActionParams, isForce: boolean
       return new ActionResult(true);
     }
 
-    if (book.wasEverPublished && book.pubStatus == 'LIVE' && book.pubStatusDetail == 'Updates publishing') {
+    if (book.wasEverPublished && (book.pubStatus == 'IN REVIEW' ||
+      (book.pubStatus == 'LIVE' && book.pubStatusDetail == 'Updates publishing'))) {
       debug(book, verbose, 'Publishing - already in progress');
       // Publishing not needed.
       return new ActionResult(true);
@@ -32,25 +34,13 @@ export async function publish(book: Book, params: ActionParams, isForce: boolean
   const url = Urls.EDIT_PAPERBACK_PRICING.replace('$id', book.id);
   debug(book, verbose, 'Publishing at url: ' + url);
   const page = await params.browser.newPage();
-  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_3 });
+  await page.goto(url, Timeouts.MIN_3);
   await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
-  await waitForElements(page, [
-    '#book-setup-navigation-bar-details-link .a-alert-content',
-    '#book-setup-navigation-bar-content-link .a-alert-content',
-    '#book-setup-navigation-bar-pricing-link .a-alert-content',
-  ]);
-
   debug(book, verbose, 'Checking if we can publish');
-
-  let id = '#book-setup-navigation-bar-details-link .a-alert-content';
-  const metadataStatus = await page.$eval(id, x => x.textContent.trim()) || '';
-
-  id = '#book-setup-navigation-bar-content-link .a-alert-content';
-  const contentStatus = await page.$eval(id, x => x.textContent.trim()) || '';
-
-  id = '#book-setup-navigation-bar-pricing-link .a-alert-content';
-  const pricingStatus = await page.$eval(id, x => x.textContent.trim()) || '';
+  const metadataStatus = await page.evalValue('#book-setup-navigation-bar-details-link .a-alert-content', x => x.textContent.trim(), Timeouts.SEC_5);
+  const contentStatus = await page.evalValue('#book-setup-navigation-bar-content-link .a-alert-content', x => x.textContent.trim(), Timeouts.SEC_5);
+  const pricingStatus = await page.evalValue('#book-setup-navigation-bar-pricing-link .a-alert-content', x => x.textContent.trim(), Timeouts.SEC_5);
 
   let ok = (metadataStatus == 'Complete') && contentStatus == 'Complete' && pricingStatus == 'Complete';
 
@@ -58,9 +48,8 @@ export async function publish(book: Book, params: ActionParams, isForce: boolean
   if (ok) {
     debug(book, verbose, 'Metadata, content and pricing status: OK');
     debug(book, verbose, 'Clicking publish');
-    await page.waitForSelector('#save-and-publish-announce', { timeout: Timeouts.SEC_30 });
-    await page.click('#save-and-publish-announce');
-    await page.waitForNavigation({ timeout: Timeouts.SEC_30 });
+    await page.click('#save-and-publish-announce', Timeouts.SEC_30);
+    await page.waitForNavigation(Timeouts.SEC_30);
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
     book.wasEverPublished = true;

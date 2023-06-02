@@ -1,10 +1,12 @@
 import { Book } from '../book/book.js';
 import { ActionResult } from '../util/action-result.js';
 import { debug, error, stripPrefix } from '../util/utils.js';
-import { Timeouts, Urls, clearTextField } from './action-utils.js';
+import { Urls } from './action-utils.js';
 import { ActionParams } from '../util/action-params.js';
+import { PageInterface } from '../browser.js';
+import { Timeouts } from '../util/timeouts.js';
 
-var globalBookshelfPage = null;
+var globalBookshelfPage: PageInterface = null;
 
 export async function scrape(book: Book, params: ActionParams): Promise<ActionResult> {
   const verbose = params.verbose
@@ -30,23 +32,20 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
   // Type the search query.
   debug(book, verbose, 'Querying for the book');
   let id = '#podbookshelftable-search-input';
-  await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
-  await clearTextField(page, id, true);
-  await page.type(id, book.id);
+  await page.clearTextField(id, Timeouts.SEC_5);
+  await page.type(id, book.id, Timeouts.SEC_5);
 
   // Click search button.
   debug(book, verbose, 'Clicking Search');
   id = '#podbookshelftable-search-button-submit .a-button-input';
-  await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
-  await page.focus(id);
-  await page.click(id);
+  await page.focus(id, Timeouts.SEC_10);
+  await page.click(id, Timeouts.SEC_10);
 
   // Get ASIN from the search result.
   if (book.asin == '') {
     debug(book, verbose, 'Getting ASIN');
     id = '#zme-indie-bookshelf-dual-print-price-asin-' + book.id;
-    await page.waitForSelector(id, { timeout: Timeouts.SEC_5 });
-    const rawAsin = await page.$eval(id, el => el.innerText) || "";
+    const rawAsin = await page.evalValue(id, el => el.innerText, Timeouts.SEC_10);
     const asin = stripPrefix(rawAsin.trim(), 'ASIN:').trim();
     debug(book, verbose, 'Got ASIN: ' + asin);
     book.asin = asin;
@@ -55,8 +54,7 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
   // Get pubStatus from the search result.
   debug(book, verbose, 'Getting pubStatus');
   id = '[id="' + book.id + '-status"] .element-popover-text > span';
-  await page.waitForSelector(id);
-  const pubStatus = await page.$eval(id, el => el.innerText.trim());
+  const pubStatus = await page.evalValue(id, el => el.innerText.trim(), Timeouts.SEC_10);
   book.pubStatus = pubStatus.trim();
   debug(book, verbose, 'Got pubStatus: ' + pubStatus);
 
@@ -64,8 +62,7 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
   // the pubStatus).
   debug(book, verbose, 'Getting pubStatusDetail');
   id = '[id="' + book.id + '-status"] .element-popover-text';
-  await page.waitForSelector(id);
-  let pubStatusDetail = await page.$eval(id, el => el.innerText.trim()) || "";
+  let pubStatusDetail = await page.evalValue(id, el => el.innerText.trim(), Timeouts.SEC_10);
   if (pubStatusDetail.startsWith(pubStatus)) {
     pubStatusDetail = pubStatusDetail.substr(pubStatus.length).trim();
   }
@@ -76,8 +73,7 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
   if (pubStatus == 'LIVE') {
     debug(book, verbose, 'Getting pubDate');
     id = '#zme-indie-bookshelf-dual-print-status-release-date-' + book.id;
-    await page.waitForSelector(id);
-    const pubDate = await page.$eval(id, el => el.innerText.trim()) || "";
+    const pubDate = await page.evalValue(id, el => el.innerText.trim(), Timeouts.SEC_10);
     book.pubDate = _formatDate(stripPrefix(pubDate, 'Submitted on ').trim(), book);
     debug(book, verbose, `Got pubDate ${book.pubDate} (${pubDate})`);
   } else {
@@ -88,8 +84,7 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
   {
     debug(book, verbose, 'Getting title id');
     id = `img[id="${book.id}"]`;
-    await page.waitForSelector(id, { timeout: Timeouts.SEC_1 });
-    const imgDataSource = await page.$eval(id, x => (x as HTMLElement).getAttribute('data-source').trim()) || "";
+    const imgDataSource = await page.evalValue(id, x => (x as HTMLElement).getAttribute('data-source').trim(), Timeouts.SEC_10);
     const regexp = /amazon[^\\]*\/CAPS-SSE\/kdp_print\/[a-zA-Z0-9]{1,5}\/([a-zA-Z0-9]{1,20})\/KDP/m;
     const match = imgDataSource.match(regexp);
     if (match == null || match.length <= 1) {
@@ -108,11 +103,9 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
   let attempt = 1;
   for (; attempt < 10; ++attempt) {
     try {
-      await page.waitForSelector(id, { timeout: Timeouts.SEC_HALF });
-      await page.waitForTimeout(Timeouts.SEC_HALF);
       await page.bringToFront();
-      await page.focus(id);
-      scrapedSeriesTitle = await page.$eval(id, el => el.innerText.trim()) || "";
+      await page.focus(id, Timeouts.SEC_10);
+      scrapedSeriesTitle = await page.evalValue(id, el => el.innerText.trim(), Timeouts.SEC_10);
     } catch (e) {
     }
     if (scrapedSeriesTitle != 'SERIES_TITLE') {
@@ -141,11 +134,11 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
   return new ActionResult(true).setNextActions(nextActions);
 }
 
-async function _getScrapePage(url: string, params: ActionParams) {
+async function _getScrapePage(url: string, params: ActionParams): Promise<PageInterface> {
   if (globalBookshelfPage == null) {
     globalBookshelfPage = await params.browser.newPage();
 
-    await globalBookshelfPage.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_3 });
+    await globalBookshelfPage.goto(url, Timeouts.MIN_3);
     await globalBookshelfPage.waitForTimeout(Timeouts.SEC_1);  // Just in case.
   }
   return globalBookshelfPage;

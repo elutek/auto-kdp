@@ -1,11 +1,11 @@
-import { Page } from 'puppeteer';
-
 import { ActionResult } from '../util/action-result.js';
 import { debug } from '../util/utils.js'
-import { Timeouts, Urls, clickSomething, maybeClosePage, selectValue, updateTextFieldIfChanged, waitForElements } from './action-utils.js';
+import { Urls, clickSomething, maybeClosePage, selectValue, updateTextFieldIfChanged, waitForElements } from './action-utils.js';
 import { ActionParams } from '../util/action-params.js';
 import { ALL_MARKETPLACES } from '../book/keys.js';
 import { Book } from '../book/book.js';
+import { PageInterface } from '../browser.js';
+import { Timeouts } from '../util/timeouts.js';
 
 export async function updatePricing(book: Book, params: ActionParams): Promise<ActionResult> {
   const verbose = params.verbose;
@@ -22,7 +22,7 @@ export async function updatePricing(book: Book, params: ActionParams): Promise<A
   }
   const page = await params.browser.newPage();
 
-  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_1 });
+  await page.goto(url, Timeouts.MIN_1);
   await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
   // Primary marketplace.
@@ -44,8 +44,7 @@ export async function updatePricing(book: Book, params: ActionParams): Promise<A
   // Save
   if (wasUpdated) {
     clickSomething('#save-announce', 'Save', page, book, verbose);
-    await page.waitForSelector(
-      '#potter-success-alert-bottom div div', { visible: true });
+    await page.waitForSelectorVisible('#potter-success-alert-bottom div div', Timeouts.SEC_15);
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
   } else {
     debug(book, verbose, 'Saving - not needed, prices were not updated')
@@ -55,7 +54,7 @@ export async function updatePricing(book: Book, params: ActionParams): Promise<A
   return new ActionResult(true);
 }
 
-async function updateMarketplace(marketplace: string, page: Page, book: Book, verbose: boolean): Promise<boolean> {
+async function updateMarketplace(marketplace: string, page: PageInterface, book: Book, verbose: boolean): Promise<boolean> {
   const id = `#data-pricing-print-${marketplace}-price-input input`;
   const newPrice = book.getPriceForMarketplace(marketplace);
   return await updateTextFieldIfChanged(id, '' + newPrice, 'price for ' + marketplace + " marketplace", page, book, verbose);

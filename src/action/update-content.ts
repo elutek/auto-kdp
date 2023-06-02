@@ -1,8 +1,9 @@
 import { ActionResult } from '../util/action-result.js';
 import { debug, error } from '../util/utils.js'
-import { Timeouts, Urls, fileExists, maybeClosePage } from './action-utils.js';
+import { Urls, fileExists, maybeClosePage } from './action-utils.js';
 import { Book } from '../book/book.js';
 import { ActionParams } from '../util/action-params.js';
+import { Timeouts } from '../util/timeouts.js';
 
 export async function updateContent(book: Book, params: ActionParams): Promise<ActionResult> {
     const verbose = params.verbose;
@@ -24,7 +25,7 @@ export async function updateContent(book: Book, params: ActionParams): Promise<A
     debug(book, verbose, 'Updating content at url: ' + url);
     const page = await params.browser.newPage();
 
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_1 });
+    await page.goto(url, Timeouts.MIN_1);
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
     // Select self-uploaded cover.
@@ -33,21 +34,16 @@ export async function updateContent(book: Book, params: ActionParams): Promise<A
         debug(book, verbose, 'Selecting PDF cover option');
         let id = '#data-print-book-publisher-cover-choice-accordion';
         let selector = id + ' [data-a-accordion-row-name=\'UPLOAD\'] a[data-action=\'a-accordion\']';
-        await page.waitForSelector(selector);
-        await page.click(selector);
+        await page.click(selector, Timeouts.SEC_1);
         await page.waitForTimeout(Timeouts.SEC_1);
     }
 
     // Cover
     {
         debug(book, verbose, 'Uploading cover');
-        const futureCoverFileChooser = page.waitForFileChooser({ timeout: Timeouts.MIN_3 });
-        await page.click('#data-print-book-publisher-cover-file-upload-browse-button-announce');
-        const coverFileChooser = await futureCoverFileChooser;
-        await coverFileChooser.accept([book.coverLocalFile]);
+        page.selectFile('#data-print-book-publisher-cover-file-upload-browse-button-announce', book.coverLocalFile, Timeouts.MIN_3);
         debug(book, verbose, 'Waiting for cover file chooser');
-        await page.waitForSelector('#data-print-book-publisher-cover-file-upload-success',
-            { visible: true, timeout: Timeouts.MIN_15 });
+        await page.waitForSelectorVisible('#data-print-book-publisher-cover-file-upload-success', Timeouts.MIN_15);
         await page.waitForTimeout(Timeouts.SEC_2);
         debug(book, verbose, 'Cover upload done');
     }
@@ -56,40 +52,36 @@ export async function updateContent(book: Book, params: ActionParams): Promise<A
     // Manuscript
     {
         debug(book, verbose, 'Uploading manuscript');
-        const futureManuscriptFileChooser = page.waitForFileChooser({ timeout: Timeouts.MIN_3 });
-        await page.click('#data-print-book-publisher-interior-file-upload-browse-button-announce');
-        const manuscriptFileChooser = await futureManuscriptFileChooser;
-        await manuscriptFileChooser.accept([book.manuscriptLocalFile]);
+        page.selectFile('#data-print-book-publisher-interior-file-upload-browse-button-announce', book.manuscriptLocalFile, Timeouts.MIN_3);
         debug(book, verbose, 'Waiting for manuscript file chooser');
-        await page.waitForSelector('#data-print-book-publisher-interior-file-upload-success',
-            { visible: true, timeout: Timeouts.MIN_15 });
+        await page.waitForSelectorVisible('#data-print-book-publisher-interior-file-upload-success', Timeouts.MIN_15);
     }
 
     // Click Launch previewer
     debug(book, verbose, 'Clicking Launch Previewer (typically takes 3.5min)');
-    await page.waitForSelector('#print-preview-noconfirm-announce');
+    await page.waitForSelector('#print-preview-noconfirm-announce', Timeouts.SEC_30);
     debug(book, verbose, 'Clicking Launch Previewer/1');
-    await page.click('#print-preview-noconfirm-announce');
+    await page.click('#print-preview-noconfirm-announce', Timeouts.SEC_10);
     debug(book, verbose, 'Clicking Launch Previewer/2');
-    await page.waitForNavigation({ timeout: Timeouts.MIN_15 });
+    await page.waitForNavigation(Timeouts.MIN_15);
     debug(book, verbose, 'Clicking Launch Previewer/3');
     await page.waitForTimeout(Timeouts.SEC_2);  // Just in case.
 
     // Click Approve on the preview page.
     debug(book, verbose, 'Clicking Approve');
-    await page.waitForSelector('#printpreview_approve_button_enabled a', { timeout: Timeouts.MIN_3 });
+    await page.waitForSelector('#printpreview_approve_button_enabled a', Timeouts.MIN_3);
     debug(book, verbose, 'Clicking Approve/1');
-    await page.click('#printpreview_approve_button_enabled a');
+    await page.click('#printpreview_approve_button_enabled a', Timeouts.MIN_1);
     debug(book, verbose, 'Clicking Approve/2');
-    await page.waitForSelector('#save-announce', { visible: true, timeout: Timeouts.MIN_3 });
+    await page.waitForSelectorVisible('#save-announce', Timeouts.MIN_3);
     debug(book, verbose, 'Clicking Approve/3');
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
     // Save.
     debug(book, verbose, 'Clicking Save');
-    await page.click('#save-announce');
-    await page.waitForSelector('#potter-success-alert-bottom div div', { visible: true });
-    await page.waitForTimeout(500);  // Just in case.
+    await page.click('#save-announce', Timeouts.MIN_1);
+    await page.waitForSelectorVisible('#potter-success-alert-bottom div div', Timeouts.MIN_1);
+    await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
     await maybeClosePage(params, page);
     return new ActionResult(true);

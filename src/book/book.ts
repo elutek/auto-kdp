@@ -297,10 +297,12 @@ export class Book {
       }
       result += "    " + key + " = " + val + "\n";
     }
+    /*
     result += `Preserved keys (${this.origData.size})\n`;
     for (const [key, val] of this.origData) {
       result += "    " + key + " = " + val + "\n";
     }
+    */
     return result;
   }
 }

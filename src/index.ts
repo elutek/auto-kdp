@@ -1,10 +1,6 @@
 #!/usr/bin/env node
 
 import { program } from 'commander';
-import { Browser } from 'puppeteer';
-
-import puppeteer from 'puppeteer-extra'
-import StealthPlugin from 'puppeteer-extra-plugin-stealth'
 
 import { BookFile } from './book/book-file.js';
 import { ExecuteBookActions } from './util/book-action-executor.js';
@@ -26,14 +22,16 @@ import { unpublish } from './action/unpublish.js';
 import { archive } from './action/archive.js';
 import { setSeriesTitle } from './action/set-series-title.js';
 
-import pkg from 'sleep';
 import { BookList } from './book/book-list.js';
 import { Book } from './book/book.js';
+import { BrowserInterface, PuppeteerBrowser } from './browser.js';
+
+import pkg from 'sleep';
 const { sleep } = pkg;
 
 
 async function executeBookActionCallback(action: string, book: Book, params: ActionParams) {
-  debug(book, params.verbose, '----- ' + action + '-----'; 
+  debug(book, params.verbose, '----- ' + action + '-----');
 
   switch (action) {
     case 'archive': return await archive(book, params); break;
@@ -54,19 +52,13 @@ async function executeBookActionCallback(action: string, book: Book, params: Act
   throw new Error('Unknown action: ' + action);
 }
 
-async function _startBrowser(bookList: BookList, headlessOverride: boolean, userDataDir: string, verbose: boolean): Promise<Browser> {
-  let headless = headlessOverride != null ? headlessOverride :
+async function _startPuppeteerBrowser(bookList: BookList, headlessOverride: boolean, userDataDir: string, verbose: boolean): Promise<BrowserInterface> {
+  const headless = headlessOverride != null ? headlessOverride :
     // Headless is not overriden: the default is whether there is a "content" action
     // which for an unknown reason does not work in a headless mode.
     !bookList.containsContentAction();
 
-  return await puppeteer
-    .use(StealthPlugin())
-    .launch({
-      headless: headless,
-      defaultViewport: null,
-      userDataDir: userDataDir
-    });
+  return PuppeteerBrowser.create(headless, userDataDir);
 }
 
 async function processOneBook(bookFile: BookFile, bookList: BookList, book: Book, params: ActionParams) {
@@ -114,7 +106,7 @@ async function mainWithOptions(booksCsvFile: string, booksConfigFile: string, co
   if (verbose) {
     console.debug('Starting browser');
   }
-  let browser = await _startBrowser(bookList, headlessOverride, userDataDir, verbose);
+  const browser = await _startPuppeteerBrowser(bookList, headlessOverride, userDataDir, verbose);
   if (verbose) {
     console.debug('Browser started');
   }

@@ -1,11 +1,12 @@
-
 import { Page } from 'puppeteer';
 
 import { ActionResult } from '../util/action-result.js';
 import { debug, error, arraysEqual, cleanupHtmlForAmazonDescription, clipLen } from '../util/utils.js';
-import { updateTextFieldIfChanged, clickSomething, Timeouts, Urls, clearTextField, maybeClosePage, waitForElements, selectValue, updateTextAreaIfChanged, getTextFieldValue, hasElement, updateHiddenTextField } from './action-utils.js';
+import { updateTextFieldIfChanged, clickSomething, Urls, maybeClosePage, waitForElements, selectValue, updateTextAreaIfChanged, getTextFieldValue, updateHiddenTextField } from './action-utils.js';
 import { Book } from '../book/book.js';
 import { ActionParams } from '../util/action-params.js';
+import { PageInterface } from '../browser.js';
+import { Timeouts } from '../util/timeouts.js';
 
 // This function also creates a book.
 export async function updateBookMetadata(book: Book, params: ActionParams): Promise<ActionResult> {
@@ -27,9 +28,9 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
   debug(book, verbose, (isNew ? 'Creating' : 'Updating') + ' at url: ' + url);
 
   const page = await params.browser.newPage();
-  let response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_1 });
+  const statusCode = await page.goto(url, Timeouts.MIN_1);
 
-  if (response.status() == 500) {
+  if (statusCode == 500) {
     error(book, 'KDP returned internal erorr (500).');
     await maybeClosePage(params, page);
     return new ActionResult(false).doNotRetry();
@@ -100,8 +101,8 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
       '#data-print-book-categories-1-bisac',
       '#data-print-book-categories-2-bisac',
     ]);
-    const category1 = isNew ? '' : (await page.$eval('#data-print-book-categories-1-bisac', x => (x as HTMLInputElement).value)) || '';
-    const category2 = isNew ? '' : (await page.$eval('#data-print-book-categories-2-bisac', x => (x as HTMLInputElement).value)) || '';
+    const category1 = isNew ? '' : (await page.evalValue('#data-print-book-categories-1-bisac', x => (x as HTMLInputElement).value, Timeouts.SEC_5));
+    const category2 = isNew ? '' : (await page.evalValue('#data-print-book-categories-2-bisac', x => (x as HTMLInputElement).value, Timeouts.SEC_5));
     const hasCategoriesSorted = [category1, category2].filter((x) => x != null && x != '').sort();
     const needCategoriesSorted = [book.category1, book.category2].filter((x) => x != null && x != '').sort();
     categoryNeedsUpdate = !arraysEqual(hasCategoriesSorted, needCategoriesSorted);
@@ -109,23 +110,26 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
     if (isNew || categoryNeedsUpdate) {
       debug(book, verbose, 'Updating categories');
       let id = '#data-print-book-categories-1-bisac';
-      await page.$eval(id, (el: HTMLInputElement, book: Book) => {
-        if (el) {
-          el.value = book.category1;
-        } else {
-          error(book, 'Could not update category 1');
-          throw Error('Could not update category 1');
-        }
-      }, book);
-      id = '#data-print-book-categories-2-bisac';
-      await page.$eval(id, (el: HTMLInputElement, book: Book) => {
-        if (el) {
-          el.value = book.category2;
-        } else {
-          error(book, 'Could not update category 2');
-          throw Error('Could not update category 2');
-        }
-      }, book);
+      if (page instanceof Page) {
+        let p = page as Page;
+        await p.$eval(id, (el: HTMLInputElement, book: Book) => {
+          if (el) {
+            el.value = book.category1;
+          } else {
+            error(book, 'Could not update category 1');
+            throw Error('Could not update category 1');
+          }
+        }, book);
+        id = '#data-print-book-categories-2-bisac';
+        await page.$eval(id, (el: HTMLInputElement, book: Book) => {
+          if (el) {
+            el.value = book.category2;
+          } else {
+            error(book, 'Could not update category 2');
+            throw Error('Could not update category 2');
+          }
+        }, book);
+      }
     } else {
       debug(book, verbose, `Selecting categories - not needed, got ${category1}, ${category2}`);
     }
@@ -138,8 +142,7 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
   // Check status of the book metadata
   {
     const id = '#book-setup-navigation-bar-details-link .a-alert-content';
-    await page.waitForSelector(id);
-    const metadataStatus = await page.$eval(id, x => x.textContent.trim()) || '';
+    const metadataStatus = await page.evalValue(id, x => x.textContent.trim(), Timeouts.SEC_5);
     let isMetadataStatusOk = metadataStatus == 'Complete';
     debug(book, verbose, 'Book metadata status: ' + (isMetadataStatusOk ? 'OK' : metadataStatus));
   }
@@ -148,9 +151,9 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
   let isSuccess = true;
   await clickSomething('#save-announce', 'Save', page, book, verbose);
   if (isNew) {
-    await page.waitForNavigation();
+    await page.waitForNavigation(Timeouts.SEC_5);
   } else {
-    await page.waitForSelector('#potter-success-alert-bottom div div', { visible: true });
+    await page.waitForSelectorVisible('#potter-success-alert-bottom div div', Timeouts.SEC_5);
     await page.waitForTimeout(Timeouts.SEC_2);
   }
 
@@ -172,7 +175,7 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
   return new ActionResult(isSuccess);
 }
 
-async function initCategories(page: Page, book: Book, verbose: boolean) {
+async function initCategories(page: PageInterface, book: Book, verbose: boolean) {
   // Determine the dummy value first. It depends on book language.
 
   let dummyCategory = '';

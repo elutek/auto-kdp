@@ -1,10 +1,11 @@
 import { ActionParams } from '../util/action-params.js';
 import { ActionResult } from '../util/action-result.js';
 import { debug, error, stripPrefix } from '../util/utils.js';
-import { Timeouts, Urls, maybeClosePage } from './action-utils.js';
+import { Urls, maybeClosePage } from './action-utils.js';
 import { Book } from '../book/book.js';
+import { Timeouts } from '../util/timeouts.js';
 
-export async function scrapeAmazonCoverImageUrl(book:Book, params:ActionParams): Promise<ActionResult> {
+export async function scrapeAmazonCoverImageUrl(book: Book, params: ActionParams): Promise<ActionResult> {
   const verbose = params.verbose;
 
   if (params.dryRun) {
@@ -21,11 +22,7 @@ export async function scrapeAmazonCoverImageUrl(book:Book, params:ActionParams):
 
   const page = await params.browser.newPage();
 
-  const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_3 });
-  await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
-
-  // Get raw content
-  const text = await response.text();
+  const text = await page.getRawContent(url, Timeouts.MIN_3);
   const resultUrl = doScrapeAmazonCoverImageUrl(text, book, verbose);
   const success = resultUrl != null && resultUrl != '';
 

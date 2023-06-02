@@ -1,8 +1,9 @@
 import { ActionResult } from '../util/action-result.js';
 import { debug, error } from '../util/utils.js'
-import { Timeouts, Urls, maybeClosePage } from './action-utils.js';
+import { Urls, maybeClosePage } from './action-utils.js';
 import { Book } from '../book/book.js';
 import { ActionParams } from '../util/action-params.js';
+import { Timeouts } from '../util/timeouts.js';
 
 export async function updateContentMetadata(book: Book, params: ActionParams): Promise<ActionResult> {
   const verbose = params.verbose;
@@ -21,7 +22,7 @@ export async function updateContentMetadata(book: Book, params: ActionParams): P
   debug(book, verbose, 'Updating content metadata at url: ' + url);
   const page = await params.browser.newPage();
 
-  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: Timeouts.MIN_1 });
+  await page.goto(url, Timeouts.MIN_1);
   await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
   debug(book, verbose, 'Loaded');
 
@@ -29,25 +30,17 @@ export async function updateContentMetadata(book: Book, params: ActionParams): P
   // TODO: Support providing your own ISBN.
   if (book.isbn == '' && !book.wasEverPublished) {
     // Click 'Get a free KDP ISBN'
-    debug(book, verbose, 'Getting ISBN/1');
-    await page.waitForSelector('#free-print-isbn-btn-announce', { timeout: Timeouts.MIN_3 });
-    debug(book, verbose, 'Getting ISBN/2');
-    await page.click('#free-print-isbn-btn-announce');
-    debug(book, verbose, 'Getting ISBN/3');
-    await page.waitForSelector('#print-isbn-confirm-button-announce', { timeout: Timeouts.MIN_3 });
-    debug(book, verbose, 'Getting ISBN/4');
+    await page.click('#free-print-isbn-btn-announce', Timeouts.MIN_3);
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
     // Confirm that this ISBN can only be used on Amazon.
-    await page.click('#print-isbn-confirm-button-announce');
+    await page.click('#print-isbn-confirm-button-announce', Timeouts.MIN_3);
     debug(book, verbose, 'Getting ISBN/5');
-    await page.waitForSelector('#free-print-isbn-accordion-row span[data-path="view.free_isbn"]',
-      { visible: true, timeout: Timeouts.MIN_3 });
+    await page.waitForSelectorVisible('#free-print-isbn-accordion-row span[data-path="view.free_isbn"]', Timeouts.MIN_3);
     debug(book, verbose, 'Getting ISBN/6');
     await page.waitForTimeout(Timeouts.SEC_2);  // Just in case.
     debug(book, verbose, 'Getting ISBN/7');
-    const isbn = await page.$eval('#free-print-isbn-accordion-row span[data-path="view.free_isbn"]',
-      el => el.innerText, { timeout: Timeouts.MIN_3 });
+    const isbn = await page.evalValue('#free-print-isbn-accordion-row span[data-path="view.free_isbn"]', el => el.innerText, Timeouts.SEC_30);
     debug(book, verbose, 'Got ISBN: ' + isbn);
     book.isbn = isbn;
 
@@ -72,8 +65,7 @@ export async function updateContentMetadata(book: Book, params: ActionParams): P
     } else {
       throw new Error('Unrecognized value for paper color: ' + book.paperColor);
     }
-    await page.waitForSelector(id);
-    await page.click(id);
+    await page.click(id, Timeouts.SEC_5);
 
     // Print option: bleed
     debug(book, verbose, 'Selecting bleed');
@@ -84,8 +76,7 @@ export async function updateContentMetadata(book: Book, params: ActionParams): P
     } else {
       throw new Error('Unrecognized value for bleed: ' + book.paperBleed);
     }
-    await page.waitForSelector(id);
-    await page.click(id);
+    await page.click(id, Timeouts.SEC_5);
 
     // Print option: glossy paper.
     debug(book, verbose, 'Selecting glossy paper');
@@ -96,14 +87,12 @@ export async function updateContentMetadata(book: Book, params: ActionParams): P
     } else {
       throw new Error('Unrecognized value for paper finish: ' + book.paperCoverFinish);
     }
-    await page.waitForSelector(id);
-    await page.click(id);
+    await page.click(id, Timeouts.SEC_5);
 
     // Select trim. First click 'select different size' 
     debug(book, verbose, 'Selecting trim');
     id = '#trim-size-btn-announce';
-    await page.waitForSelector(id);
-    await page.click(id);
+    await page.click(id, Timeouts.SEC_5);
 
     // Select trim size.
     debug(book, verbose, 'Selecting trim: ' + book.paperTrim);
@@ -121,19 +110,16 @@ export async function updateContentMetadata(book: Book, params: ActionParams): P
       throw new Error('Unrecognized value for paper trim: ' + book.paperTrim);
     }
     // TODO: Support more trim sizes
-    await page.waitForSelector(id);
-    await page.focus(id);
+    await page.focus(id, Timeouts.SEC_5);
 
     debug(book, verbose, 'got focus');
-    await page.waitForTimeout(Timeouts.SEC_1);
-    await page.click(id);
-    await page.waitForTimeout(Timeouts.SEC_1);
+    await page.click(id, Timeouts.SEC_5);
   }
 
   // Save
   debug(book, verbose, 'Saving metadata');
-  await page.click('#save-announce');
-  await page.waitForSelector('#potter-success-alert-bottom div div', { visible: true });
+  await page.click('#save-announce', Timeouts.SEC_5);
+  await page.waitForSelectorVisible('#potter-success-alert-bottom div div', Timeouts.SEC_1);
   await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
   await maybeClosePage(params, page);
