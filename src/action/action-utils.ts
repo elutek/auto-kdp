@@ -3,7 +3,7 @@ import { Browser, Page } from 'puppeteer';
 
 import { ActionParams } from '../util/action-params.js';
 import { Book } from '../book/book.js';
-import { clipLen, debug } from '../util/utils.js';
+import { clipLen, debug, error } from '../util/utils.js';
 
 export let Timeouts = {
     SEC_QUARTER: 250,
@@ -76,6 +76,20 @@ async function numOpenTabs(browser: Browser): Promise<number> {
     return (await browser.pages()).length;
 }
 
+export async function getTextFieldValue(id: string, page: Page): Promise<string> {
+    // debug(book, verbose, `Waiting for the text element (${id})`);
+    try {
+        await page.waitForSelector(id, { timeout: Timeouts.SEC_2 });
+    } catch (TimeoutError) {
+        return '';
+    }
+
+    // Read the old value.
+    const oldValue = await page.$eval(id, x => (x as HTMLInputElement).value) || '';
+
+    return oldValue;
+}
+
 export async function updateTextFieldIfChanged(id: string, value: string, fieldHumanName: string, page: Page, book: Book, verbose: boolean): Promise<boolean> {
     // debug(book, verbose, `Waiting for the text element (${id})`);
     await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
@@ -94,6 +108,31 @@ export async function updateTextFieldIfChanged(id: string, value: string, fieldH
     if (value != '') {
         await page.type(id, value);
     }
+
+    return true;
+}
+export async function updateHiddenTextField(id: string, value: string, fieldHumanName: string, page: Page, book: Book, verbose: boolean): Promise<boolean> {
+    // debug(book, verbose, `Waiting for the text element (${id})`);
+    await page.waitForSelector(id, { timeout: Timeouts.SEC_10 });
+
+    // Read the old value.
+    const oldValue = await page.$eval(id, x => (x as HTMLInputElement).value) || '';
+
+    // If they are the same, we are done.
+    if (oldValue == value) {
+        debug(book, verbose, `No need to update ${fieldHumanName} (hidden), got ${oldValue}`);
+        return false;
+    }
+    // Otherwise, update the value.
+    debug(book, verbose, `Updating ${fieldHumanName} (hidden) from ${oldValue} to ${value}`);
+    await page.$eval(id, (el: HTMLInputElement, value: string, book: Book, fieldHumanName: string) => {
+        if (el) {
+            el.value = value;
+        } else {
+            error(book, 'Could not update ' + fieldHumanName);
+            throw Error('Could not update ' + fieldHumanName);
+        }
+    }, value, book, fieldHumanName);
 
     return true;
 }
@@ -132,5 +171,16 @@ export async function updateTextAreaIfChanged(id: string, value: string, process
         await page.type(id, newValue);
     } else {
         debug(book, verbose, `Updating ${fieldHumanName}- not needed, got ${clipLen(oldValue)}`);
+    }
+}
+
+export async function hasElement(id: string, page: Page, book: Book, verbose: boolean): Promise<boolean> {
+    try {
+        await page.waitForSelector(id, { timeout: Timeouts.SEC_HALF });
+        debug(book, verbose, `Element exists: ${id}`);
+        return true;
+    } catch (e) {
+        debug(book, verbose, `Element does not exist: ${id}`);
+        return false;
     }
 }

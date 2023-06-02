@@ -136,6 +136,7 @@ export class Book {
     this.pubStatusDetail = getValue(Keys.PUB_STATUS_DETAIL);
     this.wasEverPublished = getValue(Keys.WAS_EVER_PUBLISHED) == 'true';
     this.scrapedSeriesTitle = getValue(Keys.SCRAPED_SERIES_TITLE);
+    this.coverImageUrl = getValue(Keys.COVER_IMAGE_URL);
 
     // Fields that AutoKdp is not allowed to update
     this.authorFirstName = getValue(Keys.AUTHOR_FIRST_NAME);
@@ -146,7 +147,6 @@ export class Book {
     this.newCategory2 = getValue(Keys.NEW_CATEGORY2);
     this.newCategory3 = getValue(Keys.NEW_CATEGORY3);
     this.coverLocalFile = contentDir + '/' + getValue(Keys.COVER_FILE);
-    this.coverImageUrl = getValue(Keys.COVER_IMAGE_URL);
     this.description = getValue(Keys.DESCRIPTION);
     this.illustratorFirstName = getValue(Keys.ILLUSTRATOR_FIRST_NAME);
     this.illustratorLastName = getValue(Keys.ILLUSTRATOR_LAST_NAME);
@@ -221,10 +221,17 @@ export class Book {
     return this.origData.get(key);
   }
 
+  hasOldCategories() {
+    return this.category1 != '' && this.category2 != '';
+  }
+
+  hasNewCategories() {
+    return this.newCategory1 != '' && this.newCategory2 != '' && this.newCategory3 != '';
+  }
+
   canBeCreated() {
     return this.title != '' && this.authorFirstName != '' && this.authorLastName != '' &&
-      this.description != '' && ((this.category1 != '' && this.category2 != '') ||
-        (this.newCategory1 != '' && this.newCategory2 != '' && this.newCategory3 != ''));
+      this.description != '' && (this.hasOldCategories() || this.hasNewCategories());
   }
 
   isFullyLive() {

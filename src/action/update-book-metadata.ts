@@ -1,6 +1,9 @@
+
+import { Page } from 'puppeteer';
+
 import { ActionResult } from '../util/action-result.js';
 import { debug, error, arraysEqual, cleanupHtmlForAmazonDescription, clipLen } from '../util/utils.js';
-import { updateTextFieldIfChanged, clickSomething, Timeouts, Urls, clearTextField, maybeClosePage, waitForElements, selectValue, updateTextAreaIfChanged } from './action-utils.js';
+import { updateTextFieldIfChanged, clickSomething, Timeouts, Urls, clearTextField, maybeClosePage, waitForElements, selectValue, updateTextAreaIfChanged, getTextFieldValue, hasElement, updateHiddenTextField } from './action-utils.js';
 import { Book } from '../book/book.js';
 import { ActionParams } from '../util/action-params.js';
 
@@ -68,40 +71,64 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
   await updateTextFieldIfChanged('#data-print-book-keywords-5', book.keyword5, "keyword 5", page, book, verbose);
   await updateTextFieldIfChanged('#data-print-book-keywords-6', book.keyword6, "keyword 6", page, book, verbose);
 
-  // Categories - this field is unusual. We just fill the value we need in a hidden field
-  // because manually navigating throught the selection tree woudl be tons of work.
-  await waitForElements(page, [
-    '#data-print-book-categories-1-bisac',
-    '#data-print-book-categories-2-bisac',
-  ]);
-  const category1 = isNew ? '' : (await page.$eval('#data-print-book-categories-1-bisac', x => (x as HTMLInputElement).value)) || '';
-  const category2 = isNew ? '' : (await page.$eval('#data-print-book-categories-2-bisac', x => (x as HTMLInputElement).value)) || '';
-  const hasCategoriesSorted = [category1, category2].filter((x) => x != null && x != '').sort();
-  const needCategoriesSorted = [book.category1, book.category2].filter((x) => x != null && x != '').sort();
-  const categoryNeedsUpdate = !arraysEqual(hasCategoriesSorted, needCategoriesSorted);
 
-  if (isNew || categoryNeedsUpdate) {
-    debug(book, verbose, 'Updating categories');
-    let id = '#data-print-book-categories-1-bisac';
-    await page.$eval(id, (el: HTMLInputElement, book: Book) => {
-      if (el) {
-        el.value = book.category1;
-      } else {
-        error(book, 'Could not update category 1');
-        throw Error('Could not update category 1');
-      }
-    }, book);
-    id = '#data-print-book-categories-2-bisac';
-    await page.$eval(id, (el: HTMLInputElement, book: Book) => {
-      if (el) {
-        el.value = book.category2;
-      } else {
-        error(book, 'Could not update category 2');
-        throw Error('Could not update category 2');
-      }
-    }, book);
+  // Categories. First figure out which categories should be used.
+  let categoryNeedsUpdate = false;
+  let hasNewCategories = book.newCategory1 != '' || book.newCategory2 != '' || book.newCategory3 != '';
+
+  if (hasNewCategories) {
+    if (await getTextFieldValue("#section-categories ul li:nth-child(1) input[type='hidden']", page) == '' ||
+      await getTextFieldValue("#section-categories ul li:nth-child(2) input[type='hidden']", page) == '' ||
+      await getTextFieldValue("#section-categories ul li:nth-child(3) input[type='hidden']", page) == '') {
+      debug(book, verbose, "Need to init categories");
+      await initCategories(page, book, verbose);
+      categoryNeedsUpdate = true;
+    }
+    if (await updateHiddenTextField("#section-categories ul li:nth-child(1) input[type='hidden']", book.newCategory1, 'category 1', page, book, verbose)) {
+      categoryNeedsUpdate = true;
+    }
+    if (await updateHiddenTextField("#section-categories ul li:nth-child(2) input[type='hidden']", book.newCategory2, 'category 2', page, book, verbose)) {
+      categoryNeedsUpdate = true;
+    }
+    if (await updateHiddenTextField("#section-categories ul li:nth-child(3) input[type='hidden']", book.newCategory3, 'category 3', page, book, verbose)) {
+      categoryNeedsUpdate = true;
+    }
   } else {
-    debug(book, verbose, `Selecting categories - not needed, got ${category1}, ${category2}`);
+    // Old categories - this field is unusual. We just fill the value we need in a hidden field
+    // because manually navigating throught the selection tree woudl be tons of work.
+    await waitForElements(page, [
+      '#data-print-book-categories-1-bisac',
+      '#data-print-book-categories-2-bisac',
+    ]);
+    const category1 = isNew ? '' : (await page.$eval('#data-print-book-categories-1-bisac', x => (x as HTMLInputElement).value)) || '';
+    const category2 = isNew ? '' : (await page.$eval('#data-print-book-categories-2-bisac', x => (x as HTMLInputElement).value)) || '';
+    const hasCategoriesSorted = [category1, category2].filter((x) => x != null && x != '').sort();
+    const needCategoriesSorted = [book.category1, book.category2].filter((x) => x != null && x != '').sort();
+    categoryNeedsUpdate = !arraysEqual(hasCategoriesSorted, needCategoriesSorted);
+
+    if (isNew || categoryNeedsUpdate) {
+      debug(book, verbose, 'Updating categories');
+      let id = '#data-print-book-categories-1-bisac';
+      await page.$eval(id, (el: HTMLInputElement, book: Book) => {
+        if (el) {
+          el.value = book.category1;
+        } else {
+          error(book, 'Could not update category 1');
+          throw Error('Could not update category 1');
+        }
+      }, book);
+      id = '#data-print-book-categories-2-bisac';
+      await page.$eval(id, (el: HTMLInputElement, book: Book) => {
+        if (el) {
+          el.value = book.category2;
+        } else {
+          error(book, 'Could not update category 2');
+          throw Error('Could not update category 2');
+        }
+      }, book);
+    } else {
+      debug(book, verbose, `Selecting categories - not needed, got ${category1}, ${category2}`);
+    }
   }
 
   // Whether adult content
@@ -143,4 +170,39 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
 
   await maybeClosePage(params, page);
   return new ActionResult(isSuccess);
+}
+
+async function initCategories(page: Page, book: Book, verbose: boolean) {
+  // Determine the dummy value first. It depends on book language.
+
+  let dummyCategory = '';
+  switch (book.language) {
+    // The exact category does not matter. This is only to initialize to anything,
+    // and will be overridden immediately. Pick anything that has at least 3 subcategories,
+    // and ideally is notthing embarrasing, just in case due to some mistake it
+    // becomes visible to users.
+    case "English": dummyCategory = '{"level":0,"key":"Calendars","nodeId":"3248857011"}'; break;
+    case "Polish": dummyCategory = '{"level":0,"key":"Beletrystyka","nodeId":"20788878031"}'; break;
+    case "Spanish": dummyCategory = '{"level":0,"key":"Arte y fotografía","nodeId":"902486031"}'; break;
+    case "German": dummyCategory = '{"level":0,"key":"Biografien & Erinnerungen","nodeId":"187254"}'; break;
+    case "French": dummyCategory = '{"level":0,"key":"Beaux livres","nodeId":"293136011"}'; break;
+    case "Italian": dummyCategory = '{"level":0,"key":"Diritto","nodeId":"508785031"}'; break;
+    default:
+      throw new Error("Setting categories for a book written in " + book.language + " is not supported yet");
+  }
+
+  await clickSomething('#categories-modal-button', 'Choose/Edit categories', page, book, verbose);
+  await page.waitForTimeout(Timeouts.SEC_HALF);
+  await selectValue('.a-popover-inner #react-aui-modal-content-1 select', dummyCategory, "First dummy Category", page, book, verbose);
+  await page.waitForTimeout(Timeouts.SEC_HALF);
+  await clickSomething('.a-popover-inner #react-aui-modal-content-1 .a-checkbox:nth-child(1) input', "First dummy Category", page, book, verbose);
+  await page.waitForTimeout(Timeouts.SEC_HALF);
+  await clickSomething('.a-popover-inner #react-aui-modal-content-1 .a-checkbox:nth-child(2) input', "Second dummy Category", page, book, verbose);
+  await page.waitForTimeout(Timeouts.SEC_HALF);
+  await clickSomething('.a-popover-inner #react-aui-modal-content-1 .a-checkbox:nth-child(3) input', "Third dummy Category", page, book, verbose);
+  await page.waitForTimeout(Timeouts.SEC_HALF);
+  await clickSomething('.a-popover-footer #react-aui-modal-footer-1 .a-button-primary button', 'Save', page, book, verbose);
+  await page.waitForTimeout(Timeouts.SEC_HALF);
+  await clickSomething('.a-popover-footer #react-aui-modal-footer-2 .a-button-primary button', 'Continue (to remove existing categories)', page, book, verbose);
+  await page.waitForTimeout(Timeouts.SEC_HALF);
 }
