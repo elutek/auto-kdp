@@ -110,6 +110,10 @@ export class Book {
     // Retrieve all required values.
     let getValue = (x: string) => {
       if (!resolvedDataMap.has(x)) {
+        if (x == 'category1' || x == 'category2') {
+          // Permit category1 or category2 be missing because they are getting deprecated.
+          return '';
+        }
         throw 'Key not found: ' + x;
       }
       let val = resolvedDataMap.get(x);
