@@ -35,7 +35,9 @@ export async function updatePricing(book: Book, params: ActionParams): Promise<A
   // Update all other marketplace prices next.
   for (const marketplace of ALL_MARKETPLACES) {
     if (marketplace != book.primaryMarketplace) {
-      wasUpdated ||= await updateMarketplace(marketplace, page, book, verbose);
+      if (await updateMarketplace(marketplace, page, book, verbose)) {
+        wasUpdated = true;
+      }
     }
   }
 

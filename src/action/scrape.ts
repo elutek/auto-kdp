@@ -104,8 +104,9 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
   for (; attempt < 10; ++attempt) {
     try {
       await page.bringToFront();
-      await page.focus(id, Timeouts.SEC_10);
-      scrapedSeriesTitle = await page.evalValue(id, el => el.innerText.trim(), Timeouts.SEC_10);
+      await page.focus(id, Timeouts.SEC_30);
+      await page.waitForTimeout(Timeouts.SEC_1);
+      scrapedSeriesTitle = await page.evalValue(id, el => el.innerText.trim(), Timeouts.SEC_30);
     } catch (e) {
     }
     if (scrapedSeriesTitle != 'SERIES_TITLE') {

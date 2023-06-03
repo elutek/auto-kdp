@@ -47,9 +47,10 @@ export async function publish(book: Book, params: ActionParams, isForce: boolean
   let isSuccess = ok;
   if (ok) {
     debug(book, verbose, 'Metadata, content and pricing status: OK');
+
     debug(book, verbose, 'Clicking publish');
-    await page.click('#save-and-publish-announce', Timeouts.SEC_30);
-    await page.waitForNavigation(Timeouts.SEC_30);
+    await page.click('#save-and-publish-announce', Timeouts.MIN_1);
+    await page.waitForNavigation(Timeouts.MIN_1 );
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
     book.wasEverPublished = true;

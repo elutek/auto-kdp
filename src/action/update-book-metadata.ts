@@ -149,11 +149,12 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
 
   // Save
   let isSuccess = true;
-  await clickSomething('#save-announce', 'Save', page, book, verbose);
+  debug(book, verbose, `Clicking Save`);
+  await page.click('#save-announce', Timeouts.MIN_1);
   if (isNew) {
-    await page.waitForNavigation(Timeouts.SEC_5);
+    await page.waitForNavigation(Timeouts.MIN_1);
   } else {
-    await page.waitForSelectorVisible('#potter-success-alert-bottom div div', Timeouts.SEC_5);
+    await page.waitForSelectorVisible('#potter-success-alert-bottom div div', Timeouts.MIN_1);
     await page.waitForTimeout(Timeouts.SEC_2);
   }
 
