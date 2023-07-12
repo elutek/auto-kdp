@@ -52,32 +52,35 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
   }
 
   // Get pubStatus from the search result.
-  debug(book, verbose, 'Getting pubStatus');
-  id = '[id="' + book.id + '-status"] .element-popover-text > span';
-  const pubStatus = await page.evalValue(id, el => el.innerText.trim(), Timeouts.SEC_10);
-  book.pubStatus = pubStatus.trim();
-  debug(book, verbose, 'Got pubStatus: ' + pubStatus);
-
-  // Get pubStatusDetail from the search result (it's right after
-  // the pubStatus).
-  debug(book, verbose, 'Getting pubStatusDetail');
-  id = '[id="' + book.id + '-status"] .element-popover-text';
-  let pubStatusDetail = await page.evalValue(id, el => el.innerText.trim(), Timeouts.SEC_10);
-  if (pubStatusDetail.startsWith(pubStatus)) {
-    pubStatusDetail = pubStatusDetail.substr(pubStatus.length).trim();
+  {
+    let id = '[id="' + book.id + '-status"] .element-popover-text span';
+    debug(book, verbose, 'Getting pubStatus');
+    const pubStatus = await page.evalValue(id, el => el.innerText.trim(), Timeouts.SEC_10);
+    book.pubStatus = pubStatus.trim();
+    debug(book, verbose, 'Got pubStatus: ' + pubStatus);
   }
-  book.pubStatusDetail = pubStatusDetail;
-  debug(book, verbose, 'Got pubStatusDetail: ' + pubStatusDetail);
+
+  // Get pubStatusDetail from the search result (it's right after the pubStatus).
+  {
+    let id = '[id="' + book.id + '-status"] .element-popover-text';
+    debug(book, verbose, 'Getting pubStatusDetail');
+    let pubStatusDetail = await page.evalValue(id, el => el.innerText.trim(), Timeouts.SEC_10);
+    pubStatusDetail = stripPrefix(pubStatusDetail, book.pubStatus).trim();
+    book.pubStatusDetail = pubStatusDetail;
+    debug(book, verbose, 'Got pubStatusDetail: ' + pubStatusDetail);
+  }
 
   // Get publication date
-  if (pubStatus == 'LIVE') {
-    debug(book, verbose, 'Getting pubDate');
-    id = '#zme-indie-bookshelf-dual-print-status-release-date-' + book.id;
-    const pubDate = await page.evalValue(id, el => el.innerText.trim(), Timeouts.SEC_10);
-    book.pubDate = _formatDate(stripPrefix(pubDate, 'Submitted on ').trim(), book);
-    debug(book, verbose, `Got pubDate ${book.pubDate} (${pubDate})`);
-  } else {
-    book.pubDate = '';
+  {
+    if (book.pubStatus == 'LIVE') {
+      let id = '#zme-indie-bookshelf-dual-print-status-release-date-' + book.id;
+      debug(book, verbose, 'Getting pubDate');
+      const pubDate = await page.evalValue(id, el => el.innerText.trim(), Timeouts.SEC_10);
+      book.pubDate = _formatDate(stripPrefix(pubDate, 'Submitted on ').trim(), book);
+      debug(book, verbose, `Got pubDate ${book.pubDate} (${pubDate})`);
+    } else {
+      book.pubDate = '';
+    }
   }
 
   // Get titleId
