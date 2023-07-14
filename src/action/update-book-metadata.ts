@@ -72,8 +72,13 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
   await updateTextFieldIfChanged('#data-print-book-keywords-5', book.keyword5, "keyword 5", page, book, verbose);
   await updateTextFieldIfChanged('#data-print-book-keywords-6', book.keyword6, "keyword 6", page, book, verbose);
 
+  // Whether adult content
+  // TODO: We only support non-adult content.
+  await clickSomething('#data-print-book-is-adult-content input[value=\'false\']', 'non-adult content', page, book, verbose);
 
   // Categories. First figure out which categories should be used.
+  // NOTE: Category update needs to be the *LAST* action we do. For some reason it keeps "reloading"
+  // upon edits to other fields.
   let categoryNeedsUpdate = false;
   let hasNewCategories = book.newCategory1 != '' || book.newCategory2 != '' || book.newCategory3 != '';
 
@@ -135,9 +140,6 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
     }
   }
 
-  // Whether adult content
-  // TODO: We only support non-adult content.
-  await clickSomething('#data-print-book-is-adult-content input[value=\'false\']', 'non-adult content', page, book, verbose);
 
   // Check status of the book metadata
   {
@@ -149,13 +151,15 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
 
   // Save
   let isSuccess = true;
-  debug(book, verbose, `Clicking Save`);
-  await page.click('#save-announce', Timeouts.MIN_1);
+  debug(book, verbose, `Clicking Save and Continue`);
+  await page.waitForTimeout(Timeouts.SEC_1);
+  await page.click('#save-and-continue-announce', Timeouts.MIN_1);
   if (isNew) {
     await page.waitForNavigation(Timeouts.MIN_1);
   } else {
-    await page.waitForSelectorVisible('#potter-success-alert-bottom div div', Timeouts.MIN_1);
-    await page.waitForTimeout(Timeouts.SEC_2);
+    //await page.waitForSelectorVisible('#potter-success-alert-bottom div div', Timeouts.MIN_1);
+    await page.waitForNavigation(Timeouts.MIN_1);
+    await page.waitForTimeout(Timeouts.SEC_1);
   }
 
   if (isNew) {
@@ -195,8 +199,9 @@ async function initCategories(page: PageInterface, book: Book, verbose: boolean)
       throw new Error("Setting categories for a book written in " + book.language + " is not supported yet");
   }
 
-  await clickSomething('#categories-modal-button', 'Choose/Edit categories', page, book, verbose);
-  await page.waitForTimeout(Timeouts.SEC_HALF);
+  await page.focus('#categories-modal-button', Timeouts.SEC_1);
+  await clickSomething('#categories-modal-button', 'Choose categories OR Edit Categories', page, book, verbose);
+  await page.waitForTimeout(Timeouts.SEC_1);
   await selectValue('.a-popover-inner #react-aui-modal-content-1 select', dummyCategory, "First dummy Category", page, book, verbose);
   await page.waitForTimeout(Timeouts.SEC_HALF);
   await clickSomething('.a-popover-inner #react-aui-modal-content-1 .a-checkbox:nth-child(1) input', "First dummy Category", page, book, verbose);
