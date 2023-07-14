@@ -46,7 +46,7 @@ export async function updatePricing(book: Book, params: ActionParams): Promise<A
   // Save
   if (wasUpdated) {
     clickSomething('#save-announce', 'Save', page, book, verbose);
-    await page.waitForSelectorVisible('#potter-success-alert-bottom div div', Timeouts.SEC_15);
+    await page.waitForSelectorVisible('#potter-success-alert-bottom div div', Timeouts.SEC_30);
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
   } else {
     debug(book, verbose, 'Saving - not needed, prices were not updated')
