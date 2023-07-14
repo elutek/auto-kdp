@@ -56,7 +56,7 @@ export class PuppeteerBrowser implements BrowserInterface {
         return new PuppeteerBrowser(await puppeteer
             .use(StealthPlugin())
             .launch({
-                headless: headless,
+                headless: headless ? 'new' : false,
                 defaultViewport: null,
                 userDataDir: userDataDir
             }));
@@ -132,8 +132,11 @@ export class PuppeteerPage implements PageInterface {
     }
 
     async click(id: string, timeoutMillis: number) {
+        //console.log("Waiting for id = " + id);
         await this.waitForSelector(id, timeoutMillis);
+        //console.log("Clicking at id = " + id);
         await this.page.click(id);
+        //console.log("Clicked");
     }
 
     async tap(id: string, timeoutMillis: number) {
@@ -153,7 +156,7 @@ export class PuppeteerPage implements PageInterface {
         await this.page.keyboard.press('A');
         await this.page.keyboard.up('Control');
         await this.page.keyboard.press('Backspace');
-        await this.page.waitForTimeout(Timeouts.SEC_1);
+        await this.page.waitForTimeout(Timeouts.SEC_HALF);
     }
 
     async updateValue(id: string, value: string) {
