@@ -11,19 +11,22 @@ export type ActionCallback = (action: string, book: Book, params: any) => Promis
 // If successful returns next actions; if failed, returns null.
 async function doExecuteBookActionWithRetries(action: string, book: Book, actionCallback: ActionCallback, params: ActionParams): Promise<ActionResult> {
     const verbose = params.verbose;
-    let err = null;
     for (let attempt = 1; attempt <= 3; ++attempt) {
+        debug(book, verbose, `Book action ${action} #${attempt} start`);
+        let result: ActionResult = null;
         try {
-            debug(book, verbose, `Book action ${action} #${attempt} start`);
-            const result = await actionCallback(action, book, params);
-            debug(book, verbose, `Book action ${action} #${attempt} done: ` + (result.success ? 'OK' : 'FAILED'));
-            if (result.success || !result.shouldRetry) {
-                return result;
-            }
+            result = await actionCallback(action, book, params);
         } catch (e) {
-            error(book, `Book action ${action} #${attempt} done: throws: ` + e);
+            const m = e.message;
+            error(book, "Action throws: " + e);
+            result = new ActionResult(false).setError(e);
+        }
+        debug(book, verbose, `Book action ${action} #${attempt} done: ` + (result.success ? 'OK' : 'FAILED'));
+        if (result.success || !result.shouldRetry) {
+            return result;
         }
     }
+    // All attempts failed.
     return new ActionResult(false).doNotRetry();
 }
 
