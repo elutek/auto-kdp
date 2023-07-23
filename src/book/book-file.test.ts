@@ -196,9 +196,9 @@ seriesTitle =
 
 test('detects same id', async () => {
     const books_csv =
-        `action,wasEverPublished,id     ,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
-         a     ,false           ,SAMEID,a       ,a   ,a   ,Ava  ,a        ,a      ,a              ,a        ,A
-         a     ,true            ,SAMEID,b       ,b   ,b   ,Belle,b        ,b      ,b              ,b        ,B`;
+        `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
+         a     ,false           ,X ,a       ,a   ,a   ,Ava  ,a        ,a      ,a              ,a        ,A
+         a     ,true            ,X ,b       ,b   ,b   ,Belle,b        ,b      ,b              ,b        ,B`;
 
     mock({
         'books.csv': books_csv,
@@ -209,7 +209,25 @@ test('detects same id', async () => {
     });
 
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
-    await expect(bookFile.readBooksAsync()).rejects.toEqual(new Error('Id not unique: SAMEID'));
+    await expect(bookFile.readBooksAsync()).rejects.toEqual(new Error('Id not unique: X'));
+});
+
+test('detects same ASIN', async () => {
+    const books_csv =
+        `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
+         a     ,false           ,a ,a       ,a   ,X   ,Ava  ,a        ,a      ,a              ,a        ,A
+         a     ,true            ,b ,b       ,b   ,X   ,Belle,b        ,b      ,b              ,b        ,B`;
+
+    mock({
+        'books.csv': books_csv,
+        'books.csv.lock': '',
+        'books.conf': BOOKS_CONF,
+        'content': { dir: {} },
+        'node_modules': mock.load(path.resolve(__dirname, '../../node_modules')),
+    });
+
+    let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
+    await expect(bookFile.readBooksAsync()).rejects.toEqual(new Error('ASIN not unique: X'));
 });
 
 test('detects same isbn', async () => {

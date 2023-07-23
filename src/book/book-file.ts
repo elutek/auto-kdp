@@ -118,7 +118,7 @@ export class BookFile {
     // Check asin uniqueness.
     if (book.asin != '') {
       if (book.asin in this.asins) {
-        throw new Error('Asin not unique: ' + book.asin);
+        throw new Error('ASIN not unique: ' + book.asin);
       }
       this.asins[book.asin] = book;
     }

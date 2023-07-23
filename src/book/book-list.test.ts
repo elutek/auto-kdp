@@ -18,7 +18,12 @@ test('getBooksToProcess()', () => {
     expect(bl.getBooksToProcess()).toEqual(new Map());
   }
   {
-    let bl = makeBookList([makeOkTestBook('a'), makeOkTestBook('b'), makeOkTestBook('a'), makeOkTestBook('')]);
+    let bl = makeBookList([
+      makeOkTestBook({ action: 'a' }),
+      makeOkTestBook({ action: 'b' }),
+      makeOkTestBook({ action: 'a' }),
+      makeOkTestBook({ action: '' })
+    ]);
     let m = bl.getBooksToProcess();
     expect(m.size).toEqual(2);
     expect(m.get('a')).toEqual(2);
@@ -33,7 +38,11 @@ test('getNumBooksToProcess()', () => {
     expect(bl.getNumBooksToProcess()).toEqual(0);
   }
   {
-    let bl = makeBookList([makeOkTestBook('a'), makeOkTestBook('b'), makeOkTestBook('a')]);
+    let bl = makeBookList([
+      makeOkTestBook({ action: 'a' }),
+      makeOkTestBook({ action: 'b' }),
+      makeOkTestBook({ action: 'a' })
+    ]);
     expect(bl.getNumBooksToProcess()).toEqual(3);
     bl.getBooks()[0].action = '';
     expect(bl.getNumBooksToProcess()).toEqual(2);

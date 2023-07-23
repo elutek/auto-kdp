@@ -450,40 +450,40 @@ test('isFullyLive', () => {
 
 test('canBeCreated', () => {
     // Set empty author
-    expect(makeOkTestBook('', '', 'Smith').canBeCreated()).toEqual(false);
-    expect(makeOkTestBook('', 'Alex', '').canBeCreated()).toEqual(false);
+    expect(makeOkTestBook({ authorFirstName: '' }).canBeCreated()).toEqual(false);
+    expect(makeOkTestBook({ authorLastName: '' }).canBeCreated()).toEqual(false);
 });
 
 test('canRewriteAction', () => {
-    expect(makeOkTestBook('blah').action).toEqual('blah');
-    expect(makeOkTestBook('all').action).toMatch(/metadata.*content.*publish/);
-    expect(makeOkTestBook('update-published-book').action).toMatch(/metadata.*pricing.*publish/);
+    expect(makeOkTestBook({ action: 'blah' }).action).toEqual('blah');
+    expect(makeOkTestBook({ action: 'all' }).action).toMatch(/metadata.*content.*publish/); // Just a minimal check.
+    expect(makeOkTestBook({ action: 'all-but-no-publish' }).action).toMatch(/metadata.*content/); // Just a minimal check.
 });
 
 test('can handle first action', () => {
     {
-        const book = makeOkTestBook('a1:a2:a3');
+        const book = makeOkTestBook({ action: 'a1:a2:a3' });
         expect(book.hasAction()).toEqual(true);
         expect(book.getFirstAction()).toEqual('a1');
         expect(book.popFirstAction()).toEqual('a1');
         expect(book.action).toEqual('a2:a3');
     }
     {
-        const book = makeOkTestBook('a1:a2');
+        const book = makeOkTestBook({ action: 'a1:a2' });
         expect(book.hasAction()).toEqual(true);
         expect(book.getFirstAction()).toEqual('a1');
         expect(book.popFirstAction()).toEqual('a1');
         expect(book.action).toEqual('a2');
     }
     {
-        const book = makeOkTestBook('a1');
+        const book = makeOkTestBook({ action: 'a1' });
         expect(book.hasAction()).toEqual(true);
         expect(book.getFirstAction()).toEqual('a1');
         expect(book.popFirstAction()).toEqual('a1');
         expect(book.action).toEqual('');
     }
     {
-        const book = makeOkTestBook('');
+        const book = makeOkTestBook({ action: '' });
         expect(book.hasAction()).toEqual(false);
         expect(book.getFirstAction()).toEqual('');
         expect(book.popFirstAction()).toEqual('');
@@ -491,8 +491,75 @@ test('can handle first action', () => {
     }
 })
 
+test('getPriceForMarketplace', () => {
+    let book = makeOkTestBook({
+        priceAu: '1.1',
+        priceCa: '2.1',
+        priceEur: '3.1',
+        priceGbp: '4.1',
+        priceJp: '5.1',
+        pricePl: '6.1',
+        priceSe: '7.1',
+        priceUsd: '8.1',
+    });
+    expect(book.getPriceForMarketplace("au")).toBe(1.1);
+    expect(book.getPriceForMarketplace("ca")).toBe(2.1);
+    expect(book.getPriceForMarketplace("uk")).toBe(4.1);
+    expect(book.getPriceForMarketplace("jp")).toBe(5.1);
+    expect(book.getPriceForMarketplace("pl")).toBe(6.1);
+    expect(book.getPriceForMarketplace("se")).toBe(7.1);
+    expect(book.getPriceForMarketplace("us")).toBe(8.1);
+
+    expect(book.getPriceForMarketplace("de")).toBe(3.1);
+    expect(book.getPriceForMarketplace("fr")).toBe(3.1);
+    expect(book.getPriceForMarketplace("es")).toBe(3.1);
+    expect(book.getPriceForMarketplace("it")).toBe(3.1);
+    expect(book.getPriceForMarketplace("nl")).toBe(3.1);
+
+    expect(() => book.getPriceForMarketplace("nonexistent")).toThrow(/unrecognized marketplace/i);
+})
+
+test('hasOldCategoried', () => {
+    {
+        // Old categories ok.
+        const book = makeOkTestBook({ category1: 'a', category2: 'b', newCategory1: '', newCategory2: '', newCategory3: '' });
+        expect(book.hasOldCategories()).toBe(true);
+        expect(book.hasNewCategories()).toBe(false);
+        expect(book.canBeCreated()).toBe(true);
+    }
+    {
+        // Old categories missing.
+        const book = makeOkTestBook({ category1: 'a', category2: '', newCategory1: '', newCategory2: '', newCategory3: '' });
+        expect(book.hasOldCategories()).toBe(false);
+        expect(book.hasNewCategories()).toBe(false);
+        expect(book.canBeCreated()).toBe(false);
+    }
+    {
+        // new categories ok.
+        const book = makeOkTestBook({ newCategory1: 'a', newCategory2: 'b', newCategory3: 'c', category1: '', category2: '' });
+        expect(book.hasOldCategories()).toBe(false);
+        expect(book.hasNewCategories()).toBe(true);
+        expect(book.canBeCreated()).toBe(true);
+    }
+    {
+        // new categories missing.
+        const book = makeOkTestBook({ newCategory1: 'a', newCategory2: '', newCategory3: 'c', category1: '', category2: '' });
+        expect(book.hasOldCategories()).toBe(false);
+        expect(book.hasNewCategories()).toBe(false);
+        expect(book.canBeCreated()).toBe(false);
+    }{
+        // both old and new categories ok.
+        const book = makeOkTestBook({ newCategory1: 'a', newCategory2: 'b', newCategory3: 'c', category1: 'd', category2: 'e' });
+        expect(book.hasOldCategories()).toBe(true);
+        expect(book.hasNewCategories()).toBe(true);
+        expect(book.canBeCreated()).toBe(true);
+    }
+})
+
 test('getDataToWrite', () => {
-    const book = makeOkTestBook('my-action');
+    const book = makeOkTestBook({
+        action: 'my-action'
+    });
     expect(book.getDataToWrite()).toEqual({
         "action": "my-action",
         "asin": "test_asin",
@@ -549,7 +616,9 @@ test('getDataToWrite', () => {
 });
 
 test('toString', () => {
-    const book = makeOkTestBook('my-action');
+    const book = makeOkTestBook({
+        action: 'my-action'
+    });
     expect(book.toString().replaceAll(" ", "")).toEqual(
         `action = my-action
        signature = test_signature
@@ -606,11 +675,11 @@ test('toString', () => {
 });
 
 test('badMarketplace', () => {
-    expect(() => makeOkTestBook('my-action', 'test_author_first_name', 'test_author_last_name', 'BAD_MARKETPLACE')).toThrow(/Unrecognized primary marketplace/);
+    expect(() => makeOkTestBook({ primaryMarketplace: 'BAD_MARKETPLACE' })).toThrow(/Unrecognized primary marketplace/);
 });
 
 test('badEdition', () => {
-    expect(() => makeOkTestBook('my-action', 'test_author_first_name', 'test_author_last_name', 'pl', 'notanumber')).toThrow(/Edition must/);
-    expect(() => makeOkTestBook('my-action', 'test_author_first_name', 'test_author_last_name', 'pl', '-1')).toThrow(/Edition must/);
-    expect(() => makeOkTestBook('my-action', 'test_author_first_name', 'test_author_last_name', 'pl', '0')).toThrow(/Edition must/);
+    expect(() => makeOkTestBook({ edition: 'notanumber' })).toThrow(/Edition must/);
+    expect(() => makeOkTestBook({ edition: '-1' })).toThrow(/Edition must/);
+    expect(() => makeOkTestBook({ edition: '0' })).toThrow(/Edition must/);
 });

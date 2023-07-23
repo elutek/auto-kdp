@@ -123,6 +123,7 @@ export class Book {
         try {
           val = fs.readFileSync(fileName, { encoding: 'utf-8' });
         } catch (e) {
+          /* istanbul ignore next */
           throw new Error("Could not read file: " + fileName + " to set the value of " + x);
         }
       }

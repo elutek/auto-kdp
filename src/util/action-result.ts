@@ -26,6 +26,7 @@ export class ActionResult {
 
     setError(error: Error): ActionResult {
         this.error = error;
+        this.success = false;
         return this;
     }
 

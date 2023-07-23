@@ -1,5 +1,6 @@
 import { BrowserInterface, PageInterface } from "../browser.js";
 
+/* istanbul ignore next */
 export class OnePageFakeBrowser implements BrowserInterface {
     private page: PageInterface | null = null;
     public closed = false;
@@ -29,6 +30,7 @@ export class OnePageFakeBrowser implements BrowserInterface {
     }
 }
 
+/* istanbul ignore next */
 export class FakePage implements PageInterface {
     public url = null;
     public closed = false;
@@ -82,6 +84,10 @@ export class FakePage implements PageInterface {
 
     async tap(id: string, timeoutMillis: number) {
         this.performedActions.push("tap");
+    }
+
+    async hover(id: string, timeoutMillis: number): Promise<void> {
+        this.performedActions.push("hover");
     }
 
     async focus(id: string, timeoutMillis: number): Promise<void> {
