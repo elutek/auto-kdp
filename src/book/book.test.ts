@@ -52,7 +52,7 @@ test('create book without defaults', () => {
             Keys.SIGNATURE, 'test_signature',
             Keys.TITLE, 'test_title',
             Keys.SUBTITLE, 'test_subtitle',
-            Keys.EDITION, 'test_edition',
+            Keys.EDITION, '2',
             Keys.SERIES_TITLE, 'test_series_title',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
             Keys.WAS_EVER_PUBLISHED, 'false',
@@ -107,7 +107,7 @@ test('create book without defaults', () => {
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
     expect(book.title).toEqual('test_title');
     expect(book.subtitle).toEqual('test_subtitle');
-    expect(book.edition).toEqual('test_edition');
+    expect(book.edition).toEqual('2');
     expect(book.seriesTitle).toEqual('test_series_title');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.wasEverPublished).toEqual(false);
@@ -170,7 +170,7 @@ test('create book with defaults', () => {
             Keys.SIGNATURE, 'test_signature',
             Keys.TITLE, 'test_title',
             Keys.SUBTITLE, 'test_subtitle',
-            Keys.EDITION, 'test_edition',
+            Keys.EDITION, '2',
             Keys.SERIES_TITLE, 'test_series_title',
         ),
         'content/dir',
@@ -222,8 +222,8 @@ test('create book with defaults', () => {
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
     expect(book.title).toEqual('test_title');
     expect(book.subtitle).toEqual('test_subtitle');
-    expect(book.edition).toEqual('test_edition');
-    expect(book.edition).toEqual('test_edition');
+    expect(book.edition).toEqual('2');
+    expect(book.edition).toEqual('2');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.wasEverPublished).toEqual(false);
     expect(book.signature).toEqual('test_signature');
@@ -298,7 +298,7 @@ test('create book with resolution', () => {
             Keys.COVER_IMAGE_URL, '${prefix}cover_image_url',
             Keys.ID, '${prefix}id',
             Keys.TITLE_ID, 'test_title_id',
-            Keys.EDITION, 'test_edition',
+            Keys.EDITION, '2',
             Keys.ILLUSTRATOR_FIRST_NAME, '${prefix}illustrator_first_name',
             Keys.ILLUSTRATOR_LAST_NAME, '${prefix}illustrator_last_name',
             Keys.MANUSCRIPT_CREATION_COMMAND, 'make ${title}',
@@ -395,7 +395,7 @@ test('create book with resolution', () => {
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
     expect(book.title).toEqual('test_title');
     expect(book.subtitle).toEqual('test_subtitle');
-    expect(book.edition).toEqual('test_edition');
+    expect(book.edition).toEqual('2');
     expect(book.seriesTitle).toEqual('test_series_title');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.wasEverPublished).toEqual(false);
@@ -506,7 +506,7 @@ test('getDataToWrite', () => {
         "coverImageUrl": "test_cover_image_url",
         "coverLocalFile": "test_cover_file",
         "description": "test_description",
-        "edition": "test_edition",
+        "edition": "2",
         "id": "test_id",
         "titleId": "test_title_id",
         "illustratorFirstName": "test_illustrator_first_name",
@@ -570,7 +570,7 @@ test('toString', () => {
        seriesTitle = test_series_title
        scrapedSeriesTitle = test_scraped_series_title
        subtitle = test_subtitle
-       edition = test_edition
+       edition = 2 
        title = test_title
        priceAu = 1.1
        priceCa = 2.1
@@ -603,4 +603,14 @@ test('toString', () => {
        pubStatusDetail = test_pub_status_detail
        wasEverPublished = false
 `.replaceAll(" ", ""));
+});
+
+test('badMarketplace', () => {
+    expect(() => makeOkTestBook('my-action', 'test_author_first_name', 'test_author_last_name', 'BAD_MARKETPLACE')).toThrow(/Unrecognized primary marketplace/);
+});
+
+test('badEdition', () => {
+    expect(() => makeOkTestBook('my-action', 'test_author_first_name', 'test_author_last_name', 'pl', 'notanumber')).toThrow(/Edition must/);
+    expect(() => makeOkTestBook('my-action', 'test_author_first_name', 'test_author_last_name', 'pl', '-1')).toThrow(/Edition must/);
+    expect(() => makeOkTestBook('my-action', 'test_author_first_name', 'test_author_last_name', 'pl', '0')).toThrow(/Edition must/);
 });

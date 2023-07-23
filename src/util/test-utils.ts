@@ -1,7 +1,12 @@
 import { Book } from '../book/book.js';
 import { Keys } from '../book/keys.js';
 
-export function makeOkTestBook(action = 'test_action', authorFirstName = 'test_author_first_name', authorLastName = 'test_author_last_name') {
+export function makeOkTestBook(
+        action = 'test_action',
+        authorFirstName = 'test_author_first_name',
+        authorLastName = 'test_author_last_name',
+        primaryMarketplace = 'pl',
+        edition = '2') {
     return new Book(
         makeMap(
             Keys.ACTION, action,
@@ -44,13 +49,13 @@ export function makeOkTestBook(action = 'test_action', authorFirstName = 'test_a
             Keys.PRICE_PL, '6.1',
             Keys.PRICE_SE, '7.1',
             Keys.PRICE_USD, '8.1',
-            Keys.PRIMARY_MARKETPLACE, 'pl',
+            Keys.PRIMARY_MARKETPLACE, primaryMarketplace,
             Keys.PUB_DATE, 'test_pub_date',
             Keys.PUB_STATUS, 'test_pub_status',
             Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',
             Keys.SIGNATURE, 'test_signature',
             Keys.SUBTITLE, 'test_subtitle',
-            Keys.EDITION, 'test_edition',
+            Keys.EDITION, edition,
             Keys.TITLE, 'test_title',
             Keys.SERIES_TITLE, 'test_series_title',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',

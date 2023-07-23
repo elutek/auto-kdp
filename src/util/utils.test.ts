@@ -1,4 +1,4 @@
-import { addAfter, addBefore, arraysEqual, cleanupHtmlForAmazonDescription, clipLen, isInt, mergeActions, removeSpacesInHtml, normalizeSearchQuery, stripPrefix, stripSuffix, stripQuotes, stringToIntOrThrow, removeComment } from './utils.js';
+import { addAfter, addBefore, arraysEqual, cleanupHtmlForAmazonDescription, clipLen, isInt, isPositiveInt, mergeActions, removeSpacesInHtml, normalizeSearchQuery, stripPrefix, stripSuffix, stripQuotes, stringToIntOrThrow, removeComment } from './utils.js';
 
 test('mergeActions', () => {
   expect(mergeActions('a:b', 'c:d')).toEqual('a:b:c:d');
@@ -128,6 +128,23 @@ test('isInt', () => {
   expect(isInt('blah')).toEqual(false);
   expect(isInt('2blah')).toEqual(false);
   expect(isInt('blah2')).toEqual(false);
+});
+
+
+test('isPositiveInt', () => {
+  expect(isPositiveInt('0')).toEqual(false);
+  expect(isPositiveInt('1')).toEqual(true);
+  expect(isPositiveInt('-1')).toEqual(false);
+  expect(isPositiveInt('2')).toEqual(true);
+  expect(isPositiveInt('-2')).toEqual(false);
+  expect(isPositiveInt('-234')).toEqual(false);
+  expect(isPositiveInt('234')).toEqual(true);
+  expect(isPositiveInt('-23456789')).toEqual(false);
+  expect(isPositiveInt('23456789')).toEqual(true);
+  expect(isPositiveInt('1.1')).toEqual(false);
+  expect(isPositiveInt('blah')).toEqual(false);
+  expect(isPositiveInt('2blah')).toEqual(false);
+  expect(isPositiveInt('blah2')).toEqual(false);
 });
 
 test('stringToInt', () => {

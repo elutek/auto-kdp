@@ -2,7 +2,7 @@ import * as fs from 'fs';
 
 import { Keys, ALL_MARKETPLACES } from './keys.js';
 import { resolveAllValues } from './resolve.js';
-import { copyMap, clipLen } from '../util/utils.js';
+import { copyMap, clipLen, isPositiveInt } from '../util/utils.js';
 
 // List of keys for which there cannot be a "default" value.
 // Reasons are that these field are unique or assigned from Amazon.
@@ -182,6 +182,9 @@ export class Book {
     this.title = getValue(Keys.TITLE);
     this.subtitle = getValue(Keys.SUBTITLE);
     this.edition = getValue(Keys.EDITION);
+    if (!isPositiveInt(this.edition)) {
+      throw new Error("Edition must be a positive integer, but got: " + this.edition)
+    }
     this.signature = getValue(Keys.SIGNATURE);
     this.paperColor = getValue(Keys.PAPER_COLOR);
     this.paperTrim = getValue(Keys.PAPER_TRIM);

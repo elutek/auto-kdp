@@ -145,6 +145,11 @@ export function isInt(str: string): boolean {
     return str == ('' + i);
 }
 
+export function isPositiveInt(str: string): boolean {
+    const i = parseInt(str);
+    return str == ('' + i) && i > 0;
+}
+
 export function stringToIntOrThrow(str: string): number {
     const i = parseInt(str);
     if (str != ('' + i)) {
@@ -181,3 +186,4 @@ export function removeComment(value: string): string {
     }
     return value;
 }
+

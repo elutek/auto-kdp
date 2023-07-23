@@ -156,7 +156,7 @@ paperTrim =
 signature = \${name}
 title =
 subtitle =
-edition =
+edition = 123
 seriesTitle =
 `
     mock({
@@ -190,7 +190,7 @@ seriesTitle =
         expect(book.wasEverPublished).toEqual(false);
         expect(book.scrapedSeriesTitle).toEqual('');
         expect(book.getPreservedKey('name')).toEqual('Belle');
-        expect(book.edition).toEqual('');
+        expect(book.edition).toEqual('123');
     }
 });
 
