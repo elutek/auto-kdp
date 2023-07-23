@@ -204,8 +204,15 @@ async function initCategories(page: PageInterface, book: Book, verbose: boolean)
       throw new Error("Setting categories for a book written in " + book.language + " is not supported yet");
   }
 
+  // Random actions to make click on "Choose Categories" actually work.
+  await page.focus('#data-print-book-title', Timeouts.SEC_10);
+  await page.waitForTimeout(Timeouts.SEC_5);
   await page.waitForSelector('#categories-modal-button', Timeouts.SEC_2);
-  await page.focus('#categories-modal-button', Timeouts.SEC_2);
+  await page.waitForTimeout(Timeouts.SEC_5);
+  // await page.focus('#categories-modal-button', Timeouts.SEC_2);
+  // await page.hover('#categories-modal-button', Timeouts.SEC_2);
+  // await page.tap('#categories-modal-button', Timeouts.SEC_10);
+
   await clickSomething('#categories-modal-button', 'Choose categories OR Edit Categories', page, book, verbose);
   await page.waitForTimeout(Timeouts.SEC_1);
   await selectValue('.a-popover-inner #react-aui-modal-content-1 select', dummyCategory, "First dummy Category", page, book, verbose);
