@@ -9,6 +9,7 @@ import { debug } from './util/utils.js';
 
 // Action
 import { scrapeAmazonCoverImageUrl } from './action/scrape-amazon-cover-image-url.js';
+import { assignIsbn } from './action/assign-isbn.js';
 import { scrapeIsbn } from './action/scrape-isbn.js';
 import { scrape } from './action/scrape.js';
 import { produceManuscript } from './action/produce-manuscript.js';
@@ -43,6 +44,7 @@ async function executeBookActionCallback(action: string, book: Book, params: Act
     case 'remove-series-title': return await setSeriesTitle(book, params, true); break;
     case 'scrape': return await scrape(book, params);
     case 'scrape-amazon-image': return await scrapeAmazonCoverImageUrl(book, params); break;
+    case 'assign-isbn': return await assignIsbn(book, params); break;
     case 'scrape-isbn': return await scrapeIsbn(book, params); break;
     case 'set-series-title': return await setSeriesTitle(book, params); break;
     case 'unpublish': return await unpublish(book, params); break;

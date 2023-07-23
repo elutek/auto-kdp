@@ -193,9 +193,9 @@ export class Book {
 
     // Handle special actions
     if (this.action == 'all') {
-      this.action = 'book-metadata:produce-manuscript:scrape-isbn:content:scrape-isbn:pricing:set-series-title:scrape:publish:scrape:scrape-amazon-image';
+      this.action = 'book-metadata:assign-isbn:produce-manuscript:content:scrape-isbn:pricing:set-series-title:scrape:publish:scrape:scrape-amazon-image';
     } else if (this.action == 'all-but-no-publish') {
-      this.action = 'book-metadata:produce-manuscript:scrape-isbn:content:scrape-isbn:pricing:set-series-title:scrape';
+      this.action = 'book-metadata:assign-isbn:produce-manuscript:content:scrape-isbn:pricing:set-series-title:scrape';
     }
   }
 

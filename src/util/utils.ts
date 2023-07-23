@@ -10,7 +10,7 @@ export function mergeActions(action1: string, action2: string): string {
 export function debug(book: Book, verbose: boolean, message: string) {
     if (verbose) {
         const datePrefix = new Date().toLocaleString();
-        const wholePrefix = datePrefix + " " + book.prefix() + ":: ";
+        const wholePrefix = datePrefix + " " + book.prefix() + "(" + book.id +"):: ";
         console.debug(wholePrefix + message);
     }
 }
