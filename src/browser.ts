@@ -19,6 +19,7 @@ export interface PageInterface {
     waitForNavigation(timeoutMillis: number): Promise<void>;
     selectFile(fileSelectorId: string, fileToSelect: string, timeoutMillis: number): Promise<void>;
     click(id: string, timeoutMillis: number): Promise<void>;
+    hover(id: string, timeoutMillis: number): Promise<void>;
     tap(id: string, timeoutMillis: number): Promise<void>;
     type(id: string, text: string, timeoutMillis: number): Promise<void>;
     focus(id: string, timeoutMillis: number): Promise<void>;
@@ -134,9 +135,15 @@ export class PuppeteerPage implements PageInterface {
     async click(id: string, timeoutMillis: number) {
         //console.log("Waiting for id = " + id);
         await this.waitForSelector(id, timeoutMillis);
-        //console.log("Clicking at id = " + id);
+        console.log("Clicking at id = " + id);
         await this.page.click(id);
         //console.log("Clicked");
+    }
+
+    async hover(id: string, timeoutMillis: number) {
+        console.log("Hovering on id = " + id);
+        await this.waitForSelector(id, timeoutMillis);
+        await this.page.hover(id);
     }
 
     async tap(id: string, timeoutMillis: number) {
