@@ -104,10 +104,10 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
   id = '#zme-indie-bookshelf-dual-metadata-series_title-' + book.id + ' > a';
   let scrapedSeriesTitle = '';
   let attempt = 1;
-  for (; attempt < 10; ++attempt) {
+  for (; attempt < 3; ++attempt) {
     try {
       await page.bringToFront();
-      await page.focus(id, Timeouts.SEC_30);
+      await page.focus(id, Timeouts.SEC_3);
       await page.waitForTimeout(Timeouts.SEC_1);
       scrapedSeriesTitle = await page.evalValue(id, el => el.innerText.trim(), Timeouts.SEC_30);
     } catch (e) {

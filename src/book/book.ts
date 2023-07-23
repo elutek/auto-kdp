@@ -182,7 +182,7 @@ export class Book {
     this.title = getValue(Keys.TITLE);
     this.subtitle = getValue(Keys.SUBTITLE);
     this.edition = getValue(Keys.EDITION);
-    if (!isPositiveInt(this.edition)) {
+    if (this.edition != '' && !isPositiveInt(this.edition)) {
       throw new Error("Edition must be a positive integer, but got: " + this.edition)
     }
     this.signature = getValue(Keys.SIGNATURE);
@@ -193,11 +193,9 @@ export class Book {
 
     // Handle special actions
     if (this.action == 'all') {
-      this.action = 'book-metadata:content-metadata:scrape-isbn:produce-manuscript:content:pricing:set-series-title:scrape:publish:scrape:scrape-amazon-image';
+      this.action = 'book-metadata:produce-manuscript:scrape-isbn:content:scrape-isbn:pricing:set-series-title:scrape:publish:scrape:scrape-amazon-image';
     } else if (this.action == 'all-but-no-publish') {
-      this.action = 'book-metadata:content-metadata:scrape-isbn:produce-manuscript:content:pricing:set-series-title:scrape';
-    } else if (this.action == 'update-published-book') {
-      this.action = 'book-metadata:pricing:publish:scrape';
+      this.action = 'book-metadata:produce-manuscript:scrape-isbn:content:scrape-isbn:pricing:set-series-title:scrape';
     }
   }
 

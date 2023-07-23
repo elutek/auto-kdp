@@ -46,6 +46,7 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
     await selectValue('#data-print-book-language-native', book.language.toLowerCase(), 'language', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-title', book.title, 'title', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-subtitle', book.subtitle, 'title', page, book, verbose);
+    await updateTextFieldIfChanged('#data-print-book-edition-number', book.edition, 'edition', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-primary-author-first-name', book.authorFirstName, 'author\'s first name', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-primary-author-last-name', book.authorLastName, 'author\'s last name', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-contributors-0-first-name', book.illustratorFirstName, 'illustrator\'s first name', page, book, verbose);
@@ -59,9 +60,13 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
   await clickSomething('#cke_18', 'Source button', page, book, verbose);
   await updateTextAreaIfChanged('#cke_1_contents > textarea', book.description, cleanupHtmlForAmazonDescription, 'description', page, book, verbose);
 
-  // Whether public domain
-  // TODO: support public domain works
+  // Publishing rights
+  // TODO: We only support non public domain works right now.
   await clickSomething('#non-public-domain', 'whether public domain', page, book, verbose);
+
+  // Audience (whether adult content)
+  // TODO: We only support non-adult content.
+  await clickSomething('#data-print-book-is-adult-content input[value=\'false\']', 'non-adult content', page, book, verbose);
 
   // Keywords
   await updateTextFieldIfChanged('#data-print-book-keywords-0', book.keyword0, "keyword 0", page, book, verbose);
@@ -72,9 +77,9 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
   await updateTextFieldIfChanged('#data-print-book-keywords-5', book.keyword5, "keyword 5", page, book, verbose);
   await updateTextFieldIfChanged('#data-print-book-keywords-6', book.keyword6, "keyword 6", page, book, verbose);
 
-  // Whether adult content
-  // TODO: We only support non-adult content.
-  await clickSomething('#data-print-book-is-adult-content input[value=\'false\']', 'non-adult content', page, book, verbose);
+  // Primary marketplace.
+  await selectValue('#data-print-book-home-marketplace .a-native-dropdown', book.primaryMarketplace, 'primary marketplace', page, book, verbose);
+  await page.waitForTimeout(Timeouts.SEC_1);
 
   // Categories. First figure out which categories should be used.
   // NOTE: Category update needs to be the *LAST* action we do. For some reason it keeps "reloading"
@@ -86,7 +91,7 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
     if (await getTextFieldValue("#section-categories ul li:nth-child(1) input[type='hidden']", page) == '' ||
       await getTextFieldValue("#section-categories ul li:nth-child(2) input[type='hidden']", page) == '' ||
       await getTextFieldValue("#section-categories ul li:nth-child(3) input[type='hidden']", page) == '') {
-      debug(book, verbose, "Need to init categories");
+      debug(book, verbose, "We need to initialize the categories");
       await initCategories(page, book, verbose);
       categoryNeedsUpdate = true;
     }
@@ -199,7 +204,8 @@ async function initCategories(page: PageInterface, book: Book, verbose: boolean)
       throw new Error("Setting categories for a book written in " + book.language + " is not supported yet");
   }
 
-  await page.focus('#categories-modal-button', Timeouts.SEC_1);
+  await page.waitForSelector('#categories-modal-button', Timeouts.SEC_2);
+  await page.focus('#categories-modal-button', Timeouts.SEC_2);
   await clickSomething('#categories-modal-button', 'Choose categories OR Edit Categories', page, book, verbose);
   await page.waitForTimeout(Timeouts.SEC_1);
   await selectValue('.a-popover-inner #react-aui-modal-content-1 select', dummyCategory, "First dummy Category", page, book, verbose);
@@ -212,6 +218,6 @@ async function initCategories(page: PageInterface, book: Book, verbose: boolean)
   await page.waitForTimeout(Timeouts.SEC_HALF);
   await clickSomething('.a-popover-footer #react-aui-modal-footer-1 .a-button-primary button', 'Save', page, book, verbose);
   await page.waitForTimeout(Timeouts.SEC_HALF);
-  await clickSomething('.a-popover-footer #react-aui-modal-footer-2 .a-button-primary button', 'Continue (to remove existing categories)', page, book, verbose);
-  await page.waitForTimeout(Timeouts.SEC_HALF);
+  //await clickSomething('.a-popover-footer #react-aui-modal-footer-2 .a-button-primary button', 'Continue (to remove existing categories)', page, book, verbose);
+  //await page.waitForTimeout(Timeouts.SEC_HALF);
 }

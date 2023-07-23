@@ -104,7 +104,7 @@ export async function updateHiddenTextField(id: string, value: string, fieldHuma
 }
 
 export async function selectValue(id: string, value: string, fieldHumanName: string, page: PageInterface, book: Book, verbose: boolean) {
-    //debug(book, verbose, `Waiting for the element to select (${id})`);
+    debug(book, verbose, `Waiting for the element to select (${id})`);
     const oldValue = await page.evalValue(id, x => (x as HTMLSelectElement).value, Timeouts.SEC_10);
     if (oldValue != value) {
         debug(book, verbose, `Selecting ${value} for ${fieldHumanName}`);
@@ -115,6 +115,8 @@ export async function selectValue(id: string, value: string, fieldHumanName: str
 }
 
 export async function clickSomething(id: string, fieldHumanName: string, page: PageInterface, book: Book, verbose: boolean) {
+    debug(book, verbose, `Waiting for ${fieldHumanName}`);
+    await page.waitForSelector(id, Timeouts.SEC_10);
     debug(book, verbose, `Clicking ${fieldHumanName}`);
     await page.click(id, Timeouts.SEC_10);
 }

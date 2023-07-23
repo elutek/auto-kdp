@@ -25,9 +25,6 @@ export async function updatePricing(book: Book, params: ActionParams): Promise<A
   await page.goto(url, Timeouts.MIN_1);
   await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
-  // Primary marketplace.
-  selectValue('#data-print-book-home-marketplace .a-native-dropdown', book.primaryMarketplace, 'primary marketplace', page, book, verbose);
-
   // Update the primary marketplace's price first and add some extra wait time
   let wasUpdated = await updateMarketplace(book.primaryMarketplace, page, book, verbose);
   await page.waitForTimeout(Timeouts.SEC_5);

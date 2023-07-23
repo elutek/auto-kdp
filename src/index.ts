@@ -15,7 +15,6 @@ import { produceManuscript } from './action/produce-manuscript.js';
 import { ensureLoggedIn } from './action/ensure-logged-in.js';
 import { updatePricing } from './action/update-pricing.js';
 import { updateBookMetadata } from './action/update-book-metadata.js';
-import { updateContentMetadata } from './action/update-content-metadata.js';
 import { updateContent } from './action/update-content.js';
 import { publish } from './action/publish.js';
 import { unpublish } from './action/unpublish.js';
@@ -37,7 +36,6 @@ async function executeBookActionCallback(action: string, book: Book, params: Act
     case 'archive': return await archive(book, params); break;
     case 'book-metadata': return await updateBookMetadata(book, params); break;
     case 'content': return await updateContent(book, params); break;
-    case 'content-metadata': return await updateContentMetadata(book, params); break;
     case 'force-publish': return await publish(book, params, true /*force*/); break;
     case 'pricing': return await updatePricing(book, params); break;
     case 'produce-manuscript': return await produceManuscript(book, params); break;
