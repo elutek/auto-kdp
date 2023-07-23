@@ -52,6 +52,7 @@ test('create book without defaults', () => {
             Keys.SIGNATURE, 'test_signature',
             Keys.TITLE, 'test_title',
             Keys.SUBTITLE, 'test_subtitle',
+            Keys.EDITION, 'test_edition',
             Keys.SERIES_TITLE, 'test_series_title',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
             Keys.WAS_EVER_PUBLISHED, 'false',
@@ -106,6 +107,7 @@ test('create book without defaults', () => {
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
     expect(book.title).toEqual('test_title');
     expect(book.subtitle).toEqual('test_subtitle');
+    expect(book.edition).toEqual('test_edition');
     expect(book.seriesTitle).toEqual('test_series_title');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.wasEverPublished).toEqual(false);
@@ -168,6 +170,7 @@ test('create book with defaults', () => {
             Keys.SIGNATURE, 'test_signature',
             Keys.TITLE, 'test_title',
             Keys.SUBTITLE, 'test_subtitle',
+            Keys.EDITION, 'test_edition',
             Keys.SERIES_TITLE, 'test_series_title',
         ),
         'content/dir',
@@ -219,6 +222,8 @@ test('create book with defaults', () => {
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
     expect(book.title).toEqual('test_title');
     expect(book.subtitle).toEqual('test_subtitle');
+    expect(book.edition).toEqual('test_edition');
+    expect(book.edition).toEqual('test_edition');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.wasEverPublished).toEqual(false);
     expect(book.signature).toEqual('test_signature');
@@ -293,6 +298,7 @@ test('create book with resolution', () => {
             Keys.COVER_IMAGE_URL, '${prefix}cover_image_url',
             Keys.ID, '${prefix}id',
             Keys.TITLE_ID, 'test_title_id',
+            Keys.EDITION, 'test_edition',
             Keys.ILLUSTRATOR_FIRST_NAME, '${prefix}illustrator_first_name',
             Keys.ILLUSTRATOR_LAST_NAME, '${prefix}illustrator_last_name',
             Keys.MANUSCRIPT_CREATION_COMMAND, 'make ${title}',
@@ -389,6 +395,7 @@ test('create book with resolution', () => {
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
     expect(book.title).toEqual('test_title');
     expect(book.subtitle).toEqual('test_subtitle');
+    expect(book.edition).toEqual('test_edition');
     expect(book.seriesTitle).toEqual('test_series_title');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.wasEverPublished).toEqual(false);
@@ -499,6 +506,7 @@ test('getDataToWrite', () => {
         "coverImageUrl": "test_cover_image_url",
         "coverLocalFile": "test_cover_file",
         "description": "test_description",
+        "edition": "test_edition",
         "id": "test_id",
         "titleId": "test_title_id",
         "illustratorFirstName": "test_illustrator_first_name",
@@ -562,6 +570,7 @@ test('toString', () => {
        seriesTitle = test_series_title
        scrapedSeriesTitle = test_scraped_series_title
        subtitle = test_subtitle
+       edition = test_edition
        title = test_title
        priceAu = 1.1
        priceCa = 2.1

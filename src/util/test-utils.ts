@@ -50,6 +50,7 @@ export function makeOkTestBook(action = 'test_action', authorFirstName = 'test_a
             Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',
             Keys.SIGNATURE, 'test_signature',
             Keys.SUBTITLE, 'test_subtitle',
+            Keys.EDITION, 'test_edition',
             Keys.TITLE, 'test_title',
             Keys.SERIES_TITLE, 'test_series_title',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',

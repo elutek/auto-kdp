@@ -45,6 +45,7 @@ signature = \${name}
 seriesTitle = My Series
 title = Book for \${name}
 subtitle = My subtitle
+edition = 2
 `
 
 afterEach(() => {
@@ -107,6 +108,7 @@ test('can read book file', async () => {
         expect(book.wasEverPublished).toEqual(true);
         expect(book.signature).toEqual('Belle');
         expect(book.scrapedSeriesTitle).toEqual('scraped_series_titleB');
+        expect(book.edition).toEqual('2');
     }
 });
 
@@ -154,6 +156,7 @@ paperTrim =
 signature = \${name}
 title =
 subtitle =
+edition =
 seriesTitle =
 `
     mock({
@@ -187,6 +190,7 @@ seriesTitle =
         expect(book.wasEverPublished).toEqual(false);
         expect(book.scrapedSeriesTitle).toEqual('');
         expect(book.getPreservedKey('name')).toEqual('Belle');
+        expect(book.edition).toEqual('');
     }
 });
 
@@ -357,6 +361,7 @@ signature = \${name}
 seriesTitle = My Series
 title = Book for \${name}
 subtitle = My subtitle
+edition = 2
 `
 
     mock({

@@ -25,6 +25,7 @@ export var Keys = {
     SERIES_TITLE: 'seriesTitle',
     SCRAPED_SERIES_TITLE: 'scrapedSeriesTitle',
     SUBTITLE: 'subtitle',
+    EDITION: 'edition',
     TITLE: 'title',
     PRICE_AU: 'priceAu',
     PRICE_CA: 'priceCa',

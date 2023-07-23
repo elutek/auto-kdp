@@ -139,4 +139,4 @@ All actions and puppeteer messiness is in  ```src/action``` - this is not tested
 
 ## What is needed
 
-- Some fields missing, e.g. subtitle.
+- Some fields missing e.g. contributors other than illustrator

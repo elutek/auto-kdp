@@ -73,6 +73,7 @@ export class Book {
   readonly seriesTitle: string;
   readonly title: string;
   readonly subtitle: string;
+  readonly edition: string;
   readonly signature: string;
   readonly paperColor: string;
   readonly paperTrim: string;
@@ -180,6 +181,7 @@ export class Book {
     this.seriesTitle = getValue(Keys.SERIES_TITLE);
     this.title = getValue(Keys.TITLE);
     this.subtitle = getValue(Keys.SUBTITLE);
+    this.edition = getValue(Keys.EDITION);
     this.signature = getValue(Keys.SIGNATURE);
     this.paperColor = getValue(Keys.PAPER_COLOR);
     this.paperTrim = getValue(Keys.PAPER_TRIM);
