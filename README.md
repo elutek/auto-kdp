@@ -1,6 +1,8 @@
 # Objective
 
-Command-line tool to create or update books on Amazon KDP book publishing site. Books are stored in your local CSV file, PDFs to upload are in a local directory.
+Command-line tool to create or update books on Amazon KDP book publishing site. Books are stored in your local CSV file, PDFs to upload are in a local directory, and auto-kdp uses Puppeteer to run a browser on your behalf.
+
+## More details
 
 [KDP](https://kdp.amazon.com) is a wonderful service that allows you to publish print and digital books for free and sell them on Amazon. But if you have a larger number of books, clicking through the website is just mind-numbing. Auto-kdp uses puppeteer under the hood to click thorugh the KDP pages like a human would. 
 
@@ -10,7 +12,7 @@ If you publish few books, you do _not_ need this - but if you publish, say, 100,
 
 If this was useful, drop me a line. It took me quite some time to separate and generalize this code out of my personal use case. If someone finds this useful, it would make my day. Thanks!
 
-### Caveats
+## Caveats
 
 - Please note auto-kdp does not handle _everything_ - I created it for my own needs. For example does not currently support subtitle, or kindle books. I wrote it as cleanly as possible so new fields can be added by pattern matching. 
 - It may break if amazon changes something in the page, e. g. uses different ```id``` for HTML elements we refer to. There is nothing we can do about it. In My about 2 years of experience this has happened only once.
@@ -46,6 +48,30 @@ When the tool is done (or, in case it crashes), the ".new" file has the state. Y
 meld books.csv books.csv.new
 mv books.csv.new books.csv
 ```
+
+# Getting started
+
+NOTE: auto-kdp does not save your KDP credentionals, or transfer it anywhere - they stay in a local directory that you own and can delete any time.
+
+- Step 1: I highly recommend familiarity with using Amazon KDP manually. Publish at least one book from end-to-end and learn KDP's terminology and all flows.
+- Step 2: Read the file [keys.ts](src/book/keys.ts). This is the list of key:values that auto-kdp supports.
+- Step 3: Create files called `books.csv` and `books.conf`. See examples in the [test-data](test-data) directory.
+  - Start by setting your book's title, subtitle, edition, author, illustrator, prices, etc.
+  - If it's the same for all books set it in `books.conf`. If it varies between books, add a column in `books.csv`. Column names correspond to the names listed in [keys.ts](src/book/keys.ts).
+  - Note that some columns like `pubStatus` or `ISBN` must be in the CSV file because they are scraped from KDP. The full list can be found by searching for [_KEYS_WITH_NO_DEFAULT](src/book/book.ts).
+  - Set `action` to empty.
+  - Tip: The [Edit csv](https://marketplace.visualstudio.com/items?itemName=janisdd.vscode-edit-csv) extension to VS Code is very useful (I'm not associated with them).
+- Step 4: Try with `action` empty. This means `auto-kdp` will parse all books but do nothing, except signing into your KDP account.
+  - `ts-node ./auto-kdp/src/index.ts --books books.csv --config books.conf --content-dir book/ --user-data ./user_data --verbose --keep-open --headless=no`
+  - "keep open" means that browser tabs will not be closed.
+  - "headless=no" means that you can see the browser and observe actions that it's doing for you. The only action needed is to sign into your KDP account.
+  - If you get errors, check the syntax of the CSV file.
+- Step 5: Set `action` to `book-metadata` for one book and rerun. `auto-kdp` will create a book with a new `id` set its title, author, etc. It will *not* get ISBN, so this book will be easy to delete and you can try as much as you wish.
+- Step 6: Visit your [KDP bookshelf](https://kdp.amazon.com/en_US/bookshelf) and see if the book showed up.
+- Step 7: Run with `headless=yes`. The work will be done without the browser's UI. Now you can try more books or other actions. To see exactly what each action is doing, you can read [src/action](src/action), for example [src/action/publish.ts](src/action/publish.ts), which basically clicks the "Publish" button.
+
+
+> *WARNING*. KDP pages can be finicky. Sometimes they are fast and sometimes slow, sometimes they change or rename fields or move fields, but `auto-kdp` was not updated yet. I am actively using it (Jul'23) but am just one person doing a side project. Being successful with `auto-kdp` will require babysitting it and a dose of tech savvy. Feel free to start and issue or send me a PR. Thanks!
 
 # Custom keys
 
