@@ -29,8 +29,18 @@ export class BookFile {
     this.bookFilePath = bookFilePath;
     this.lockFilePath = bookFilePath + '.lock';
     this.outputFilePath = bookFilePath + '.new';
-    PropertiesReader(bookConfigFilePath).each(
-      (k, v) => this.bookConfig.set(k, removeComment(v as string).trim()));
+    PropertiesReader(bookConfigFilePath).each((k, v) => {
+      /* Istanbul ignore next */
+      if (this.bookConfig.has(k)) {
+        // This does not actually happen. If there is
+        // a dupe property, PropertiesReader uses the
+        // last value. There exists a setting to
+        // "allowDuplicateDefinitions
+        // but it does not seem to do what we need.
+        throw new Error("Default defined more than once: " + k)
+      }
+      this.bookConfig.set(k, removeComment(v as string).trim())
+    });
   }
 
   async readBooksAsync(): Promise<BookList> {
@@ -139,5 +149,9 @@ export class BookFile {
     this.signatures[sig] = book;
 
     bookList.addBook(book);
+  }
+
+  getConfigForKey(key: string): string {
+    return this.bookConfig.get(key);
   }
 }

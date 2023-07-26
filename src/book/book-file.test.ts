@@ -397,3 +397,23 @@ edition = 2
     expect(books[0].description).toEqual('xxx');
     expect(books[0].authorFirstName).toEqual('Belle');
 });
+
+test('detects default defined more than once (not supported)', async () => {
+    const books_csv =
+        `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle
+               ,                ,b ,b      ,b   ,b   ,Belle,         ,       ,               ,             ,`;
+    let books_conf = BOOKS_CONF
+    books_conf += "mykey = v1\n"
+    books_conf += "mykey = v2\n"
+    books_conf += "another key = whatever\n"
+    mock({
+        'books.csv': books_csv,
+        'books.csv.lock': '',
+        'books.conf': books_conf,
+        'content': { dir: {} },
+        'node_modules': mock.load(path.resolve(__dirname, '../../node_modules')),
+    });
+
+    const bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
+    expect(bookFile.getConfigForKey('mykey')).toBe("v2");
+});
