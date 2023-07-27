@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 
-import { Keys, ALL_MARKETPLACES } from './keys.js';
+import { Keys, ALL_MARKETPLACES, ALL_BOOK_LANGUAGES } from './keys.js';
 import { resolveAllValues } from './resolve.js';
 import { copyMap, clipLen, isPositiveInt } from '../util/utils.js';
 
@@ -163,7 +163,10 @@ export class Book {
     this.keyword4 = getValue(Keys.KEYWORD4);
     this.keyword5 = getValue(Keys.KEYWORD5);
     this.keyword6 = getValue(Keys.KEYWORD6);
-    this.language = getValue(Keys.LANGUAGE);
+    this.language = getValue(Keys.LANGUAGE).toLowerCase();
+    if (ALL_BOOK_LANGUAGES.indexOf(this.language) < 0) {
+      throw new Error("Unsupported book language: " + this.language);
+    }
     this.manuscriptCreationCommand = getValue(Keys.MANUSCRIPT_CREATION_COMMAND);
     this.manuscriptLocalFile = contentDir + '/' + getValue(Keys.MANUSCRIPT_FILE);
     this.notes = getValue(Keys.NOTES);

@@ -87,11 +87,11 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
   {
     debug(book, verbose, 'Getting title id');
     id = `img[id="${book.id}"]`;
-    const imgDataSource = await page.evalValue(id, x => (x as HTMLElement).getAttribute('data-source').trim(), Timeouts.SEC_10);
+    const imgDataSource = await page.evalValue(id, x => (x as HTMLElement).getAttribute('data-source').trim(), Timeouts.SEC_5);
     const regexp = /amazon[^\\]*\/CAPS-SSE\/kdp_print\/[a-zA-Z0-9]{1,5}\/([a-zA-Z0-9]{1,20})\/KDP/m;
     const match = imgDataSource.match(regexp);
     if (match == null || match.length <= 1) {
-      debug(book, verbose, 'Could not match img data-source: ' + imgDataSource);
+      debug(book, verbose, 'Could not get title id: could not match img data-source: ' + imgDataSource);
     } else {
       book.titleId = match[1];
       debug(book, verbose, 'Got title id: ' + book.titleId);

@@ -43,7 +43,7 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
     // This fields can only be updated if the book
     // has never been published. After publishing, they
     // are set in stone.
-    await selectValue('#data-print-book-language-native', book.language.toLowerCase(), 'language', page, book, verbose);
+    await selectValue('#data-print-book-language-native', book.language, 'language', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-title', book.title, 'title', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-subtitle', book.subtitle, 'title', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-edition-number', book.edition, 'edition', page, book, verbose);
@@ -189,19 +189,20 @@ async function initCategories(page: PageInterface, book: Book, verbose: boolean)
   // Determine the dummy value first. It depends on book language.
 
   let dummyCategory = '';
-  switch (book.language) {
+  switch (book.primaryMarketplace) {
     // The exact category does not matter. This is only to initialize to anything,
     // and will be overridden immediately. Pick anything that has at least 3 subcategories,
     // and ideally is notthing embarrasing, just in case due to some mistake it
     // becomes visible to users.
-    case "English": dummyCategory = '{"level":0,"key":"Calendars","nodeId":"3248857011"}'; break;
-    case "Polish": dummyCategory = '{"level":0,"key":"Beletrystyka","nodeId":"20788878031"}'; break;
-    case "Spanish": dummyCategory = '{"level":0,"key":"Arte y fotografía","nodeId":"902486031"}'; break;
-    case "German": dummyCategory = '{"level":0,"key":"Biografien & Erinnerungen","nodeId":"187254"}'; break;
-    case "French": dummyCategory = '{"level":0,"key":"Beaux livres","nodeId":"293136011"}'; break;
-    case "Italian": dummyCategory = '{"level":0,"key":"Diritto","nodeId":"508785031"}'; break;
+    case "us": dummyCategory = '{"level":0,"key":"Calendars","nodeId":"3248857011"}'; break;
+    case "pl": dummyCategory = '{"level":0,"key":"Beletrystyka","nodeId":"20788878031"}'; break;
+    case "es": dummyCategory = '{"level":0,"key":"Arte y fotografía","nodeId":"902486031"}'; break;
+    case "de": dummyCategory = '{"level":0,"key":"Biografien & Erinnerungen","nodeId":"187254"}'; break;
+    case "fr": dummyCategory = '{"level":0,"key":"Beaux livres","nodeId":"293136011"}'; break;
+    case "it": dummyCategory = '{"level":0,"key":"Diritto","nodeId":"508785031"}'; break;
+    case "nl": dummyCategory = '{"level":0,"key":"Recht","nodeId":"16437441031"}'; break;
     default:
-      throw new Error("Setting categories for a book written in " + book.language + " is not supported yet");
+      throw new Error("Setting categories for a book for marketplace " + book.primaryMarketplace + " is not supported yet");
   }
 
   // Random actions to make click on "Choose Categories" actually work.
