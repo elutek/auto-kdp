@@ -185,6 +185,16 @@ export async function updateContent(book: Book, params: ActionParams): Promise<A
     debug(book, verbose, 'Clicking Approve/3');
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
+    // Whether AI-generated
+    // TODO: For now only support "No", but would be nice to support "Yes".
+    debug(book, verbose, "Clicking whether AI-generated")
+    await page.click('#section-generative-ai div[aria-labelledby="generative-ai-questionnaire-question"] div[data-a-accordion-row-name="no"] a', Timeouts.SEC_10);
+    debug(book, verbose, "Clicking Confirm that my answers are accurate (this field only shows sometimes)")
+    try {
+        await page.click('#section-generative-ai .a-checkbox input', Timeouts.SEC_5)
+    } catch (e) {
+        console.log("Caught exception", e)
+    }
 
     // Save
     debug(book, verbose, 'Clicking Save and Contnue');
