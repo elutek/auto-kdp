@@ -1,6 +1,6 @@
 import { ActionParams } from '../util/action-params.js';
 import { ActionResult } from '../util/action-result.js';
-import { debug, error, stripPrefix } from '../util/utils.js';
+import { debug, error } from '../util/utils.js';
 import { Urls, maybeClosePage } from './action-utils.js';
 import { Book } from '../book/book.js';
 import { Timeouts } from '../util/timeouts.js';
@@ -37,22 +37,25 @@ export async function scrapeAmazonCoverImageUrl(book: Book, params: ActionParams
   return new ActionResult(success);
 }
 
-export function doScrapeAmazonCoverImageUrl(text, book, verbose) {
+export function doScrapeAmazonCoverImageUrl(text: string, book: Book, verbose: boolean) {
   if (text == null || text == undefined) {
     return null;
   }
   /* Istanbul skip next */
   debug(book, verbose, 'Got response of length ' + text.length);
-  const mainUrlRe = /"mainUrl":"([^"]+?)"/;
-  const mainUrls = text.match(mainUrlRe);
-  if (mainUrls == null) {
+
+  const regex = /<img .*?src="https:\/\/m.media-amazon.com\/images\/I\/([a-zA-Z0-9_\.\-]*.jpg)"/gm;
+  const urls: string[] = [];
+
+  for (const extractedUrls of text.matchAll(regex)) {
+    urls.push(extractedUrls[1]);
+  }
+
+  if (urls.length == 0) {
     return null;
   }
-  /* Istanbul skip next */
-  for (let i = 0; i < mainUrls.length; ++i) {
-    debug(book, verbose, "    Matched: " + mainUrls[i]);
+  if (urls.length > 1) {
+    error(book, "Expecting one URL but multiple ofund:\n\t" + urls.join("\n\t"));
   }
-  return mainUrls && mainUrls.length > 1 && mainUrls[1] && mainUrls[1] != '' &&
-    mainUrls[1].startsWith(Urls.AMAZON_IMAGE_URL) ? stripPrefix(mainUrls[1], Urls.AMAZON_IMAGE_URL) : (
-    mainUrls[1].startsWith(Urls.AMAZON_IMAGE_URL2) ? stripPrefix(mainUrls[1], Urls.AMAZON_IMAGE_URL2) : null);
+  return urls[0];
 }
