@@ -117,6 +117,7 @@ export async function selectValue(id: string, value: string, fieldHumanName: str
 export async function clickSomething(id: string, fieldHumanName: string, page: PageInterface, book: Book, verbose: boolean) {
     // debug(book, verbose, `Waiting for ${fieldHumanName}`);
     debug(book, verbose, `Clicking ${fieldHumanName}`);
+    await page.focus(id, Timeouts.SEC_15);
     await page.click(id, Timeouts.SEC_15);
 }
 
