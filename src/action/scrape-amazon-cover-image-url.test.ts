@@ -15,8 +15,13 @@ const REAL_EXAMPLE = `
 	    </span> </span></li> src="https://m.media-amazon.com/images/I/BAD.NOT.ME.jpg"
 `;
 
+const REAL_EXAMPLE2 = `
+<img alt="Ek praat Roemeens, Vorbesc română: Afrikaans-Roemeens prentewoordeboek vir kinders, Afrikaans-română dicționar cu imagini pentru copii (Visuele taalleer vir kinders (AF)) (Afrikaans Edition)" src="https://m.media-amazon.com/images/I/61tllKEbkbL._SY342_.jpg" data-old-hires="https://m.media-amazon.com/images/I/61tllKEbkbL._SL1000_.jpg" onload="markFeatureRenderForImageBlock(); this.onload='';setCSMReq('af');if(typeof addlongPoleTag === 'function'){ addlongPoleTag('af','desktop-image-atf-marker');};setCSMReq('cf')" data-a-image-name="landingImage" class="a-dynamic-image a-stretch-horizontal" id="landingImage" data-a-dynamic-image="{&quot;https://m.media-amazon.com/images/I/61tllKEbkbL._SY385_.jpg&quot;:[385,385],&quot;https://m.media-amazon.com/images/I/61tllKEbkbL._SY425_.jpg&quot;:[425,425],&quot;https://m.media-amazon.com/images/I/61tllKEbkbL._SY466_.jpg&quot;:[466,466],&quot;https://m.media-amazon.com/images/I/61tllKEbkbL._SY342_.jpg&quot;:[342,342],&quot;https://m.media-amazon.com/images/I/61tllKEbkbL._SY522_.jpg&quot;:[522,522]}" style="max-width: 193px; max-height: 193px;">
+`;
+
 test('real example', () => {
   expect(doScrapeAmazonCoverImageUrl(REAL_EXAMPLE, null, false)).toEqual("616xGtOSgTL._SY466_.jpg");
+  expect(doScrapeAmazonCoverImageUrl(REAL_EXAMPLE2, null, false)).toEqual("61tllKEbkbL._SY342_.jpg");
 });
 
 const NEG_REAL_EXAMPLE = `

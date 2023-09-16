@@ -23,7 +23,7 @@ export function makeOkTestBook({
     keyword4 = 'test_keyword4',
     keyword5 = 'test_keyword5',
     keyword6 = 'test_keyword6',
-    language = 'test_language',
+    language = 'afrikaans',
     manuscriptCreationCommand = 'test_manuscript_creation_command',
     manuscriptFile = 'test_manuscript_file',
     newCategory1 = 'test_new_cat1',

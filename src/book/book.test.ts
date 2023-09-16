@@ -29,7 +29,7 @@ test('create book without defaults', () => {
             Keys.KEYWORD4, 'test_keyword4',
             Keys.KEYWORD5, 'test_keyword5',
             Keys.KEYWORD6, 'test_keyword6',
-            Keys.LANGUAGE, 'test_language',
+            Keys.LANGUAGE, 'afrikaans',
             Keys.MANUSCRIPT_CREATION_COMMAND, 'test_manuscript_creation_command',
             Keys.MANUSCRIPT_FILE, 'test_manuscript_file',
             Keys.NOTES, 'test_notes',
@@ -85,7 +85,7 @@ test('create book without defaults', () => {
     expect(book.keyword4).toEqual('test_keyword4');
     expect(book.keyword5).toEqual('test_keyword5');
     expect(book.keyword6).toEqual('test_keyword6');
-    expect(book.language).toEqual('test_language');
+    expect(book.language).toEqual('afrikaans');
     expect(book.manuscriptCreationCommand).toEqual('test_manuscript_creation_command');
     expect(book.manuscriptLocalFile).toEqual('content/dir/test_manuscript_file');
     expect(book.notes).toEqual('test_notes');
@@ -150,7 +150,7 @@ test('create book with defaults', () => {
             Keys.KEYWORD4, 'test_keyword4',
             Keys.KEYWORD5, 'test_keyword5',
             Keys.KEYWORD6, 'test_keyword6',
-            Keys.LANGUAGE, 'test_language',
+            Keys.LANGUAGE, 'afrikaans',
             Keys.MANUSCRIPT_CREATION_COMMAND, 'make book',
             Keys.MANUSCRIPT_FILE, 'test_manuscript_file',
             Keys.NOTES, 'test_notes',
@@ -200,7 +200,7 @@ test('create book with defaults', () => {
     expect(book.keyword4).toEqual('test_keyword4');
     expect(book.keyword5).toEqual('test_keyword5');
     expect(book.keyword6).toEqual('test_keyword6');
-    expect(book.language).toEqual('test_language');
+    expect(book.language).toEqual('afrikaans');
     expect(book.manuscriptCreationCommand).toEqual('make book');
     expect(book.manuscriptLocalFile).toEqual('content/dir/test_manuscript_file');
     expect(book.notes).toEqual('test_notes');
@@ -262,7 +262,7 @@ test('detects missing key', () => {
                 Keys.KEYWORD4, 'test_keyword4',
                 Keys.KEYWORD5, 'test_keyword5',
                 Keys.KEYWORD6, 'test_keyword6',
-                Keys.LANGUAGE, 'test_language',
+                Keys.LANGUAGE, 'afrikaans',
                 Keys.MANUSCRIPT_FILE, 'test_manuscript_file',
                 Keys.NOTES, 'test_notes',
                 Keys.PAPER_BLEED, 'test_paper_bleed',
@@ -326,7 +326,7 @@ test('create book with resolution', () => {
             Keys.KEYWORD4, '${prefix}keyword4',
             Keys.KEYWORD5, '${prefix}keyword5',
             Keys.KEYWORD6, '${prefix}keyword6',
-            Keys.LANGUAGE, '${prefix}language',
+            Keys.LANGUAGE, 'afrikaans',
             Keys.MANUSCRIPT_FILE, '${prefix}manuscript_file',
             Keys.NOTES, '${prefix}notes',
             Keys.PAPER_BLEED, '${prefix}paper_bleed',
@@ -373,7 +373,7 @@ test('create book with resolution', () => {
     expect(book.keyword4).toEqual('test_keyword4');
     expect(book.keyword5).toEqual('test_keyword5');
     expect(book.keyword6).toEqual('test_keyword6');
-    expect(book.language).toEqual('test_language');
+    expect(book.language).toEqual('afrikaans');
     expect(book.manuscriptCreationCommand).toEqual('make test_title');
     expect(book.manuscriptLocalFile).toEqual('content/dir/test_manuscript_file');
     expect(book.notes).toEqual('test_notes');
@@ -586,7 +586,7 @@ test('getDataToWrite', () => {
         "keyword4": "test_keyword4",
         "keyword5": "test_keyword5",
         "keyword6": "test_keyword6",
-        "language": "test_language",
+        "language": "afrikaans",
         "manuscriptCreationCommand": "test_manuscript_creation_command",
         "manuscriptLocalFile": "test_manuscript_file",
         "notes": "test_notes",
@@ -635,7 +635,7 @@ test('toString', () => {
        keyword4 = test_keyword4
        keyword5 = test_keyword5
        keyword6 = test_keyword6
-       language = test_language
+       language = afrikaans
        seriesTitle = test_series_title
        scrapedSeriesTitle = test_scraped_series_title
        subtitle = test_subtitle
