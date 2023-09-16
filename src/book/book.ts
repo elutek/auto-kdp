@@ -197,7 +197,8 @@ export class Book {
 
     // Handle special actions
     if (this.action == 'all') {
-      this.action = 'book-metadata:assign-isbn:produce-manuscript:content:scrape-isbn:pricing:set-series-title:scrape:publish:scrape:scrape-amazon-image';
+      this.action = 'book-metadata:assign-isbn:produce-manuscript:content:scrape-isbn:pricing:set-series-title:scrape:publish:scrape';
+      /* after the book is published, do the 'scrape-amazon-image' action */
     } else if (this.action == 'all-but-no-publish') {
       this.action = 'book-metadata:assign-isbn:produce-manuscript:content:scrape-isbn:pricing:set-series-title:scrape';
     }
@@ -275,6 +276,15 @@ export class Book {
 
   getActionList() {
     return this.action.split(':').filter(x => x);
+  }
+
+  hasNonScrapingAction(): boolean {
+    for(const action of this.getActionList()) {
+      if (action != "scrape" && action != "scrape-amazon-image" && action != "scrape-isbn") {
+        return true;
+      }
+    }
+    return false;
   }
 
   getDataToWrite() {
