@@ -182,17 +182,15 @@ async function removeSeriesTitle(page: PageInterface, book: Book, verbose: boole
         await page.waitForSelector(id, Timeouts.SEC_5);
     }
     await page.click(id, Timeouts.SEC_5);
-    await page.waitForTimeout(Timeouts.SEC_10);
+    await page.waitForTimeout(Timeouts.SEC_3);
 
     debug(book, verbose, 'Clicking Done');
     try {
-        id = '#react-aui-modal-footer-1 input[type="submit"]';
-        await page.waitForSelector(id, Timeouts.SEC_5);
+        //await page.click('#react-aui-modal-footer-1 input[type="submit"]', Timeouts.SEC_10);
+        await page.click('#react-aui-modal-footer-1 .a-button', Timeouts.SEC_10);
     } catch (e) {
-        debug(book, verbose, "Trying 2");
-        id = '#react-aui-modal-footer-2 input[type="submit"]';
-        await page.waitForSelector(id, Timeouts.SEC_5);
+        debug(book, verbose, "Trying modal 2 as a backup");
+        await page.click('#react-aui-modal-footer-2 input[type="submit"]', Timeouts.SEC_10);
     }
-    await page.click(id, Timeouts.SEC_5);
     await page.waitForTimeout(Timeouts.SEC_1);
 }
