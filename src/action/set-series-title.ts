@@ -37,9 +37,14 @@ export async function setSeriesTitle(book: Book, params: ActionParams, forceRemo
     debug(book, verbose, 'Getting series title');
     const existingSeriesTitle = await page.evalValue('#series_title', x => x.textContent.trim(), Timeouts.SEC_5);
 
-    if (forceRemoval && existingSeriesTitle != '') {
-        debug(book, verbose, `Removing book from series ${book.seriesTitle}`);
-        await removeSeriesTitle(page, book, verbose);
+    if (forceRemoval) {
+        if (existingSeriesTitle != '') {
+            debug(book, verbose, `Removing book from series ${book.seriesTitle}`);
+            await removeSeriesTitle(page, book, verbose);
+        } else {
+            debug(book, verbose, `Removing book from series ${book.seriesTitle} - not needed, already removed`);
+            return new ActionResult(true);
+        }
     } else if (book.seriesTitle == existingSeriesTitle) {
         debug(book, verbose, `Updating series title - not needed, got ${existingSeriesTitle}`);
     } else if (book.seriesTitle != '' && existingSeriesTitle == '') {
