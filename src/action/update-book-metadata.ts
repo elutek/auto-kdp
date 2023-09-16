@@ -156,9 +156,7 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
 
   // Save
   let isSuccess = true;
-  debug(book, verbose, `Clicking Save and Continue`);
-  await page.waitForTimeout(Timeouts.SEC_1);
-  await page.click('#save-and-continue-announce', Timeouts.MIN_1);
+  await clickSomething('#save-and-continue-announce', 'Save and Continue', page, book, verbose);
   if (isNew) {
     await page.waitForNavigation(Timeouts.MIN_1);
   } else {
