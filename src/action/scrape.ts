@@ -144,6 +144,9 @@ async function _getScrapePage(url: string, params: ActionParams): Promise<PageIn
 
     await globalBookshelfPage.goto(url, Timeouts.MIN_3);
     await globalBookshelfPage.waitForTimeout(Timeouts.SEC_1);  // Just in case.
+
+    // Select "ALL" books, i.e. include archived ones.
+    await globalBookshelfPage.select('#podbookshelftable_view_input-option', 'ALL', Timeouts.SEC_3);
   }
   return globalBookshelfPage;
 }
