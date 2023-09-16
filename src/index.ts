@@ -76,7 +76,17 @@ async function processOneBook(bookFile: BookFile, bookList: BookList, book: Book
 }
 
 
-async function mainWithOptions(booksCsvFile: string, booksConfigFile: string, contentDir: string, userDataDir: string, keepOpen: boolean, headlessOverride: boolean, dryRun: boolean, verbose: boolean) {
+async function mainWithOptions(
+  booksCsvFile: string,
+  booksConfigFile: string,
+  contentDir: string,
+  userDataDir: string,
+  keepOpen: boolean,
+  headlessOverride: boolean,
+  scrapeOnly: boolean,
+  dryRun: boolean,
+  verbose: boolean) {
+
   if (dryRun) {
     console.log('This is DRY RUN');
   }
@@ -90,6 +100,7 @@ async function mainWithOptions(booksCsvFile: string, booksConfigFile: string, co
       `\tbook config file: ${booksConfigFile}\n` +
       `\tbooks content dir ${contentDir}\n` +
       `\tuser data dir ${userDataDir}\n` +
+      `\tscrape only ? ${scrapeOnly}\n` +
       `\tkeepOpen: ${keepOpen}\n` +
       `\tdryRun: ${dryRun}\n` +
       `\tverbose: ${verbose}`);
@@ -135,7 +146,8 @@ async function mainWithOptions(booksCsvFile: string, booksConfigFile: string, co
     //
     let numConsecutiveFastOperations = 0;
     for (let book of bookList.getBooks()) {
-      if (book.action != '') {
+      const shouldIgnore = book.action == '' || (scrapeOnly && book.hasNonScrapingAction());
+      if (!shouldIgnore) {
         const durationSeconds = await processOneBook(bookFile, bookList, book, params);
 
         //
@@ -172,6 +184,7 @@ async function main() {
     .requiredOption('-u, --user-data <dir>', 'User data dir to store cookies, etc', './user_data')
     .option('-k, --keep-open', 'Keep tabs open', false)
     .option('-h, --headless <yes|no>', 'Open in headless mode (no browser visible)', '')
+    .option('-s, --scrape-only', 'Process only scraping requests', '')
     .option('-d, --dry-run', 'Dry run - no actual actions taken', false)
     .option('-v, --verbose', 'Be chatty', false);
 
@@ -181,6 +194,7 @@ async function main() {
 
   let headlessStr = opts.headless != undefined && opts.headless != null ? opts.headless : '';
   let headlessOverride = headlessStr == 'yes' || headlessStr == 'true' ? true : (headlessStr == 'no' || headlessStr == 'false' ? false : null);
+  let scrapeOnly = opts.scrapeOnly != undefined && opts.scrapeOnly != null ? opts.scrapeOnly : false;
   let dryRun = opts.dryRun != undefined && opts.dryRun != null ? opts.dryRun : false;
   let keepOpen = opts.keepOpen != undefined && opts.keepOpen != null ? opts.keepOpen : false;
   let verbose = opts.verbose != undefined && opts.verbose != null ? opts.verbose : false;
@@ -191,7 +205,7 @@ async function main() {
   });
 
   const startTime = performance.now();
-  await mainWithOptions(opts.books, opts.config, opts.contentDir, opts.userData, keepOpen, headlessOverride, dryRun, verbose);
+  await mainWithOptions(opts.books, opts.config, opts.contentDir, opts.userData, keepOpen, headlessOverride, scrapeOnly, dryRun, verbose);
   const durationSeconds = (performance.now() - startTime) / 1000;
   const durationMinutes = Math.round(10 * durationSeconds / 60) / 10;
   console.log("Whole thing took " + durationMinutes + " minutes")
