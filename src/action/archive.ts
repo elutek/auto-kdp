@@ -55,13 +55,12 @@ export async function archive(book: Book, params: ActionParams): Promise<ActionR
     await page.tap(id, Timeouts.SEC_10);
 
     // Click archive.
-    await clickSomething(`#print_archive_title-${book.titleId}`, 'Archive', page, book, verbose);
+    await clickSomething(`#print_archive_title-${book.titleId}`, 'Archive (from menu)', page, book, verbose);
+    await page.waitForTimeout(Timeouts.SEC_3);
 
     // Click confimration
-    debug(book, verbose, 'Clicking confirmation');
-    id = '#archive-title-ok-announce';
-    await page.focus(id, Timeouts.SEC_10);
-    await page.click(id, Timeouts.SEC_10);
+    debug(book, verbose, 'Clicking Archive to confirm');
+    await page.click('#archive-title-ok-announce', Timeouts.SEC_10);
     await page.waitForTimeout(Timeouts.SEC_5);
 
     debug(book, verbose, 'Archiving done');
