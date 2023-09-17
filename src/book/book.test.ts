@@ -55,6 +55,7 @@ test('create book without defaults', () => {
             Keys.EDITION, '2',
             Keys.SERIES_TITLE, 'test_series_title',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
+            Keys.SCRAPED_IS_ARCHIVED, 'archived',
             Keys.WAS_EVER_PUBLISHED, 'false',
         ),
         makeMap(),
@@ -110,6 +111,7 @@ test('create book without defaults', () => {
     expect(book.edition).toEqual('2');
     expect(book.seriesTitle).toEqual('test_series_title');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
+    expect(book.scrapedIsArchived).toEqual('archived');
     expect(book.wasEverPublished).toEqual(false);
     expect(book.signature).toEqual('test_signature');
 });
@@ -130,6 +132,7 @@ test('create book with defaults', () => {
             Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',
             Keys.WAS_EVER_PUBLISHED, 'false',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
+            Keys.SCRAPED_IS_ARCHIVED, 'archived',
         ),
         makeMap(
             Keys.AUTHOR_FIRST_NAME, 'bad bad bad',
@@ -225,6 +228,7 @@ test('create book with defaults', () => {
     expect(book.edition).toEqual('2');
     expect(book.edition).toEqual('2');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
+    expect(book.scrapedIsArchived).toEqual('archived');
     expect(book.wasEverPublished).toEqual(false);
     expect(book.signature).toEqual('test_signature');
 });
@@ -244,6 +248,7 @@ test('detects missing key', () => {
                 Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',
                 Keys.WAS_EVER_PUBLISHED, 'false',
                 Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
+                Keys.SCRAPED_IS_ARCHIVED, 'archived',
             ),
             makeMap(
                 Keys.CATEGORY1, 'test_cat1',
@@ -308,6 +313,7 @@ test('create book with resolution', () => {
             Keys.PUB_STATUS_DETAIL, '${prefix}pub_status_detail',
             Keys.WAS_EVER_PUBLISHED, 'false',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
+            Keys.SCRAPED_IS_ARCHIVED, 'archived',
         ),
         makeMap(
             'prefix', "test_",
@@ -398,6 +404,7 @@ test('create book with resolution', () => {
     expect(book.edition).toEqual('2');
     expect(book.seriesTitle).toEqual('test_series_title');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
+    expect(book.scrapedIsArchived).toEqual('archived');
     expect(book.wasEverPublished).toEqual(false);
     expect(book.signature).toEqual('test_signature');
 });
@@ -427,25 +434,46 @@ test('detects bad resolution', () => {
 });
 
 
+function createFullyLiveBook(): Book {
+    return makeOkTestBook({
+        wasEverPublished: 'true',
+        pubStatus: 'LIVE',
+        pubStatusDetail: '',
+        scrapedIsArchived: '',
+        scrapedSeriesTitle: 'ok',
+    });
+}
+
 test('isFullyLive', () => {
-    const book = makeOkTestBook();
-    book.wasEverPublished = true;
-    book.pubStatus = 'Publishing';
-
-    expect(book.isFullyLive()).toEqual(false);
-
-    book.pubStatus = 'LIVE';
-    book.pubStatusDetail = 'some updates pending';
-
-    expect(book.isFullyLive()).toEqual(false);
-
-    book.pubStatusDetail = '';
-
-    expect(book.isFullyLive()).toEqual(false);
-
-    book.scrapedSeriesTitle = 'ok';
-
-    expect(book.isFullyLive()).toEqual(true);
+    {
+        let fullyLiveBook = createFullyLiveBook();
+        expect(fullyLiveBook.isFullyLive()).toEqual(true);
+    }
+    {
+        const book = createFullyLiveBook();
+        book.wasEverPublished = false;
+        expect(book.isFullyLive()).toEqual(false);
+    }
+    {
+        const book = createFullyLiveBook();
+        book.pubStatus = 'DRAFT';
+        expect(book.isFullyLive()).toEqual(false);
+    }
+    {
+        const book = createFullyLiveBook();
+        book.pubStatusDetail = 'Updates pending';
+        expect(book.isFullyLive()).toEqual(false);
+    }
+    {
+        const book = createFullyLiveBook();
+        book.scrapedIsArchived = 'archived';
+        expect(book.isFullyLive()).toEqual(false);
+    }
+    {
+        const book = createFullyLiveBook();
+        book.scrapedSeriesTitle = 'mismatched';
+        expect(book.isFullyLive()).toEqual(false);
+    }
 });
 
 test('canBeCreated', () => {
@@ -547,7 +575,7 @@ test('hasOldCategoried', () => {
         expect(book.hasOldCategories()).toBe(false);
         expect(book.hasNewCategories()).toBe(false);
         expect(book.canBeCreated()).toBe(false);
-    }{
+    } {
         // both old and new categories ok.
         const book = makeOkTestBook({ newCategory1: 'a', newCategory2: 'b', newCategory3: 'c', category1: 'd', category2: 'e' });
         expect(book.hasOldCategories()).toBe(true);
@@ -606,6 +634,7 @@ test('getDataToWrite', () => {
         "pubDate": "test_pub_date",
         "pubStatus": "test_pub_status",
         "pubStatusDetail": "test_pub_status_detail",
+        "scrapedIsArchived": "archived",
         "scrapedSeriesTitle": "test_scraped_series_title",
         "seriesTitle": "test_series_title",
         "signature": "test_signature",
@@ -671,6 +700,7 @@ test('toString', () => {
        pubStatus = test_pub_status
        pubStatusDetail = test_pub_status_detail
        wasEverPublished = false
+       scrapedIsArchived = archived
 `.replaceAll(" ", ""));
 });
 

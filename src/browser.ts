@@ -29,6 +29,7 @@ export interface PageInterface {
     updateValue(id: string, value: string): Promise<void>;
     clearTextField(id: string, timeoutMillis: number): Promise<void>;
     close(): Promise<void>;
+    hasElement(id: string, timeoutMillis: number): Promise<boolean>;
 }
 
 export class PuppeteerBrowser implements BrowserInterface {
@@ -70,6 +71,7 @@ export class PuppeteerPage implements PageInterface {
     constructor(page: Page) {
         this.page = page;
     }
+
     url(): string {
         return this.page.url();
     }
@@ -178,5 +180,14 @@ export class PuppeteerPage implements PageInterface {
 
     async close() {
         await this.page.close();
+    }
+
+    async hasElement(id: string, timeoutMillis: number): Promise<boolean> {
+        try {
+            await this.waitForSelector(id, timeoutMillis);
+            return true;
+        } catch (e) {
+            return false;
+        }
     }
 }

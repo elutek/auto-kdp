@@ -141,4 +141,9 @@ export var Keys = {
     // we cannot remove it - the record stays forever, but stops showing
     // as available.
     WAS_EVER_PUBLISHED: 'wasEverPublished',
+
+    // Archived => 'archived'
+    // Not archived or never checked => ''
+    // Could not check (got misleading values) => 'undetermined'
+    SCRAPED_IS_ARCHIVED: 'scrapedIsArchived',
 };

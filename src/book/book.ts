@@ -18,7 +18,8 @@ const _KEYS_WITH_NO_DEFAULT = [
   Keys.PUB_STATUS_DETAIL,
   Keys.TITLE_ID,
   Keys.WAS_EVER_PUBLISHED,
-  Keys.SCRAPED_SERIES_TITLE
+  Keys.SCRAPED_SERIES_TITLE,
+  Keys.SCRAPED_IS_ARCHIVED
 ];
 
 export class Book {
@@ -37,6 +38,7 @@ export class Book {
   public titleId: string;
   public wasEverPublished: boolean;
   public scrapedSeriesTitle: string;
+  public scrapedIsArchived: string;
 
   // Fields that AutoKdp is not allowed to update
   readonly authorFirstName: string;
@@ -142,6 +144,10 @@ export class Book {
     this.pubStatusDetail = getValue(Keys.PUB_STATUS_DETAIL);
     this.wasEverPublished = getValue(Keys.WAS_EVER_PUBLISHED) == 'true';
     this.scrapedSeriesTitle = getValue(Keys.SCRAPED_SERIES_TITLE);
+    this.scrapedIsArchived = getValue(Keys.SCRAPED_IS_ARCHIVED);
+    if (!["undetermined", "archived", ""].includes(this.scrapedIsArchived)) {
+      throw new Error("Unknown value for 'is archived': " + this.scrapedIsArchived);
+    }
     this.coverImageUrl = getValue(Keys.COVER_IMAGE_URL);
 
     // Fields that AutoKdp is not allowed to update
@@ -247,7 +253,18 @@ export class Book {
   }
 
   isFullyLive() {
-    return this.wasEverPublished && this.pubStatus == 'LIVE' && this.pubStatusDetail == '' && this.scrapedSeriesTitle.toLowerCase().includes('ok');
+    return this.wasEverPublished &&
+      this.pubStatus == 'LIVE' &&
+      this.pubStatusDetail == '' &&
+      this.scrapedSeriesTitle.toLowerCase().includes('ok') &&
+      this.scrapedIsArchived == '';
+  }
+
+  isFullyDiscarded() {
+    return this.wasEverPublished &&
+      this.pubStatus == 'DRAFT' &&
+      this.pubStatusDetail == 'Unpublished' &&
+      this.scrapedIsArchived == 'archived';
   }
 
   numActions() {
@@ -279,7 +296,7 @@ export class Book {
   }
 
   hasNonScrapingAction(): boolean {
-    for(const action of this.getActionList()) {
+    for (const action of this.getActionList()) {
       if (action != "scrape" && action != "scrape-amazon-image" && action != "scrape-isbn") {
         return true;
       }

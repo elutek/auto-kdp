@@ -1,10 +1,11 @@
 import { Book } from '../book/book.js';
 import { ActionResult } from '../util/action-result.js';
 import { debug, error, stripPrefix } from '../util/utils.js';
-import { Urls } from './action-utils.js';
+import { Urls, clickSomething } from './action-utils.js';
 import { ActionParams } from '../util/action-params.js';
 import { PageInterface } from '../browser.js';
 import { Timeouts } from '../util/timeouts.js';
+import { isArgumentsObject } from 'util/types';
 
 var globalBookshelfPage: PageInterface = null;
 
@@ -128,13 +129,38 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
 
   debug(book, verbose, 'Got scraped series title: ' + scrapedSeriesTitle + ' - ' + book.scrapedSeriesTitle);
 
+  // Check whether this book is archived.
+  // Opening menu
+  debug(book, verbose, 'Checking if archived');
+  id = `#zme-indie-bookshelf-dual-print-actions-${book.pubStatus.toLowerCase()}-book-actions-${book.id}-other-actions-announce`;
+  await page.focus(id, Timeouts.SEC_1);
+  await page.waitForTimeout(Timeouts.SEC_1);
+  await page.tap(id, Timeouts.SEC_1);
+  await page.waitForTimeout(Timeouts.SEC_1);
+  // Reading if there is an option to archive or to unarchive
+  const hasArchiveOption = await page.hasElement(`#print_archive_title-${book.titleId}`, Timeouts.SEC_3);
+  const hasUnarchiveOption = await page.hasElement(`#print_unarchive_title-${book.titleId}`, Timeouts.SEC_3);
+  debug(book, verbose, "Has archive option = " + hasArchiveOption);
+  debug(book, verbose, "Has unarchive option = " + hasUnarchiveOption);
+  let archivedStatus = 'unknown';
+  if (hasUnarchiveOption && !hasArchiveOption) {
+    archivedStatus = 'archived';
+  } else if (hasArchiveOption && !hasUnarchiveOption) {
+    archivedStatus = '';
+  } else {
+    archivedStatus = 'undetermined';
+  }
+  book.scrapedIsArchived = archivedStatus;
+  debug(book, verbose, "Got archived status: " + book.scrapedIsArchived);
 
   /* We do not close this special page.
     await maybeClosePage(params, page);
   */
 
-  let nextActions = !book.isFullyLive() && book.numActions() == 1 && book.getFirstAction() == 'scrape' ? 'scrape' : '';
-  debug(book, verbose, `Next actions: ${nextActions}`);
+  const forceScrapeRepeat = (!book.isFullyLive() && !book.isFullyDiscarded()) &&
+    book.numActions() == 1 && book.getFirstAction() == 'scrape';
+  debug(book, verbose, `Repeating scrape? ${forceScrapeRepeat}`);
+  const nextActions = forceScrapeRepeat ? 'scrape' : '';
   return new ActionResult(true).setNextActions(nextActions);
 }
 

@@ -121,4 +121,8 @@ export class FakePage implements PageInterface {
         }
         this.closed = true;
     }
+
+    async hasElement(id: string, timeoutMillis: number): Promise<boolean> {
+        return false;
+    }
 }
