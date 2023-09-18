@@ -132,7 +132,7 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
   // Check whether this book is archived.
   // Opening menu
   debug(book, verbose, 'Checking if archived');
-  const draftStatus = book.pubStatus == 'IN REVIEW' ? 'draft' :
+  const draftStatus = ['IN REVIEW', 'PUBLISHING'].includes(book.pubStatus) ? 'draft' :
     (book.pubStatus == 'LIVE' && book.pubStatusDetail == 'With unpublished changes' ? 'live-progress' :
       book.pubStatus.toLowerCase());
   id = `#zme-indie-bookshelf-dual-print-actions-${draftStatus}-book-actions-${book.id}-other-actions-announce`;
