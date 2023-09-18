@@ -44,7 +44,7 @@ export function doScrapeAmazonCoverImageUrl(text: string, book: Book, verbose: b
   /* Istanbul skip next */
   debug(book, verbose, 'Got response of length ' + text.length);
 
-  const regex = /<img .*?src="https:\/\/m.media-amazon.com\/images\/I\/([a-zA-Z0-9_\.\-]*.jpg)"/gm;
+  const regex = /<img .*?src="https:\/\/m.media-amazon.com\/images\/I\/([a-zA-Z0-9_\.\-\+]*.jpg)" .*?data-a-image-name="landingImage"/gm;
   const urls: string[] = [];
 
   for (const extractedUrls of text.matchAll(regex)) {
