@@ -117,7 +117,7 @@ test('can read book file', async () => {
 test('can read book with empty values', async () => {
     const empty_books_csv =
         `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
-               ,                ,  ,       ,    ,    ,Belle,         ,       ,               ,             ,                  ,archived`;
+               ,                ,  ,       ,    ,    ,Belle,         ,       ,               ,             ,                  ,`;
 
     const empty_books_conf = `
 authorFirstName =
@@ -160,7 +160,6 @@ title =
 subtitle =
 edition = 123
 seriesTitle =
-scrapedIsArchived =
 `
     mock({
         'books.csv': empty_books_csv,
@@ -192,7 +191,7 @@ scrapedIsArchived =
         expect(book.priceUsd).toBeNull();
         expect(book.wasEverPublished).toEqual(false);
         expect(book.scrapedSeriesTitle).toEqual('');
-        expect(book.scrapedIsArchived).toEqual('archived');
+        expect(book.scrapedIsArchived).toEqual('');
         expect(book.getPreservedKey('name')).toEqual('Belle');
         expect(book.edition).toEqual('123');
     }
