@@ -161,7 +161,7 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
   */
 
   const forceScrapeRepeat = (!book.isFullyLive() && !book.isFullyDiscarded()) &&
-    book.numActions() == 1 && book.getFirstAction() == 'scrape';
+    (book.action == 'scrape' || book.action == 'scrape:scrape-amazon-image');
   debug(book, verbose, `Repeating scrape? ${forceScrapeRepeat}`);
   const nextActions = forceScrapeRepeat ? 'scrape' : '';
   return new ActionResult(true).setNextActions(nextActions);
