@@ -52,11 +52,17 @@ async function executeBookActionCallback(action: string, book: Book, params: Act
   throw new Error('Unknown action: ' + action);
 }
 
-async function _startPuppeteerBrowser(bookList: BookList, headlessOverride: boolean, userDataDir: string, verbose: boolean): Promise<BrowserInterface> {
+async function _startPuppeteerBrowser(
+  bookList: BookList,
+  headlessOverride: boolean,
+  scrapeOnly: boolean,
+  userDataDir: string,
+  verbose: boolean)
+  : Promise<BrowserInterface> {
   const headless = headlessOverride != null ? headlessOverride :
     // Headless is not overriden: the default is whether there is a "content" action
     // which for an unknown reason does not work in a headless mode.
-    !bookList.containsContentAction();
+    scrapeOnly || !bookList.containsContentAction();
 
   return PuppeteerBrowser.create(headless, userDataDir);
 }
@@ -117,7 +123,7 @@ async function mainWithOptions(
   if (verbose) {
     console.debug('Starting browser');
   }
-  const browser = await _startPuppeteerBrowser(bookList, headlessOverride, userDataDir, verbose);
+  const browser = await _startPuppeteerBrowser(bookList, headlessOverride, scrapeOnly, userDataDir, verbose);
   if (verbose) {
     console.debug('Browser started');
   }
