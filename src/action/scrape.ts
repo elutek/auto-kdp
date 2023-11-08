@@ -133,7 +133,7 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
   // Opening menu
   debug(book, verbose, 'Checking if archived');
   const draftStatus = ['IN REVIEW', 'PUBLISHING'].includes(book.pubStatus) ? 'draft' :
-    (book.pubStatus == 'LIVE' && book.pubStatusDetail == 'With unpublished changes' ? 'live-progress' :
+    (book.pubStatus == 'LIVE' && ['With unpublished changes', 'Updates publishing', 'Updates in review'].includes(book.pubStatusDetail) ? 'live-progress' :
       book.pubStatus.toLowerCase());
   id = `#zme-indie-bookshelf-dual-print-actions-${draftStatus}-book-actions-${book.id}-other-actions-announce`;
   await page.focus(id, Timeouts.SEC_1);
