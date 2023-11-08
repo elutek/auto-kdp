@@ -22,6 +22,9 @@ const _KEYS_WITH_NO_DEFAULT = [
   Keys.SCRAPED_IS_ARCHIVED
 ];
 
+const MAX_DESCRIPTION_LENGTH = 4000;
+const MAX_TITLE_AND_SUBTITLE_LENGTH = 255;
+
 export class Book {
 
   private origData: Map<string, string>;
@@ -160,6 +163,10 @@ export class Book {
     this.newCategory3 = getValue(Keys.NEW_CATEGORY3);
     this.coverLocalFile = contentDir + '/' + getValue(Keys.COVER_FILE);
     this.description = getValue(Keys.DESCRIPTION);
+    if (this.description.length > MAX_DESCRIPTION_LENGTH) {
+      throw new Error("Description too long: max len is " + MAX_DESCRIPTION_LENGTH +
+        " but got: " + this.description.length + ": " + this.description)
+    }
     this.illustratorFirstName = getValue(Keys.ILLUSTRATOR_FIRST_NAME);
     this.illustratorLastName = getValue(Keys.ILLUSTRATOR_LAST_NAME);
     this.keyword0 = getValue(Keys.KEYWORD0);
@@ -191,6 +198,10 @@ export class Book {
     this.seriesTitle = getValue(Keys.SERIES_TITLE);
     this.title = getValue(Keys.TITLE);
     this.subtitle = getValue(Keys.SUBTITLE);
+    if (this.title.length + this.subtitle.length > MAX_TITLE_AND_SUBTITLE_LENGTH) {
+      throw new Error("Title+Subtitle too long: max len is " + MAX_TITLE_AND_SUBTITLE_LENGTH +
+        " but got: " + (this.title.length + this.subtitle.length) + ": " + this.title + " / " + this.subtitle)
+    }
     this.edition = getValue(Keys.EDITION);
     if (this.edition != '' && !isPositiveInt(this.edition)) {
       throw new Error("Edition must be a positive integer, but got: " + this.edition)
