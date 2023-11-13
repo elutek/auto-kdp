@@ -156,6 +156,8 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
 
   // Save
   let isSuccess = true;
+  await page.click('#page-container', Timeouts.SEC_HALF);
+  await page.waitForTimeout(Timeouts.SEC_HALF);
   await clickSomething('#save-and-continue-announce', 'Save and Continue', page, book, verbose);
   if (isNew) {
     await page.waitForNavigation(Timeouts.MIN_1);
@@ -192,7 +194,7 @@ async function initCategories(page: PageInterface, book: Book, verbose: boolean)
     // and will be overridden immediately. Pick anything that has at least 3 subcategories,
     // and ideally is notthing embarrasing, just in case due to some mistake it
     // becomes visible to users.
-    case "us": dummyCategory = '{"level":0,"key":"Calendars","nodeId":"3248857011"}'; break;
+    case "us": dummyCategory = '{"level":0,"key":"Arts & Photography","nodeId":"1"}'; break;
     case "pl": dummyCategory = '{"level":0,"key":"Beletrystyka","nodeId":"20788878031"}'; break;
     case "es": dummyCategory = '{"level":0,"key":"Arte y fotografía","nodeId":"902486031"}'; break;
     case "de": dummyCategory = '{"level":0,"key":"Biografien & Erinnerungen","nodeId":"187254"}'; break;
@@ -208,9 +210,6 @@ async function initCategories(page: PageInterface, book: Book, verbose: boolean)
   await page.waitForTimeout(Timeouts.SEC_5);
   await page.waitForSelector('#categories-modal-button', Timeouts.SEC_2);
   await page.waitForTimeout(Timeouts.SEC_5);
-  // await page.focus('#categories-modal-button', Timeouts.SEC_2);
-  // await page.hover('#categories-modal-button', Timeouts.SEC_2);
-  // await page.tap('#categories-modal-button', Timeouts.SEC_10);
 
   await clickSomething('#categories-modal-button', 'Choose categories OR Edit Categories', page, book, verbose);
   await page.waitForTimeout(Timeouts.SEC_1);
@@ -224,6 +223,4 @@ async function initCategories(page: PageInterface, book: Book, verbose: boolean)
   await page.waitForTimeout(Timeouts.SEC_HALF);
   await clickSomething('.a-popover-footer #react-aui-modal-footer-1 .a-button-primary button', 'Save', page, book, verbose);
   await page.waitForTimeout(Timeouts.SEC_HALF);
-  //await clickSomething('.a-popover-footer #react-aui-modal-footer-2 .a-button-primary button', 'Continue (to remove existing categories)', page, book, verbose);
-  //await page.waitForTimeout(Timeouts.SEC_HALF);
 }
