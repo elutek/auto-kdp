@@ -45,7 +45,7 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
     // are set in stone.
     await selectValue('#data-print-book-language-native', book.language, 'language', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-title', book.title, 'title', page, book, verbose);
-    await updateTextFieldIfChanged('#data-print-book-subtitle', book.subtitle, 'title', page, book, verbose);
+    await updateTextFieldIfChanged('#data-print-book-subtitle', book.subtitle, 'subtitle', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-edition-number', book.edition, 'edition', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-primary-author-first-name', book.authorFirstName, 'author\'s first name', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-primary-author-last-name', book.authorLastName, 'author\'s last name', page, book, verbose);
