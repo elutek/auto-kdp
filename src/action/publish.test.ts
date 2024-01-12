@@ -11,7 +11,6 @@ test('publishDryRun', async () => {
         keepOpen: false,
         dryRun: true,
         verbose: true,
-        scrapeOnly: false
     };
 
     const actionResult = await publish(book, params);
@@ -26,7 +25,6 @@ test('alreadyPublished', async () => {
         keepOpen: false,
         dryRun: false,
         verbose: true,
-        scrapeOnly: false
     };
 
     book.wasEverPublished = true;
@@ -45,7 +43,6 @@ test('publishingInProgressA', async () => {
         keepOpen: false,
         dryRun: false,
         verbose: true,
-        scrapeOnly: false
     };
 
     book.wasEverPublished = true;
@@ -64,7 +61,6 @@ test('publishingInProgressB', async () => {
         keepOpen: false,
         dryRun: false,
         verbose: true,
-        scrapeOnly: false
     };
 
     book.wasEverPublished = true;
@@ -93,7 +89,6 @@ test('canPublish', async () => {
         keepOpen: false,
         dryRun: false,
         verbose: true,
-        scrapeOnly: false
     };
 
     //
@@ -141,7 +136,6 @@ test('cannotPublish', async () => {
         keepOpen: false,
         dryRun: false,
         verbose: true,
-        scrapeOnly: false
     };
 
     //

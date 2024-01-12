@@ -5,5 +5,4 @@ export class ActionParams {
     public keepOpen: boolean = false;
     public dryRun: boolean = false;
     public browser: BrowserInterface = null;
-    public scrapeOnly: boolean = false;
 }

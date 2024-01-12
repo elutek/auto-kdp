@@ -55,14 +55,13 @@ async function executeBookActionCallback(action: string, book: Book, params: Act
 async function _startPuppeteerBrowser(
   bookList: BookList,
   headlessOverride: boolean,
-  scrapeOnly: boolean,
   userDataDir: string,
   verbose: boolean)
   : Promise<BrowserInterface> {
   const headless = headlessOverride != null ? headlessOverride :
     // Headless is not overriden: the default is whether there is a "content" action
     // which for an unknown reason does not work in a headless mode.
-    scrapeOnly || !bookList.containsContentAction();
+    !bookList.containsContentAction();
 
   return PuppeteerBrowser.create(headless, userDataDir);
 }
@@ -82,7 +81,7 @@ async function processOneBook(bookFile: BookFile, bookList: BookList, book: Book
 }
 
 
-async function processAllBooksOnce(bookList: BookList, bookFile: BookFile, params: ActionParams) {
+async function processAllBooksOnce(scrapeOnly: boolean | null, bookList: BookList, bookFile: BookFile, params: ActionParams) {
   //
   // Ensure logged in.
   // 
@@ -99,8 +98,7 @@ async function processAllBooksOnce(bookList: BookList, bookFile: BookFile, param
   //
   let numConsecutiveFastOperations = 0;
   for (let book of bookList.getBooks()) {
-    const shouldIgnore = book.action == '' || (params.scrapeOnly && book.hasNonScrapingAction());
-    if (!shouldIgnore) {
+    if (book.action != '' && (scrapeOnly == null || scrapeOnly == book.getActionList().every(a => a.startsWith("scrape")))) {
       const durationSeconds = await processOneBook(bookFile, bookList, book, params);
 
       //
@@ -128,7 +126,6 @@ async function mainWithOptions(
   userDataDir: string,
   keepOpen: boolean,
   headlessOverride: boolean,
-  scrapeOnly: boolean,
   dryRun: boolean,
   verbose: boolean) {
 
@@ -145,7 +142,6 @@ async function mainWithOptions(
       `\tbook config file: ${booksConfigFile}\n` +
       `\tbooks content dir ${contentDir}\n` +
       `\tuser data dir ${userDataDir}\n` +
-      `\tscrape only ? ${scrapeOnly}\n` +
       `\tkeepOpen: ${keepOpen}\n` +
       `\tdryRun: ${dryRun}\n` +
       `\tverbose: ${verbose}`);
@@ -162,7 +158,7 @@ async function mainWithOptions(
   if (verbose) {
     console.debug('Starting browser');
   }
-  const browser = await _startPuppeteerBrowser(bookList, headlessOverride, scrapeOnly, userDataDir, verbose);
+  const browser = await _startPuppeteerBrowser(bookList, headlessOverride, userDataDir, verbose);
   if (verbose) {
     console.debug('Browser started');
   }
@@ -172,11 +168,10 @@ async function mainWithOptions(
     keepOpen: keepOpen,
     dryRun: dryRun,
     verbose: verbose,
-    scrapeOnly: scrapeOnly
   };
 
   try {
-    await processAllBooksOnce(bookList, bookFile, params);
+    await processAllBooksOnce(null, bookList, bookFile, params);
   } finally {
     if (!keepOpen) {
       await browser.close();
@@ -195,7 +190,6 @@ async function main() {
     .requiredOption('-u, --user-data <dir>', 'User data dir to store cookies, etc', './user_data')
     .option('-k, --keep-open', 'Keep tabs open', false)
     .option('-h, --headless <yes|no>', 'Open in headless mode (no browser visible)', '')
-    .option('-s, --scrape-only', 'Process only scraping requests', '')
     .option('-d, --dry-run', 'Dry run - no actual actions taken', false)
     .option('-v, --verbose', 'Be chatty', false);
 
@@ -205,7 +199,6 @@ async function main() {
 
   let headlessStr = opts.headless != undefined && opts.headless != null ? opts.headless : '';
   let headlessOverride = headlessStr == 'yes' || headlessStr == 'true' ? true : (headlessStr == 'no' || headlessStr == 'false' ? false : null);
-  let scrapeOnly = opts.scrapeOnly != undefined && opts.scrapeOnly != null ? opts.scrapeOnly : false;
   let dryRun = opts.dryRun != undefined && opts.dryRun != null ? opts.dryRun : false;
   let keepOpen = opts.keepOpen != undefined && opts.keepOpen != null ? opts.keepOpen : false;
   let verbose = opts.verbose != undefined && opts.verbose != null ? opts.verbose : false;
@@ -216,7 +209,7 @@ async function main() {
   });
 
   const startTime = performance.now();
-  await mainWithOptions(opts.books, opts.config, opts.contentDir, opts.userData, keepOpen, headlessOverride, scrapeOnly, dryRun, verbose);
+  await mainWithOptions(opts.books, opts.config, opts.contentDir, opts.userData, keepOpen, headlessOverride, dryRun, verbose);
   const durationSeconds = (performance.now() - startTime) / 1000;
   const durationMinutes = Math.round(10 * durationSeconds / 60) / 10;
   console.log("Whole thing took " + durationMinutes + " minutes")
