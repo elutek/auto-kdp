@@ -6,17 +6,17 @@ import { fileURLToPath } from 'url';
 import { BookFile } from './book-file.js';
 
 const BOOKS_CONF = `
-authorFirstName = test_author_first_name
-authorLastName = test_author_last_name
-category1 = test_cat1
-category2 = test_cat2
-newCategory1 = test_new_cat1
-newCategory2 = test_new_cat2
-newCategory3 = test_new_cat3
-coverLocalFile = test_cover_file_\${name}
-description = test_description for \${name}
-illustratorFirstName = test_illustrator_first_name
-illustratorLastName = test_illustrator_last_name
+authorFirstName = author_first_name
+authorLastName = author_last_name
+category1 = cat1
+category2 = cat2
+newCategory1 = new_cat1
+newCategory2 = new_cat2
+newCategory3 = new_cat3
+coverLocalFile = cover_file_\${name}
+description = description for \${name}
+illustratorFirstName = illustrator_first_name
+illustratorLastName = illustrator_last_name
 keyword0 = test \${name}
 keyword1 = 
 keyword2 =
@@ -37,10 +37,10 @@ pricePl =
 priceSe = 
 priceUsd = 1.2
 primaryMarketplace = pl
-paperBleed = test_paper_bleed
-paperCoverFinish = test_paper_cover_finish
-paperColor = test_paper_color
-paperTrim = test_paper_trim
+paperBleed = paper_bleed
+paperCoverFinish = paper_cover_finish
+paperColor = paper_color
+paperTrim = paper_trim
 signature = \${name}
 seriesTitle = My Series
 title = Book for \${name}
@@ -54,9 +54,9 @@ afterEach(() => {
 
 test('can read book file', async () => {
     const books_csv =
-        `action     ,wasEverPublished,id       ,titleId       ,isbn       ,asin       ,name  ,pubStatus        ,pubDate        ,pubStatusDetail         ,coverImageUrl         ,scrapedSeriesTitle,   scrapedIsArchived
-        test_actionA,false           ,test_idA ,test_title_idA,test_isbnA ,test_asinA ,Ava   ,test_pub_statusA ,test_pub_dateA ,test_pub_status_detailA ,test_cover_image_urlA ,scraped_series_titleA,archived
-        test_actionB,true            ,test_idB ,test_title_idB,test_isbnB ,test_asinB ,Belle ,test_pub_statusB ,test_pub_dateB ,test_pub_status_detailB ,test_cover_image_urlB ,scraped_series_titleB,undetermined`;
+       `action,wasEverPublished,id ,titleId  ,isbn ,asin ,name ,pubStatus  ,pubDate  ,pubStatusDetail   ,publishTime             ,coverImageUrl   ,scrapedSeriesTitle   ,scrapedIsArchived
+        actionA,false          ,idA,title_idA,isbnA,asinA,Ava  ,pub_statusA,pub_dateA,pub_status_detailA,2011-10-05T21:48:00.000Z,cover_image_urlA,scraped_series_titleA,archived
+        actionB,true           ,idB,title_idB,isbnB,asinB,Belle,pub_statusB,pub_dateB,pub_status_detailB,2011-10-05T21:48:00.000Z,cover_image_urlB,scraped_series_titleB,undetermined`;
 
     mock({
         'books.csv': books_csv,
@@ -73,40 +73,42 @@ test('can read book file', async () => {
     {
         let book = books[0];
         // Select only a few key fields for checking.
-        expect(book.action).toEqual('test_actionA');
-        expect(book.asin).toEqual('test_asinA');
-        expect(book.authorFirstName).toEqual('test_author_first_name');
-        expect(book.authorLastName).toEqual('test_author_last_name');
-        expect(book.coverLocalFile).toEqual('content/dir/test_cover_file_Ava');
-        expect(book.coverImageUrl).toEqual('test_cover_image_urlA');
-        expect(book.description).toEqual('test_description for Ava');
-        expect(book.id).toEqual('test_idA');
-        expect(book.isbn).toEqual('test_isbnA');
+        expect(book.action).toEqual('actionA');
+        expect(book.asin).toEqual('asinA');
+        expect(book.authorFirstName).toEqual('author_first_name');
+        expect(book.authorLastName).toEqual('author_last_name');
+        expect(book.coverLocalFile).toEqual('content/dir/cover_file_Ava');
+        expect(book.coverImageUrl).toEqual('cover_image_urlA');
+        expect(book.description).toEqual('description for Ava');
+        expect(book.id).toEqual('idA');
+        expect(book.isbn).toEqual('isbnA');
         expect(book.keyword0).toEqual('test Ava');
         expect(book.manuscriptCreationCommand).toEqual('make book_Ava');
         expect(book.manuscriptLocalFile).toEqual('content/dir/manuscript/file/Ava.pdf');
         expect(book.priceUsd).toEqual(1.2);
         expect(book.wasEverPublished).toEqual(false);
+        expect(book.publishTime.toISOString()).toEqual('2011-10-05T21:48:00.000Z');
         expect(book.signature).toEqual('Ava');
         expect(book.scrapedSeriesTitle).toEqual('scraped_series_titleA');
         expect(book.scrapedIsArchived).toEqual('archived');
     }
     {
         let book = books[1];
-        expect(book.action).toEqual('test_actionB');
-        expect(book.asin).toEqual('test_asinB');
-        expect(book.authorFirstName).toEqual('test_author_first_name');
-        expect(book.authorLastName).toEqual('test_author_last_name');
-        expect(book.coverLocalFile).toEqual('content/dir/test_cover_file_Belle');
-        expect(book.coverImageUrl).toEqual('test_cover_image_urlB');
-        expect(book.description).toEqual('test_description for Belle');
-        expect(book.id).toEqual('test_idB');
-        expect(book.isbn).toEqual('test_isbnB');
+        expect(book.action).toEqual('actionB');
+        expect(book.asin).toEqual('asinB');
+        expect(book.authorFirstName).toEqual('author_first_name');
+        expect(book.authorLastName).toEqual('author_last_name');
+        expect(book.coverLocalFile).toEqual('content/dir/cover_file_Belle');
+        expect(book.coverImageUrl).toEqual('cover_image_urlB');
+        expect(book.description).toEqual('description for Belle');
+        expect(book.id).toEqual('idB');
+        expect(book.isbn).toEqual('isbnB');
         expect(book.keyword0).toEqual('test Belle');
         expect(book.manuscriptCreationCommand).toEqual('make book_Belle');
         expect(book.manuscriptLocalFile).toEqual('content/dir/manuscript/file/Belle.pdf');
         expect(book.priceUsd).toEqual(1.2);
         expect(book.wasEverPublished).toEqual(true);
+        expect(book.publishTime.toISOString()).toEqual('2011-10-05T21:48:00.000Z');
         expect(book.signature).toEqual('Belle');
         expect(book.scrapedSeriesTitle).toEqual('scraped_series_titleB');
         expect(book.edition).toEqual('2');
@@ -116,8 +118,8 @@ test('can read book file', async () => {
 
 test('can read book with empty values', async () => {
     const empty_books_csv =
-        `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
-               ,                ,  ,       ,    ,    ,Belle,         ,       ,               ,             ,                  ,`;
+        `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,publishTime,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
+               ,                ,  ,       ,    ,    ,Belle,         ,       ,               ,           ,             ,                  ,`;
 
     const empty_books_conf = `
 authorFirstName =
@@ -190,6 +192,7 @@ seriesTitle =
         expect(book.manuscriptLocalFile).toEqual('content/dir/');
         expect(book.priceUsd).toBeNull();
         expect(book.wasEverPublished).toEqual(false);
+        expect(book.publishTime).toEqual(null);
         expect(book.scrapedSeriesTitle).toEqual('');
         expect(book.scrapedIsArchived).toEqual('');
         expect(book.getPreservedKey('name')).toEqual('Belle');
@@ -199,9 +202,9 @@ seriesTitle =
 
 test('detects same id', async () => {
     const books_csv =
-        `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
-         a     ,false           ,X ,a      ,a   ,a   ,Ava  ,a        ,a      ,a              ,a            ,A                 ,
-         a     ,true            ,X ,b      ,b   ,b   ,Belle,b        ,b      ,b              ,b            ,B                 ,`;
+        `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,publishTime,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
+         a     ,false           ,X ,a      ,a   ,a   ,Ava  ,a        ,a      ,a              ,           ,a            ,A                 ,
+         a     ,true            ,X ,b      ,b   ,b   ,Belle,b        ,b      ,b              ,           ,b            ,B                 ,`;
 
     mock({
         'books.csv': books_csv,
@@ -217,9 +220,9 @@ test('detects same id', async () => {
 
 test('detects same ASIN', async () => {
     const books_csv =
-        `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
-         a     ,false           ,a ,a      ,a   ,X   ,Ava  ,a        ,a      ,a              ,a            ,A                 ,
-         a     ,true            ,b ,b      ,b   ,X   ,Belle,b        ,b      ,b              ,b            ,B                 ,`;
+        `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,publishTime,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
+         a     ,false           ,a ,a      ,a   ,X   ,Ava  ,a        ,a      ,a              ,           ,a            ,A                 ,
+         a     ,true            ,b ,b      ,b   ,X   ,Belle,b        ,b      ,b              ,           ,b            ,B                 ,`;
 
     mock({
         'books.csv': books_csv,
@@ -235,9 +238,9 @@ test('detects same ASIN', async () => {
 
 test('detects same isbn', async () => {
     const books_csv =
-        `action,wasEverPublished,id,titleId,isbn    ,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
-         a      ,false           ,a ,a     ,SAMEISBN,a   ,Ava  ,a        ,a      ,a              ,a            ,A                 ,
-         a      ,true            ,b ,b     ,SAMEISBN,b   ,Belle,b        ,b      ,b              ,b            ,B                 ,`;
+        `action,wasEverPublished,id,titleId,isbn    ,asin,name ,pubStatus,pubDate,pubStatusDetail,publishTime,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
+         a      ,false           ,a ,a     ,SAMEISBN,a   ,Ava  ,a        ,a      ,a              ,           ,a            ,A                 ,
+         a      ,true            ,b ,b     ,SAMEISBN,b   ,Belle,b        ,b      ,b              ,           ,b            ,B                 ,`;
 
     mock({
         'books.csv': books_csv,
@@ -253,9 +256,9 @@ test('detects same isbn', async () => {
 
 test('detects same titleId', async () => {
     const books_csv =
-        `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
-         a     ,false           ,a ,SAME   ,a   ,a   ,Ava  ,a        ,a      ,a              ,a            ,A                 ,
-         a     ,true            ,b ,SAME   ,b   ,b   ,Belle,b        ,b      ,b              ,b            ,B                 ,`;
+        `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,publishTime,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
+         a     ,false           ,a ,SAME   ,a   ,a   ,Ava  ,a        ,a      ,a              ,           ,a            ,A                 ,
+         a     ,true            ,b ,SAME   ,b   ,b   ,Belle,b        ,b      ,b              ,           ,b            ,B                 ,`;
 
     mock({
         'books.csv': books_csv,
@@ -271,9 +274,9 @@ test('detects same titleId', async () => {
 
 test('detects same signature', async () => {
     const books_csv =
-        `action,wasEverPublished,id,titleId,isbn,asin,name,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
-         a      ,false           ,a ,a      ,a  ,a   ,Ava ,a        ,a      ,a              ,a            ,A                 ,
-         a      ,true            ,b ,b      ,b  ,b   ,Ava ,b        ,b      ,b              ,b            ,B                 ,`;
+        `action,wasEverPublished,id,titleId,isbn,asin,name,pubStatus,pubDate,pubStatusDetail,publishTime,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
+         a      ,false           ,a ,a      ,a  ,a   ,Ava ,a        ,a      ,a              ,           ,a            ,A                 ,
+         a      ,true            ,b ,b      ,b  ,b   ,Ava ,b        ,b      ,b              ,           ,b            ,B                 ,`;
 
     mock({
         'books.csv': books_csv,
@@ -290,9 +293,9 @@ test('detects same signature', async () => {
 
 test('can read and write the book file', async () => {
     const books_csv =
-        `action,wasEverPublished,id,titleId,isbn,asin,name,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived,description
-test_actionA,false,test_idA,test_title_idA,test_isbnA,test_asinA,Ava,test_pub_statusA,test_pub_dateA,test_pub_status_detailA,test_cover_image_urlA,title_a,archived,descriptionA
-test_actionB,true,test_idB,test_title_idB,test_isbnB,test_asinB,Belle,test_pub_statusB,test_pub_dateB,test_pub_status_detailB,test_cover_image_urlB,title_b,,file:file.txt
+        `action,wasEverPublished,id,titleId,isbn,asin,name,pubStatus,pubDate,pubStatusDetail,publishTime,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived,description
+test_actionA,false,test_idA,test_title_idA,test_isbnA,test_asinA,Ava,test_pub_statusA,test_pub_dateA,test_pub_status_detailA,,test_cover_image_urlA,title_a,archived,descriptionA
+test_actionB,true,test_idB,test_title_idB,test_isbnB,test_asinB,Belle,test_pub_statusB,test_pub_dateB,test_pub_status_detailB,,test_cover_image_urlB,title_b,,file:file.txt
 `;
 
     mock({
@@ -309,7 +312,7 @@ test_actionB,true,test_idB,test_title_idB,test_isbnB,test_asinB,Belle,test_pub_s
     const bookList = await bookFile.readBooksAsync();
 
     // Write the output.
-    await expect(await bookFile.writeBooksAsync(bookList)).resolves;
+    expect(await bookFile.writeBooksAsync(bookList)).resolves;
 
     // Test the file written is the same as the source.
     let books_new = fs.readFileSync('books.csv.new', { encoding: "utf8", flag: "r" });
@@ -318,8 +321,8 @@ test_actionB,true,test_idB,test_title_idB,test_isbnB,test_asinB,Belle,test_pub_s
 
 test('can read book file with an embedded file', async () => {
     const books_csv =
-        `description ,action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
-        file:file.txt,      ,                ,b ,b      ,b   ,b   ,Belle,         ,       ,               ,             ,                  ,`;
+        `description ,action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,publishTime,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
+        file:file.txt,      ,                ,b ,b      ,b   ,b   ,Belle,         ,       ,               ,           ,             ,                  ,`;
 
     mock({
         'books.csv': books_csv,
@@ -339,8 +342,8 @@ test('can read book file with an embedded file', async () => {
 
 test('can read book file with line comments', async () => {
     const books_csv =
-        `description,action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
-        xxx ## blah ,      ,                ,b ,b      ,b   ,b   ,Belle,         ,       ,               ,             ,                  ,`;
+        `description,action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,publishTime,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
+        xxx ## blah ,      ,                ,b ,b      ,b   ,b   ,Belle,         ,       ,               ,           ,             ,                  ,`;
 
     const BOOKS_CONF_WITH_COMMENTS = `
 authorFirstName = Belle ## lalalalal lalal
@@ -403,8 +406,8 @@ edition = 2
 
 test('detects default defined more than once (not supported)', async () => {
     const books_csv =
-        `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
-               ,                ,b ,b      ,b   ,b   ,Belle,         ,       ,               ,             ,                  ,`;
+        `action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,publishTime,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
+               ,                ,b ,b      ,b   ,b   ,Belle,         ,       ,               ,           ,             ,                  ,`;
     let books_conf = BOOKS_CONF
     books_conf += "mykey = v1\n"
     books_conf += "mykey = v2\n"

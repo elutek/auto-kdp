@@ -16,6 +16,7 @@ const _KEYS_WITH_NO_DEFAULT = [
   Keys.PUB_DATE,
   Keys.PUB_STATUS,
   Keys.PUB_STATUS_DETAIL,
+  Keys.PUBLISH_TIME,
   Keys.TITLE_ID,
   Keys.WAS_EVER_PUBLISHED,
   Keys.SCRAPED_SERIES_TITLE,
@@ -38,6 +39,7 @@ export class Book {
   public pubDate: string;
   public pubStatus: string;
   public pubStatusDetail: string;
+  public publishTime: Date | null;
   public titleId: string;
   public wasEverPublished: boolean;
   public scrapedSeriesTitle: string;
@@ -145,6 +147,8 @@ export class Book {
     this.pubDate = getValue(Keys.PUB_DATE);
     this.pubStatus = getValue(Keys.PUB_STATUS);
     this.pubStatusDetail = getValue(Keys.PUB_STATUS_DETAIL);
+    const publishTimeStr = getValue(Keys.PUBLISH_TIME);
+    this.publishTime = publishTimeStr == '' ? null : new Date(Date.parse(publishTimeStr));
     this.wasEverPublished = getValue(Keys.WAS_EVER_PUBLISHED) == 'true';
     this.scrapedSeriesTitle = getValue(Keys.SCRAPED_SERIES_TITLE);
     this.scrapedIsArchived = getValue(Keys.SCRAPED_IS_ARCHIVED);
@@ -319,13 +323,26 @@ export class Book {
     let result = {};
     // First return the original values.
     for (const [key, val] of this.origData) {
-      result[key] = val;
+      result[key] = this.getValueToWrite(val);
     }
     // Override the changed values.
     for (const key of _KEYS_WITH_NO_DEFAULT) {
-      result[key] = this[key];
+      result[key] = this.getValueToWrite(this[key]);
     }
     return result;
+  }
+
+  getValueToWrite(obj: any): string | boolean | null {
+    if (obj instanceof Date) {
+      return obj.toISOString();
+    }
+    if (["string", "boolean"].includes(typeof(obj))) {
+      return obj;
+    }
+    if (obj == null) {
+      return '';
+    }
+    throw Error("Uknown object type: " + typeof(obj) + ": for object: " + obj);
   }
 
   prefix() {
@@ -337,8 +354,12 @@ export class Book {
     for (const k in Keys) {
       const key = Keys[k];
       let val = this[key];
-      if (val != null && typeof val === "string") {
-        val = clipLen(val as string, 200);
+      if (val != null) {
+        if (typeof val === "string") {
+          val = clipLen(val as string, 200);
+        } else if (val instanceof Date) {
+          val = val.toISOString()
+        }
       }
       result += "    " + key + " = " + val + "\n";
     }

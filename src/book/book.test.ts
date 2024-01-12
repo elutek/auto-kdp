@@ -49,6 +49,7 @@ test('create book without defaults', () => {
             Keys.PUB_DATE, 'test_pub_date',
             Keys.PUB_STATUS, 'test_pub_status',
             Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',
+            Keys.PUBLISH_TIME, '2011-10-05T21:48:00.000Z',
             Keys.SIGNATURE, 'test_signature',
             Keys.TITLE, 'test_title',
             Keys.SUBTITLE, 'test_subtitle',
@@ -106,6 +107,7 @@ test('create book without defaults', () => {
     expect(book.pubDate).toEqual('test_pub_date');
     expect(book.pubStatus).toEqual('test_pub_status');
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
+    expect(book.publishTime.toISOString()).toEqual('2011-10-05T21:48:00.000Z');
     expect(book.title).toEqual('test_title');
     expect(book.subtitle).toEqual('test_subtitle');
     expect(book.edition).toEqual('2');
@@ -130,6 +132,7 @@ test('create book with defaults', () => {
             Keys.PUB_DATE, 'test_pub_date',
             Keys.PUB_STATUS, 'test_pub_status',
             Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',
+            Keys.PUBLISH_TIME, '2011-10-05T21:48:00.000Z',
             Keys.WAS_EVER_PUBLISHED, 'false',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
             Keys.SCRAPED_IS_ARCHIVED, 'archived',
@@ -223,6 +226,7 @@ test('create book with defaults', () => {
     expect(book.pubDate).toEqual('test_pub_date');
     expect(book.pubStatus).toEqual('test_pub_status');
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
+    expect(book.publishTime.toISOString()).toEqual('2011-10-05T21:48:00.000Z');
     expect(book.title).toEqual('test_title');
     expect(book.subtitle).toEqual('test_subtitle');
     expect(book.edition).toEqual('2');
@@ -246,6 +250,7 @@ test('detects missing key', () => {
                 Keys.PUB_DATE, 'test_pub_date',
                 Keys.PUB_STATUS, 'test_pub_status',
                 Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',
+                Keys.PUBLISH_TIME, '2011-10-05T21:48:00.000Z',
                 Keys.WAS_EVER_PUBLISHED, 'false',
                 Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
                 Keys.SCRAPED_IS_ARCHIVED, 'archived',
@@ -311,6 +316,7 @@ test('create book with resolution', () => {
             Keys.PUB_DATE, '${prefix}pub_date',
             Keys.PUB_STATUS, '${prefix}pub_status',
             Keys.PUB_STATUS_DETAIL, '${prefix}pub_status_detail',
+            Keys.PUBLISH_TIME, '2011-10-05T21:48:00.000Z',
             Keys.WAS_EVER_PUBLISHED, 'false',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
             Keys.SCRAPED_IS_ARCHIVED, 'archived',
@@ -399,6 +405,7 @@ test('create book with resolution', () => {
     expect(book.pubDate).toEqual('test_pub_date');
     expect(book.pubStatus).toEqual('test_pub_status');
     expect(book.pubStatusDetail).toEqual('test_pub_status_detail');
+    expect(book.publishTime.toISOString()).toEqual('2011-10-05T21:48:00.000Z');
     expect(book.title).toEqual('test_title');
     expect(book.subtitle).toEqual('test_subtitle');
     expect(book.edition).toEqual('2');
@@ -634,6 +641,7 @@ test('getDataToWrite', () => {
         "pubDate": "test_pub_date",
         "pubStatus": "test_pub_status",
         "pubStatusDetail": "test_pub_status_detail",
+        "publishTime": "2011-10-05T21:48:00.000Z",
         "scrapedIsArchived": "archived",
         "scrapedSeriesTitle": "test_scraped_series_title",
         "seriesTitle": "test_series_title",
@@ -699,6 +707,7 @@ test('toString', () => {
        pubDate = test_pub_date
        pubStatus = test_pub_status
        pubStatusDetail = test_pub_status_detail
+       publishTime = 2011-10-05T21:48:00.000Z
        wasEverPublished = false
        scrapedIsArchived = archived
 `.replaceAll(" ", ""));

@@ -136,6 +136,7 @@ export var Keys = {
     PUB_DATE: 'pubDate',
     PUB_STATUS: 'pubStatus',
     PUB_STATUS_DETAIL: 'pubStatusDetail',
+    PUBLISH_TIME: 'publishTime', // Date and time when did we clicked 'Publish'
 
     // Set to true on the first time when we publish. After publishing
     // we cannot remove it - the record stays forever, but stops showing
