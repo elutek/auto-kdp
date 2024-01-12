@@ -82,6 +82,45 @@ async function processOneBook(bookFile: BookFile, bookList: BookList, book: Book
 }
 
 
+async function processAllBooksOnce(bookList: BookList, bookFile: BookFile, params: ActionParams) {
+  //
+  // Ensure logged in.
+  // 
+  if (params.verbose) {
+    console.debug('Ensuring logged in');
+  }
+  await ensureLoggedIn(params);
+  if (params.verbose) {
+    console.debug('Logged in');
+  }
+
+  //
+  // Process all books, write useful stats.
+  //
+  let numConsecutiveFastOperations = 0;
+  for (let book of bookList.getBooks()) {
+    const shouldIgnore = book.action == '' || (params.scrapeOnly && book.hasNonScrapingAction());
+    if (!shouldIgnore) {
+      const durationSeconds = await processOneBook(bookFile, bookList, book, params);
+
+      //
+      // Handle many consecutive fast operations
+      //
+      if (durationSeconds <= 2.0) {
+        numConsecutiveFastOperations++;
+        if (numConsecutiveFastOperations > 200) {
+          // Take a little break.
+          console.log("Too many fast operations - sleeping for 30s");
+          sleep(30);
+          numConsecutiveFastOperations = 0;
+        }
+      } else {
+        numConsecutiveFastOperations = 0;
+      }
+    }
+  }
+}
+
 async function mainWithOptions(
   booksCsvFile: string,
   booksConfigFile: string,
@@ -132,46 +171,12 @@ async function mainWithOptions(
     browser: browser,
     keepOpen: keepOpen,
     dryRun: dryRun,
-    verbose: verbose
+    verbose: verbose,
+    scrapeOnly: scrapeOnly
   };
 
   try {
-    //
-    // Login.
-    // 
-    if (verbose) {
-      console.debug('Logging in');
-    }
-    await ensureLoggedIn(params);
-    if (verbose) {
-      console.debug('Logged in');
-    }
-
-    //
-    // Process all books, write useful stats.
-    //
-    let numConsecutiveFastOperations = 0;
-    for (let book of bookList.getBooks()) {
-      const shouldIgnore = book.action == '' || (scrapeOnly && book.hasNonScrapingAction());
-      if (!shouldIgnore) {
-        const durationSeconds = await processOneBook(bookFile, bookList, book, params);
-
-        //
-        // Handle many consecutive fast operations
-        //
-        if (durationSeconds <= 2.0) {
-          numConsecutiveFastOperations++;
-          if (numConsecutiveFastOperations > 200) {
-            // Take a little break.
-            console.log("Too many fast operations - sleeping for 30s");
-            sleep(30);
-            numConsecutiveFastOperations = 0;
-          }
-        } else {
-          numConsecutiveFastOperations = 0;
-        }
-      }
-    }
+    await processAllBooksOnce(bookList, bookFile, params);
   } finally {
     if (!keepOpen) {
       await browser.close();
@@ -180,7 +185,7 @@ async function mainWithOptions(
   if (verbose) {
     console.log('We are done');
   }
-};
+}
 
 async function main() {
   program

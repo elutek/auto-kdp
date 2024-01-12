@@ -87,6 +87,7 @@ export class BookFile {
   }
 
   async writeBooksAsync(bookList: BookList) {
+    this.backupFile(this.outputFilePath)
     return new Promise((resolve, reject) =>
       lockfile.lock(this.lockFilePath)
         .then((release) => {
@@ -153,5 +154,27 @@ export class BookFile {
 
   getConfigForKey(key: string): string {
     return this.bookConfig.get(key);
+  }
+
+  backupFile(fileName: string) {
+    if (!fs.existsSync(fileName)) {
+      // Nothing to backup.
+      return
+    }
+    let newFileName = this.findUniqueFileName(fileName);
+    console.log("Backing",fileName,"to",newFileName);
+    fs.copyFileSync(fileName, newFileName);
+  }
+
+  findUniqueFileName(basicFileName: string): string {
+    let n = 1;
+    while (true) {
+      let newFileName = basicFileName + "." + n
+      if (!fs.existsSync(newFileName)) {
+        return newFileName
+      }
+      n++
+    }
+    throw Error("Should not happen")
   }
 }
