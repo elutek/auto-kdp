@@ -10,6 +10,11 @@ import { Book } from './book.js';
 import { BookList } from './book-list.js';
 import { removeComment } from '../util/utils.js';
 
+// If this feature is turned on, we don't simply overwrite
+// books.csv.new, but keep all the versions books.csv.new.1,
+// books.csv.new.2 and so on.
+const BACKUP_FILE = false;
+
 // We protect  file with a lock, because it will be updated in-place.
 export class BookFile {
   private contentDir: string;
@@ -87,7 +92,9 @@ export class BookFile {
   }
 
   async writeBooksAsync(bookList: BookList) {
-    this.backupFile(this.outputFilePath)
+    if (BACKUP_FILE) {
+      this.backupFile(this.outputFilePath)
+    }
     return new Promise((resolve, reject) =>
       lockfile.lock(this.lockFilePath)
         .then((release) => {
@@ -162,7 +169,7 @@ export class BookFile {
       return
     }
     let newFileName = this.findUniqueFileName(fileName);
-    console.log("Backing",fileName,"to",newFileName);
+    console.log("Backing", fileName, "to", newFileName);
     fs.copyFileSync(fileName, newFileName);
   }
 
