@@ -148,8 +148,8 @@ export async function updateContent(book: Book, params: ActionParams): Promise<A
     // Cover
     {
         debug(book, verbose, 'Uploading cover');
-        await page.waitForSelector('#data-print-book-publisher-cover-file-upload-browse-button-announce', Timeouts.SEC_3);
-        await page.selectFile('#data-print-book-publisher-cover-file-upload-browse-button-announce', book.coverLocalFile, Timeouts.MIN_20);
+        await page.waitForSelector('#data-print-book-publisher-cover-file-upload-browse-button-announce', Timeouts.SEC_5);
+        await page.selectFile('#data-print-book-publisher-cover-file-upload-browse-button-announce', book.coverLocalFile, Timeouts.MIN_5);
         debug(book, verbose, 'Waiting for cover file chooser');
         await page.waitForSelectorVisible('#data-print-book-publisher-cover-file-upload-success', Timeouts.MIN_20);
         await page.waitForTimeout(Timeouts.SEC_2);
@@ -159,8 +159,8 @@ export async function updateContent(book: Book, params: ActionParams): Promise<A
     // Manuscript
     {
         debug(book, verbose, 'Uploading manuscript');
-        await page.waitForSelector('#data-print-book-publisher-interior-file-upload-browse-button-announce', Timeouts.SEC_3);
-        await page.selectFile('#data-print-book-publisher-interior-file-upload-browse-button-announce', book.manuscriptLocalFile, Timeouts.MIN_20);
+        await page.waitForSelector('#data-print-book-publisher-interior-file-upload-browse-button-announce', Timeouts.SEC_5);
+        await page.selectFile('#data-print-book-publisher-interior-file-upload-browse-button-announce', book.manuscriptLocalFile, Timeouts.MIN_5);
         debug(book, verbose, 'Waiting for manuscript file chooser');
         await page.waitForSelectorVisible('#data-print-book-publisher-interior-file-upload-success', Timeouts.MIN_20);
     }

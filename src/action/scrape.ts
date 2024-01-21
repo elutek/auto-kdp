@@ -5,7 +5,6 @@ import { Urls, clickSomething } from './action-utils.js';
 import { ActionParams } from '../util/action-params.js';
 import { PageInterface } from '../browser.js';
 import { Timeouts } from '../util/timeouts.js';
-import { isArgumentsObject } from 'util/types';
 
 var globalBookshelfPage: PageInterface = null;
 
@@ -39,6 +38,7 @@ export async function scrape(book: Book, params: ActionParams): Promise<ActionRe
   // Click search button.
   debug(book, verbose, 'Clicking Search');
   id = '#podbookshelftable-search-button-submit .a-button-input';
+  await page.waitForTimeout(Timeouts.SEC_HALF);
   await page.focus(id, Timeouts.SEC_10);
   await page.click(id, Timeouts.SEC_10);
 
