@@ -128,7 +128,7 @@ export class Book {
       if (val.startsWith("file:")) {
         const fileName = val.substring("file:".length);
         try {
-          val = fs.readFileSync(fileName, { encoding: 'utf-8' });
+          val = fs.readFileSync(fileName).toString();
         } catch (e) {
           /* istanbul ignore next */
           throw new Error("Could not read file: " + fileName + " to set the value of " + x);

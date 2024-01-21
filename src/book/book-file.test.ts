@@ -48,6 +48,17 @@ subtitle = My subtitle
 edition = 2
 `
 
+function fileExists(name: string) {
+    // Somewhow fs.existsSync(..) does not seem to work with mock-fs
+    // but readFileSync(..) does.
+    try {
+        fs.readFileSync(name)
+        return true
+    } catch (e) {
+        return false
+    }
+}
+
 afterEach(() => {
     mock.restore();
 });
@@ -69,6 +80,7 @@ test('can read book file', async () => {
     let bookFile = new BookFile('books.csv', 'books.conf', 'content/dir');
     const bookList = await bookFile.readBooksAsync();
     const books = bookList.getBooks();
+
     expect(books.length).toEqual(2);
     {
         let book = books[0];
@@ -291,7 +303,7 @@ test('detects same signature', async () => {
     await expect(bookFile.readBooksAsync()).rejects.toEqual(new Error('Signature not unique: Ava'));
 });
 
-test('can read and write the book file', async () => {
+test('writes output', async () => {
     const books_csv =
         `action,wasEverPublished,id,titleId,isbn,asin,name,pubStatus,pubDate,pubStatusDetail,publishTime,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived,description
 test_actionA,false,test_idA,test_title_idA,test_isbnA,test_asinA,Ava,test_pub_statusA,test_pub_dateA,test_pub_status_detailA,,test_cover_image_urlA,title_a,archived,descriptionA
@@ -303,7 +315,6 @@ test_actionB,true,test_idB,test_title_idB,test_isbnB,test_asinB,Belle,test_pub_s
         'books.csv.new': '',
         'books.csv.lock': '',
         'books.conf': BOOKS_CONF,
-        'file.txt': 'description B',
         'content': { dir: {} },
         'node_modules': mock.load(path.resolve(__dirname, '../../node_modules')),
     });
@@ -312,14 +323,15 @@ test_actionB,true,test_idB,test_title_idB,test_isbnB,test_asinB,Belle,test_pub_s
     const bookList = await bookFile.readBooksAsync();
 
     // Write the output.
-    expect(await bookFile.writeBooksAsync(bookList)).resolves;
+    await bookFile.writeBooksAsync(bookList);
 
     // Test the file written is the same as the source.
-    let books_new = fs.readFileSync('books.csv.new', { encoding: "utf8", flag: "r" });
+    expect(fileExists('books.csv.new'));
+    let books_new = fs.readFileSync('books.csv.new').toString()
     expect(books_new).toEqual(books_csv);
 });
 
-test('can read book file with an embedded file', async () => {
+test('can read description from a file', async () => {
     const books_csv =
         `description ,action,wasEverPublished,id,titleId,isbn,asin,name ,pubStatus,pubDate,pubStatusDetail,publishTime,coverImageUrl,scrapedSeriesTitle,scrapedIsArchived
         file:file.txt,      ,                ,b ,b      ,b   ,b   ,Belle,         ,       ,               ,           ,             ,                  ,`;

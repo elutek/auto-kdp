@@ -10,10 +10,10 @@ import { Book } from './book.js';
 import { BookList } from './book-list.js';
 import { removeComment } from '../util/utils.js';
 
-// If this feature is turned on, we don't simply overwrite
-// books.csv.new, but keep all the versions books.csv.new.1,
-// books.csv.new.2 and so on.
-const BACKUP_FILE = false;
+// This seems to be required on mac, even though all files are UTF-8.
+// Change to utf-8 on other platforms. This seems to be a bug in
+// properties-reader code.
+export const FILE_ENCODING = "ascii";
 
 // We protect  file with a lock, because it will be updated in-place.
 export class BookFile {
@@ -34,15 +34,11 @@ export class BookFile {
     this.bookFilePath = bookFilePath;
     this.lockFilePath = bookFilePath + '.lock';
     this.outputFilePath = bookFilePath + '.new';
-    PropertiesReader(bookConfigFilePath).each((k, v) => {
+
+    PropertiesReader(bookConfigFilePath, FILE_ENCODING).each((k, v) => {
       /* Istanbul ignore next */
       if (this.bookConfig.has(k)) {
-        // This does not actually happen. If there is
-        // a dupe property, PropertiesReader uses the
-        // last value. There exists a setting to
-        // "allowDuplicateDefinitions
-        // but it does not seem to do what we need.
-        throw new Error("Default defined more than once: " + k)
+        throw new Error("Should not happen")
       }
       this.bookConfig.set(k, removeComment(v as string).trim())
     });
@@ -92,9 +88,6 @@ export class BookFile {
   }
 
   async writeBooksAsync(bookList: BookList) {
-    if (BACKUP_FILE) {
-      this.backupFile(this.outputFilePath)
-    }
     return new Promise((resolve, reject) =>
       lockfile.lock(this.lockFilePath)
         .then((release) => {
@@ -161,27 +154,5 @@ export class BookFile {
 
   getConfigForKey(key: string): string {
     return this.bookConfig.get(key);
-  }
-
-  backupFile(fileName: string) {
-    if (!fs.existsSync(fileName)) {
-      // Nothing to backup.
-      return
-    }
-    let newFileName = this.findUniqueFileName(fileName);
-    console.log("Backing", fileName, "to", newFileName);
-    fs.copyFileSync(fileName, newFileName);
-  }
-
-  findUniqueFileName(basicFileName: string): string {
-    let n = 1;
-    while (true) {
-      let newFileName = basicFileName + "." + n
-      if (!fs.existsSync(newFileName)) {
-        return newFileName
-      }
-      n++
-    }
-    throw Error("Should not happen")
   }
 }
