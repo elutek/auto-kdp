@@ -158,12 +158,11 @@ export class PuppeteerPage implements PageInterface {
         await this.page.type(id, text);
     }
 
+
     async clearTextField(id: string, timeoutMillis: number) {
         await this.waitForSelector(id, timeoutMillis);
         await this.page.focus(id);
-        await this.page.keyboard.down('Control');
-        await this.page.keyboard.press('A');
-        await this.page.keyboard.up('Control');
+        await this.page.click(id, { clickCount: 3 });
         await this.page.keyboard.press('Backspace');
         await this.page.waitForTimeout(Timeouts.SEC_HALF);
     }
