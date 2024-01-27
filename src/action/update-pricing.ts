@@ -34,7 +34,11 @@ export async function updatePricing(book: Book, params: ActionParams): Promise<A
     if (marketplace != book.primaryMarketplace) {
       if (await updateMarketplace(marketplace, page, book, verbose)) {
         wasUpdated = true;
+        await page.waitForTimeout(Timeouts.SEC_1);
       }
+      // The pricing page is flaky - an attempt to slow things down.
+      // It seems when a price is entered some javascript is running and updating things
+      // in the background.
     }
   }
 
