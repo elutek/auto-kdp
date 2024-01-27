@@ -54,7 +54,9 @@ export async function publish(book: Book, params: ActionParams, isForce: boolean
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
     book.wasEverPublished = true;
-    book.publishTime = new Date();
+    if (book.publishTime != null) {
+      book.publishTime = new Date();
+    }
   } else {
     debug(book, verbose, `Cannot publish! Metadata: ${metadataStatus}, content: ${contentStatus}, pricing: ${pricingStatus}`);
     isSuccess = false;
