@@ -42,7 +42,8 @@ export async function updatePricing(book: Book, params: ActionParams): Promise<A
     }
   }
 
-  await page.waitForTimeout(Timeouts.SEC_5);
+  await page.focus('#save-announce', Timeouts.SEC_5);
+  await page.waitForTimeout(Timeouts.SEC_15);
 
   // Save
   if (wasUpdated) {
