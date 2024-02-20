@@ -54,7 +54,7 @@ export async function publish(book: Book, params: ActionParams, isForce: boolean
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
     book.wasEverPublished = true;
-    if (book.publishTime != null) {
+    if (book.publishTime == null) {
       book.publishTime = new Date();
     }
   } else {
