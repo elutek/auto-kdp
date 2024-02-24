@@ -334,7 +334,7 @@ export class Book {
 
   getValueToWrite(obj: any): string | boolean | null {
     if (obj instanceof Date) {
-      return obj.toISOString();
+      return obj.toString();
     }
     if (["string", "boolean"].includes(typeof(obj))) {
       return obj;
@@ -358,7 +358,7 @@ export class Book {
         if (typeof val === "string") {
           val = clipLen(val as string, 200);
         } else if (val instanceof Date) {
-          val = val.toISOString()
+          val = val.toString()
         }
       }
       result += "    " + key + " = " + val + "\n";
