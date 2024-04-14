@@ -165,6 +165,12 @@ export async function updateContent(book: Book, params: ActionParams): Promise<A
         await page.waitForSelectorVisible('#data-print-book-publisher-interior-file-upload-success', Timeouts.MIN_20);
     }
 
+    // Whether AI-generated. This must be set *before* launch previewer, 
+    // as a lack of answer here, sometimes disables the launch preview.
+    // TODO: For now only support "No", but would be nice to support "Yes".
+    debug(book, verbose, "Clicking whether AI-generated")
+    await page.click('#section-generative-ai div[aria-labelledby="generative-ai-questionnaire-question"] div[data-a-accordion-row-name="no"] a', Timeouts.SEC_10);
+
     // Click Launch previewer
     debug(book, verbose, 'Clicking Launch Previewer (typically takes 3.5min)');
     await page.waitForSelector('#print-preview-noconfirm-announce', Timeouts.SEC_30);
@@ -185,10 +191,6 @@ export async function updateContent(book: Book, params: ActionParams): Promise<A
     debug(book, verbose, 'Clicking Approve/3');
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
-    // Whether AI-generated
-    // TODO: For now only support "No", but would be nice to support "Yes".
-    debug(book, verbose, "Clicking whether AI-generated")
-    await page.click('#section-generative-ai div[aria-labelledby="generative-ai-questionnaire-question"] div[data-a-accordion-row-name="no"] a', Timeouts.SEC_10);
     debug(book, verbose, "Clicking Confirm that my answers are accurate (this field only shows sometimes)")
     try {
         await page.click('#section-generative-ai .a-checkbox input', Timeouts.SEC_5)
