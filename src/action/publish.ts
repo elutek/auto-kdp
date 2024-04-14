@@ -55,7 +55,6 @@ export async function publish(book: Book, params: ActionParams, isForce: boolean
 
     book.wasEverPublished = true;
     if (book.publishTime == null) {
-      book.publishTime = new Date();
     }
   } else {
     debug(book, verbose, `Cannot publish! Metadata: ${metadataStatus}, content: ${contentStatus}, pricing: ${pricingStatus}`);
