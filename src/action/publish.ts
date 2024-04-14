@@ -4,6 +4,7 @@ import { Urls, maybeClosePage } from './action-utils.js';
 import { ActionParams } from '../util/action-params.js';
 import { debug } from '../util/utils.js';
 import { Timeouts } from '../util/timeouts.js';
+import { updateAllPrices } from './update-pricing.js';
 
 export async function publish(book: Book, params: ActionParams, isForce: boolean = false): Promise<ActionResult> {
   const verbose = params.verbose;
@@ -47,6 +48,12 @@ export async function publish(book: Book, params: ActionParams, isForce: boolean
   let isSuccess = ok;
   if (ok) {
     debug(book, verbose, 'Metadata, content and pricing status: OK');
+
+    // Update pricing, which is shown on this page. 
+    // This is only needed because KDP has a bug in pricing updates: when pricing is
+    // safed to the draft, some prices randomly don't get saved. Hopefully this will
+    // use the exact correct prices.
+    await updateAllPrices(book, page, verbose)
 
     debug(book, verbose, 'Clicking publish');
     await page.click('#save-and-publish-announce', Timeouts.MIN_1);

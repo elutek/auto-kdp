@@ -25,6 +25,26 @@ export async function updatePricing(book: Book, params: ActionParams): Promise<A
   await page.goto(url, Timeouts.MIN_1);
   await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
 
+  let wasUpdated = await updateAllPrices(book, page, verbose);
+
+  await page.focus('#save-announce', Timeouts.SEC_5);
+  await page.waitForTimeout(Timeouts.SEC_5);
+
+  // Save
+  if (wasUpdated) {
+    clickSomething('#save-announce', 'Save', page, book, verbose);
+    await page.waitForSelectorVisible('#potter-success-alert-bottom div div', Timeouts.SEC_30);
+    await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
+  } else {
+    debug(book, verbose, 'Saving - not needed, prices were not updated')
+  }
+
+  await maybeClosePage(params, page);
+  return new ActionResult(true);
+}
+
+// Returns whether anything was updated.
+export async function updateAllPrices(book: Book, page: PageInterface, verbose: boolean): Promise<boolean> {
   // Update the primary marketplace's price first and add some extra wait time
   let wasUpdated = await updateMarketplace(book.primaryMarketplace, page, book, verbose);
   await page.waitForTimeout(Timeouts.SEC_5);
@@ -42,20 +62,7 @@ export async function updatePricing(book: Book, params: ActionParams): Promise<A
     }
   }
 
-  await page.focus('#save-announce', Timeouts.SEC_5);
-  await page.waitForTimeout(Timeouts.SEC_15);
-
-  // Save
-  if (wasUpdated) {
-    clickSomething('#save-announce', 'Save', page, book, verbose);
-    await page.waitForSelectorVisible('#potter-success-alert-bottom div div', Timeouts.SEC_30);
-    await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
-  } else {
-    debug(book, verbose, 'Saving - not needed, prices were not updated')
-  }
-
-  await maybeClosePage(params, page);
-  return new ActionResult(true);
+  return wasUpdated;
 }
 
 async function updateMarketplace(marketplace: string, page: PageInterface, book: Book, verbose: boolean): Promise<boolean> {
