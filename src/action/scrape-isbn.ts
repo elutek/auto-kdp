@@ -26,9 +26,9 @@ export async function scrapeIsbn(book: Book, params: ActionParams): Promise<Acti
     debug(book, verbose, 'Page loaded');
 
     // get ISBN
-    await page.waitForSelectorVisible('#free-print-isbn-accordion-row span[data-path="view.free_isbn"]', Timeouts.MIN_1);
+    await page.waitForSelectorVisible('.potter-print-isbn-display span:nth-child(2)', Timeouts.MIN_1);
     debug(book, verbose, 'Wait done');
-    let isbn = await page.evalValue('#free-print-isbn-accordion-row span[data-path="view.free_isbn"]', el => el.innerText, Timeouts.SEC_10);
+    let isbn = await page.evalValue('.potter-print-isbn-display span:nth-child(2)', el => el.innerText, Timeouts.SEC_10);
 
     debug(book, verbose, 'Got ISBN: ' + isbn);
     book.isbn = isbn;
