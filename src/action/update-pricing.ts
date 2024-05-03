@@ -47,7 +47,7 @@ export async function updatePricing(book: Book, params: ActionParams): Promise<A
 export async function updateAllPrices(book: Book, page: PageInterface, verbose: boolean): Promise<boolean> {
   // Update the primary marketplace's price first and add some extra wait time
   let wasUpdated = await updateMarketplace(book.primaryMarketplace, page, book, verbose);
-  await page.waitForTimeout(Timeouts.SEC_5);
+  await page.waitForTimeout(Timeouts.SEC_2);
 
   // Update all other marketplace prices next.
   for (const marketplace of ALL_MARKETPLACES) {
