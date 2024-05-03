@@ -29,17 +29,18 @@ export async function assignIsbn(book: Book, params: ActionParams): Promise<Acti
   // TODO: Support providing your own ISBN.
   if (book.isbn == '' && !book.wasEverPublished) {
     // Click 'Get a free KDP ISBN'
-    await page.click('#free-print-isbn-btn-announce', Timeouts.MIN_3);
-    await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
+    await page.click('div[data-a-accordion-row-name="free"] .a-button-input', Timeouts.SEC_30)
+    await page.waitForTimeout(Timeouts.SEC_1);
+
+    // Click confirmation button
+    await page.click('#free-isbn-confirm-button-announce', Timeouts.SEC_30)
+    await page.waitForTimeout(Timeouts.SEC_1);
 
     // Confirm that this ISBN can only be used on Amazon.
-    await page.click('#print-isbn-confirm-button-announce', Timeouts.MIN_3);
-    debug(book, verbose, 'Getting ISBN/5');
-    await page.waitForSelectorVisible('#free-print-isbn-accordion-row span[data-path="view.free_isbn"]', Timeouts.MIN_3);
-    debug(book, verbose, 'Getting ISBN/6');
-    await page.waitForTimeout(Timeouts.SEC_2);  // Just in case.
-    debug(book, verbose, 'Getting ISBN/7');
-    const isbn = await page.evalValue('#free-print-isbn-accordion-row span[data-path="view.free_isbn"]', el => el.innerText, Timeouts.SEC_30);
+    await page.waitForSelectorVisible('.potter-print-isbn-display span:nth-child(2)', Timeouts.MIN_1);
+    debug(book, verbose, 'Wait done');
+    let isbn = await page.evalValue('.potter-print-isbn-display span:nth-child(2)', el => el.innerText, Timeouts.SEC_10);
+
     debug(book, verbose, 'Got ISBN: ' + isbn);
     book.isbn = isbn;
 
