@@ -21,6 +21,7 @@ export const ALL_BOOK_LANGUAGES = [
     "irish",
     "italian",
     "japanese",
+    "japanesehiragana",
     "latin",
     "luxembourgish",
     "manx",
