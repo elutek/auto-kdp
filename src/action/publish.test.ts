@@ -95,7 +95,7 @@ test('canPublish', async () => {
     // Action
     //
 
-    const actionResult = await publish(book, params);
+    const actionResult = await publish(book, params, /*isForce=*/false, /*skipPricing=*/true);
 
     //
     // Verify

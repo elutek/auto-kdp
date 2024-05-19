@@ -641,7 +641,7 @@ test('getDataToWrite', () => {
         "pubDate": "test_pub_date",
         "pubStatus": "test_pub_status",
         "pubStatusDetail": "test_pub_status_detail",
-        "publishTime": "2011-10-05T21:48:00.000Z",
+        "publishTime": "Wed Oct 05 2011 14:48:00 GMT-0700 (Pacific Daylight Time)",
         "scrapedIsArchived": "archived",
         "scrapedSeriesTitle": "test_scraped_series_title",
         "seriesTitle": "test_series_title",
@@ -707,7 +707,7 @@ test('toString', () => {
        pubDate = test_pub_date
        pubStatus = test_pub_status
        pubStatusDetail = test_pub_status_detail
-       publishTime = 2011-10-05T21:48:00.000Z
+       publishTime = Wed Oct 05 2011 14:48:00 GMT-0700 (Pacific Daylight Time)
        wasEverPublished = false
        scrapedIsArchived = archived
 `.replaceAll(" ", ""));
