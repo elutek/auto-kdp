@@ -1,6 +1,6 @@
 FLAGS := --books books.csv --config books.conf --content-dir=. --user-data ./user-data --verbose --headless=no --keep-open
 
-BIN = ts-node ../src/index.ts
+BIN = node --loader ts-node/esm ../src/index.ts
 
 dryrun:
 	$(BIN) $(FLAGS) --dry-run
