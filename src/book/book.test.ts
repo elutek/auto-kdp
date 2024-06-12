@@ -230,7 +230,6 @@ test('create book with defaults', () => {
     expect(book.title).toEqual('test_title');
     expect(book.subtitle).toEqual('test_subtitle');
     expect(book.edition).toEqual('2');
-    expect(book.edition).toEqual('2');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.scrapedIsArchived).toEqual('archived');
     expect(book.wasEverPublished).toEqual(false);
@@ -721,4 +720,76 @@ test('badEdition', () => {
     expect(() => makeOkTestBook({ edition: 'notanumber' })).toThrow(/Edition must/);
     expect(() => makeOkTestBook({ edition: '-1' })).toThrow(/Edition must/);
     expect(() => makeOkTestBook({ edition: '0' })).toThrow(/Edition must/);
+});
+
+test('create book in japanese', () => {
+    const book = new Book(
+        makeMap(
+            Keys.ACTION, 'test_action',
+            Keys.ASIN, 'test_asin',
+            Keys.AUTHOR_WHOLE, 'test_author_whole',
+            Keys.AUTHOR_WHOLE_PRONUNCIATION, 'test_author_whole_pronunciation',
+            Keys.COVER_FILE, 'test_cover_file',
+            Keys.COVER_IMAGE_URL, 'test_cover_image_url',
+            Keys.DESCRIPTION, 'test_description',
+            Keys.ID, 'test_id',
+            Keys.ILLUSTRATOR_WHOLE, 'test_illustrator_whole',
+            Keys.ILLUSTRATOR_WHOLE_PRONUNCIATION, 'test_illustrator_whole_pronunciation',
+            Keys.ISBN, 'test_isbn',
+            Keys.LANGUAGE, 'japanese',
+            Keys.MANUSCRIPT_CREATION_COMMAND, 'test_manuscript_creation_command',
+            Keys.MANUSCRIPT_FILE, 'test_manuscript_file',
+            Keys.NEW_CATEGORY1, 'test_new_cat1',
+            Keys.NEW_CATEGORY2, 'test_new_cat2',
+            Keys.NEW_CATEGORY3, 'test_new_cat3',
+            Keys.NOTES, 'test_notes',
+            Keys.PAPER_BLEED, 'test_paper_bleed',
+            Keys.PAPER_COLOR, 'test_paper_color',
+            Keys.PAPER_COVER_FINISH, 'test_paper_cover_finish',
+            Keys.PAPER_TRIM, 'test_paper_trim',
+            Keys.PRICE_AU, '1.1',
+            Keys.PRICE_CA, '2.1',
+            Keys.PRICE_EUR, '3.1',
+            Keys.PRICE_GBP, '4.1',
+            Keys.PRICE_JP, '5.1',
+            Keys.PRICE_PL, '6.1',
+            Keys.PRICE_SE, '7.1',
+            Keys.PRICE_USD, '8.1',
+            Keys.PRIMARY_MARKETPLACE, 'jp',
+            Keys.PUBLISH_TIME, '2011-10-05T21:48:00.000Z',
+            Keys.PUB_DATE, 'test_pub_date',
+            Keys.PUB_STATUS, 'test_pub_status',
+            Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',
+            Keys.SCRAPED_IS_ARCHIVED, '',
+            Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
+            Keys.SIGNATURE, 'test_signature',
+            Keys.SUBTITLE, 'test_subtitle',
+            Keys.SUBTITLE_PRONUNCIATION, 'test_subtitle_pronunciation',
+            Keys.TITLE, 'test_title',
+            Keys.TITLE_ID, 'test_id',
+            Keys.TITLE_PRONUNCIATION, 'test_title_pronunciation',
+            Keys.WAS_EVER_PUBLISHED, 'false',
+            Keys.AUTHOR_FIRST_NAME, 'test_author_first_name',
+            Keys.AUTHOR_LAST_NAME, 'test_author_last_name',
+            Keys.ILLUSTRATOR_FIRST_NAME, 'test_illustrator_first_name',
+            Keys.ILLUSTRATOR_LAST_NAME, 'test_illustrator_last_name',
+        ),
+        makeMap(),
+        'content/dir',
+        []);
+
+    expect(book.language).toEqual('japanese');
+    expect(book.primaryMarketplace).toEqual('jp');
+
+    expect(book.title).toEqual('test_title');
+    expect(book.titlePronunciation).toEqual('test_title_pronunciation');
+
+    expect(book.subtitle).toEqual('test_subtitle');
+    expect(book.subtitlePronunciation).toEqual('test_subtitle_pronunciation');
+
+    expect(book.authorWhole).toEqual('test_author_whole');
+    expect(book.authorWholePronunciation).toEqual('test_author_whole_pronunciation');
+
+    expect(book.illustratorWhole).toEqual('test_illustrator_whole');
+    expect(book.illustratorWholePronunciation).toEqual('test_illustrator_whole_pronunciation');
 });

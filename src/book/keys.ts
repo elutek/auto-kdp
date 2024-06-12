@@ -148,4 +148,32 @@ export var Keys = {
     // Not archived or never checked => ''
     // Could not check (got misleading values) => 'undetermined'
     SCRAPED_IS_ARCHIVED: 'scrapedIsArchived',
+
+    // Special keys needed only for books in Japanese.
+    TITLE_PRONUNCIATION: 'titlePronunciation',
+    SUBTITLE_PRONUNCIATION: 'subtitlePronunciation',
+    AUTHOR_WHOLE: 'authorWhole',
+    AUTHOR_WHOLE_PRONUNCIATION: 'authorWholePronunciation',
+    ILLUSTRATOR_WHOLE: 'illustratorWhole',
+    ILLUSTRATOR_WHOLE_PRONUNCIATION: 'illustratornWholePronunciation'
 };
+
+export const OPTIONAL_KEYS = [
+    Keys.AUTHOR_WHOLE,
+    Keys.AUTHOR_WHOLE_PRONUNCIATION,
+    Keys.CATEGORY1,
+    Keys.CATEGORY2,
+    Keys.EDITION,
+    Keys.ILLUSTRATOR_WHOLE,
+    Keys.ILLUSTRATOR_WHOLE_PRONUNCIATION,
+    Keys.KEYWORD0,
+    Keys.KEYWORD1,
+    Keys.KEYWORD2,
+    Keys.KEYWORD3,
+    Keys.KEYWORD4,
+    Keys.KEYWORD5,
+    Keys.KEYWORD6,
+    Keys.SUBTITLE,
+    Keys.SUBTITLE_PRONUNCIATION,
+    Keys.TITLE_PRONUNCIATION,
+];

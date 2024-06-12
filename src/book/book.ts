@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 
-import { Keys, ALL_MARKETPLACES, ALL_BOOK_LANGUAGES } from './keys.js';
+import { Keys, ALL_MARKETPLACES, ALL_BOOK_LANGUAGES, OPTIONAL_KEYS } from './keys.js';
 import { resolveAllValues } from './resolve.js';
 import { copyMap, clipLen, isPositiveInt } from '../util/utils.js';
 
@@ -87,6 +87,14 @@ export class Book {
   readonly paperBleed: string;
   readonly paperCoverFinish: string;
 
+  // Fields only needed for books in Japanese
+  readonly titlePronunciation: string;
+  readonly subtitlePronunciation: string;
+  readonly authorWhole: string;
+  readonly authorWholePronunciation: string;
+  readonly illustratorWhole: string;
+  readonly illustratorWholePronunciation: string;
+
   constructor(data: Map<string, string>, defaults: Map<string, string>, contentDir: string, allDataMaps: Array<Map<string, string>>) {
     // Check for illegal defaults.
     for (const k of _KEYS_WITH_NO_DEFAULT) {
@@ -116,13 +124,17 @@ export class Book {
     }
 
     // Retrieve all required values.
-    let getValue = (x: string) => {
+    let getValue = (x: string, isOptional: boolean = false) => {
       if (!resolvedDataMap.has(x)) {
         if (x == 'category1' || x == 'category2') {
           // Permit category1 or category2 be missing because they are getting deprecated.
           return '';
         }
-        throw 'Key not found: ' + x;
+        if (isOptional) {
+          return '';
+        } else {
+          throw 'Key not found: ' + x;
+        }
       }
       let val = resolvedDataMap.get(x);
       if (val.startsWith("file:")) {
@@ -136,6 +148,7 @@ export class Book {
       }
       return val;
     }
+    let getOptionalValue = (x: string) => getValue(x,  /*isOptional=*/ true);
     let parseFloatOrNull = (x: string | null) => x == null || x == '' ? null : parseFloat(x);
 
     // Fields that AutoKdp is allowed to update
@@ -157,11 +170,11 @@ export class Book {
     }
     this.coverImageUrl = getValue(Keys.COVER_IMAGE_URL);
 
-    // Fields that AutoKdp is not allowed to update
+    // Fields that AutoKdp is not allowed to updaten
     this.authorFirstName = getValue(Keys.AUTHOR_FIRST_NAME);
     this.authorLastName = getValue(Keys.AUTHOR_LAST_NAME);
-    this.category1 = getValue(Keys.CATEGORY1);
-    this.category2 = getValue(Keys.CATEGORY2);
+    this.category1 = getOptionalValue(Keys.CATEGORY1);
+    this.category2 = getOptionalValue(Keys.CATEGORY2);
     this.newCategory1 = getValue(Keys.NEW_CATEGORY1);
     this.newCategory2 = getValue(Keys.NEW_CATEGORY2);
     this.newCategory3 = getValue(Keys.NEW_CATEGORY3);
@@ -173,13 +186,13 @@ export class Book {
     }
     this.illustratorFirstName = getValue(Keys.ILLUSTRATOR_FIRST_NAME);
     this.illustratorLastName = getValue(Keys.ILLUSTRATOR_LAST_NAME);
-    this.keyword0 = getValue(Keys.KEYWORD0);
-    this.keyword1 = getValue(Keys.KEYWORD1);
-    this.keyword2 = getValue(Keys.KEYWORD2);
-    this.keyword3 = getValue(Keys.KEYWORD3);
-    this.keyword4 = getValue(Keys.KEYWORD4);
-    this.keyword5 = getValue(Keys.KEYWORD5);
-    this.keyword6 = getValue(Keys.KEYWORD6);
+    this.keyword0 = getOptionalValue(Keys.KEYWORD0);
+    this.keyword1 = getOptionalValue(Keys.KEYWORD1);
+    this.keyword2 = getOptionalValue(Keys.KEYWORD2);
+    this.keyword3 = getOptionalValue(Keys.KEYWORD3);
+    this.keyword4 = getOptionalValue(Keys.KEYWORD4);
+    this.keyword5 = getOptionalValue(Keys.KEYWORD5);
+    this.keyword6 = getOptionalValue(Keys.KEYWORD6);
     this.language = getValue(Keys.LANGUAGE).toLowerCase();
     if (ALL_BOOK_LANGUAGES.indexOf(this.language) < 0) {
       throw new Error("Unsupported book language: " + this.language);
@@ -199,14 +212,14 @@ export class Book {
     if (!ALL_MARKETPLACES.includes(this.primaryMarketplace)) {
       throw new Error("Unrecognized primary marketplace: " + this.primaryMarketplace)
     }
-    this.seriesTitle = getValue(Keys.SERIES_TITLE);
+    this.seriesTitle = getOptionalValue(Keys.SERIES_TITLE);
     this.title = getValue(Keys.TITLE);
-    this.subtitle = getValue(Keys.SUBTITLE);
+    this.subtitle = getOptionalValue(Keys.SUBTITLE);
     if (this.title.length + this.subtitle.length > MAX_TITLE_AND_SUBTITLE_LENGTH) {
       throw new Error("Title+Subtitle too long: max len is " + MAX_TITLE_AND_SUBTITLE_LENGTH +
         " but got: " + (this.title.length + this.subtitle.length) + ": " + this.title + " / " + this.subtitle)
     }
-    this.edition = getValue(Keys.EDITION);
+    this.edition = getOptionalValue(Keys.EDITION);
     if (this.edition != '' && !isPositiveInt(this.edition)) {
       throw new Error("Edition must be a positive integer, but got: " + this.edition)
     }
@@ -215,6 +228,14 @@ export class Book {
     this.paperTrim = getValue(Keys.PAPER_TRIM);
     this.paperBleed = getValue(Keys.PAPER_BLEED);
     this.paperCoverFinish = getValue(Keys.PAPER_COVER_FINISH);
+
+    // Fields needed only for the Japanese language.
+    this.titlePronunciation = getOptionalValue(Keys.TITLE_PRONUNCIATION);
+    this.subtitlePronunciation = getOptionalValue(Keys.SUBTITLE_PRONUNCIATION);
+    this.authorWhole = getOptionalValue(Keys.AUTHOR_WHOLE);
+    this.authorWholePronunciation = getOptionalValue(Keys.AUTHOR_WHOLE_PRONUNCIATION);
+    this.illustratorWhole = getOptionalValue(Keys.ILLUSTRATOR_WHOLE);
+    this.illustratorWholePronunciation = getOptionalValue(Keys.ILLUSTRATOR_WHOLE_PRONUNCIATION);
 
     // Handle special actions
     if (this.action == 'all') {
@@ -345,15 +366,19 @@ export class Book {
     throw Error("Uknown object type: " + typeof(obj) + ": for object: " + obj);
   }
 
-  prefix() {
+  prefix(): string {
     return this.signature;
   }
 
-  toString() {
+  toString(): string {
     let result = "";
     for (const k in Keys) {
       const key = Keys[k];
       let val = this[key];
+      if (OPTIONAL_KEYS.indexOf(key) >= 0 && (val == '' || val == undefined || val == null)) {
+        // Do not export optional empty keys.
+        continue
+      }
       if (val != null) {
         if (typeof val === "string") {
           val = clipLen(val as string, 200);
@@ -363,12 +388,6 @@ export class Book {
       }
       result += "    " + key + " = " + val + "\n";
     }
-    /*
-    result += `Preserved keys (${this.origData.size})\n`;
-    for (const [key, val] of this.origData) {
-      result += "    " + key + " = " + val + "\n";
-    }
-    */
     return result;
   }
 }

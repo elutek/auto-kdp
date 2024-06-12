@@ -123,5 +123,4 @@ export function makeMap(...vals: string[]): Map<string, string> {
         m.set(vals[i], vals[i + 1]);
     }
     return m;
-
 }
