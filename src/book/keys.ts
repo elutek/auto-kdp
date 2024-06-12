@@ -163,7 +163,7 @@ export var Keys = {
     AUTHOR_WHOLE: 'authorWhole',
     AUTHOR_WHOLE_PRONUNCIATION: 'authorWholePronunciation',
     ILLUSTRATOR_WHOLE: 'illustratorWhole',
-    ILLUSTRATOR_WHOLE_PRONUNCIATION: 'illustratornWholePronunciation'
+    ILLUSTRATOR_WHOLE_PRONUNCIATION: 'illustratorWholePronunciation',
 };
 
 export const OPTIONAL_KEYS = [
