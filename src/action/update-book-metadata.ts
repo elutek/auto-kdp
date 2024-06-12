@@ -40,7 +40,7 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
 
   // This is currently only for Japanese. In that case we provide fields differently, 
   // and need to provide pronunciation fields (in a different alphabet) as well.
-  let hasPronunciation = languageHasPronunciation(book.language)
+  let isJapanese = book.language.toLowerCase() == "japanese";
 
   if (book.canEditCriticalMetadata()) {
 
@@ -49,17 +49,31 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
     // are set in stone.
     await selectValue('#data-print-book-language-native', book.language, 'language', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-title', book.title, 'title', page, book, verbose);
-    if (hasPronunciation) {
-      await updateTextFieldIfChanged('#data-print-book-title', book.title, 'title', page, book, verbose);
+    await updateTextFieldIfChanged('#data-print-book-title', book.title, 'title', page, book, verbose);
+    if (isJapanese) {
+      await updateTextFieldIfChanged('#data-print-book-title-pronunciation', book.titlePronunciation, 'title pronunciation', page, book, verbose);
     }
     await updateTextFieldIfChanged('#data-print-book-subtitle', book.subtitle, 'subtitle', page, book, verbose);
+    if (isJapanese) {
+      await updateTextFieldIfChanged('#data-print-book-subtitle-pronunciation', book.subtitlePronunciation, 'title pronunciation', page, book, verbose);
+    }
     await updateTextFieldIfChanged('#data-print-book-edition-number', book.edition, 'edition', page, book, verbose);
-    await updateTextFieldIfChanged('#data-print-book-primary-author-first-name', book.authorFirstName, 'author\'s first name', page, book, verbose);
-    await updateTextFieldIfChanged('#data-print-book-primary-author-last-name', book.authorLastName, 'author\'s last name', page, book, verbose);
-    await updateTextFieldIfChanged('#data-print-book-contributors-0-first-name', book.illustratorFirstName, 'illustrator\'s first name', page, book, verbose);
-    await updateTextFieldIfChanged('#data-print-book-contributors-0-last-name', book.illustratorLastName, 'illustrator\'s last name', page, book, verbose);
-    if (book.illustratorFirstName != '' || book.illustratorLastName != '') {
-      await selectValue('#data-print-book-contributors-0-role-native', 'illustrator', 'illustrator\'s role', page, book, verbose);
+    if (isJapanese) {
+      await updateTextFieldIfChanged('#data-print-book-primary-author-last-name-jp', book.authorWhole, 'author\'s whole name', page, book, verbose);
+      await updateTextFieldIfChanged('#data-print-book-primary-author-pronunciation', book.authorWholePronunciation, 'author\'s whole name pronunciation', page, book, verbose);
+      if (book.illustratorWhole != '' || book.illustratorWholePronunciation != '') {
+        await selectValue("select[name='data[print_book][contributors][0][role]']", 'illustrator', 'Illustrator\'s role', page, book, verbose);
+        await updateTextFieldIfChanged('#data-print-book-contributors-0-last-name-jp', book.illustratorWhole, 'illustrator\'s whole name', page, book, verbose);
+        await updateTextFieldIfChanged('#data-print-book-contributors-0-pronunciation', book.illustratorWholePronunciation, 'illustrator\'s whole name pronuncation', page, book, verbose);
+      }
+    } else {
+      await updateTextFieldIfChanged('#data-print-book-primary-author-first-name', book.authorFirstName, 'author\'s first name', page, book, verbose);
+      await updateTextFieldIfChanged('#data-print-book-primary-author-last-name', book.authorLastName, 'author\'s last name', page, book, verbose);
+      await updateTextFieldIfChanged('#data-print-book-contributors-0-first-name', book.illustratorFirstName, 'illustrator\'s first name', page, book, verbose);
+      await updateTextFieldIfChanged('#data-print-book-contributors-0-last-name', book.illustratorLastName, 'illustrator\'s last name', page, book, verbose);
+      if (book.illustratorFirstName != '' || book.illustratorLastName != '') {
+        await selectValue('#data-print-book-contributors-0-role-native', 'illustrator', 'illustrator\'s role', page, book, verbose);
+      }
     }
   }
 
@@ -208,6 +222,7 @@ async function initCategories(page: PageInterface, book: Book, verbose: boolean)
     case "fr": dummyCategory = '{"level":0,"key":"Beaux livres","nodeId":"293136011"}'; break;
     case "it": dummyCategory = '{"level":0,"key":"Diritto","nodeId":"508785031"}'; break;
     case "nl": dummyCategory = '{"level":0,"key":"Recht","nodeId":"16437441031"}'; break;
+    case "jp": dummyCategory = '{"level":0,"key":"Travel","nodeId":"492090"}'; break;
     default:
       throw new Error("Setting categories for a book for marketplace " + book.primaryMarketplace + " is not supported yet");
   }
@@ -230,8 +245,4 @@ async function initCategories(page: PageInterface, book: Book, verbose: boolean)
   await page.waitForTimeout(Timeouts.SEC_HALF);
   await clickSomething('.a-popover-footer #react-aui-modal-footer-1 .a-button-primary button', 'Save', page, book, verbose);
   await page.waitForTimeout(Timeouts.SEC_HALF);
-}
-
-function languageHasPronunciation(lang: string): boolean {
-  return lang == "Japanese"
 }

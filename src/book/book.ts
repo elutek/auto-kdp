@@ -281,8 +281,19 @@ export class Book {
   }
 
   canBeCreated() {
-    return this.title != '' && this.authorFirstName != '' && this.authorLastName != '' &&
-      this.description != '' && (this.hasOldCategories() || this.hasNewCategories());
+    let requirePronunciation = this.language == "Japanese";
+
+    let titleOk = this.title != '' && (!requirePronunciation || this.titlePronunciation != '');
+    let subtitleOk = this.subtitle == '' || (!requirePronunciation || this.subtitlePronunciation != '') ;
+    let authorOk = this.authorFirstName != '' && this.authorLastName != '' &&
+      (!requirePronunciation || this.authorWhole != '' && this.authorWholePronunciation != '');
+    let hasIllustrator = this.illustratorFirstName != '' || this.illustratorLastName != '';
+    let illustratorOk = !hasIllustrator || (this.illustratorFirstName != '' && this.illustratorLastName != '' &&
+      (!requirePronunciation || this.illustratorWhole != '' && this.illustratorWholePronunciation != ''));
+    let descriptionOk = this.description != '';
+    let categoriesOk = this.hasOldCategories() || this.hasNewCategories()
+
+    return titleOk && subtitleOk && authorOk && illustratorOk && descriptionOk  && categoriesOk;
   }
 
   // Checks whether we can edit critical metdata such as title or author. Editing becomes
