@@ -18,17 +18,17 @@ export async function publish(book: Book, params: ActionParams, isForce: boolean
   // first. The "forcing" feature is needed for some bug in KDP when the status
   // does not change soon enough.
   if (!isForce) {
-    if (book.wasEverPublished && book.pubStatus == 'LIVE' && book.pubStatusDetail == '') {
-      debug(book, verbose, 'Publishing - not needed, already fully published');
-      // Publishing not needed.
+    if (book.isLive() && !book.canBePublished()) {
+      debug(book, verbose, 'Cannot publish: already published');
       return new ActionResult(true);
     }
-
-    if (book.wasEverPublished && (book.pubStatus == 'IN REVIEW' ||
-      (book.pubStatus == 'LIVE' && book.pubStatusDetail == 'Updates publishing'))) {
-      debug(book, verbose, 'Publishing - already in progress');
-      // Publishing not needed.
+    if (book.isPublishingInProgress()) {
+      debug(book, verbose, 'Publishing not needed: publishing already in progress');
       return new ActionResult(true);
+    }
+    if (!book.canBePublished()) {
+      debug(book, verbose, 'Cannot publish');
+      return new ActionResult(false);
     }
   }
 
@@ -61,10 +61,6 @@ export async function publish(book: Book, params: ActionParams, isForce: boolean
     await page.click('#save-and-publish-announce', Timeouts.MIN_1);
     await page.waitForNavigation(Timeouts.MIN_1 );
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
-
-    book.wasEverPublished = true;
-    if (book.publishTime == null) {
-    }
   } else {
     debug(book, verbose, `Cannot publish! Metadata: ${metadataStatus}, content: ${contentStatus}, pricing: ${pricingStatus}`);
     isSuccess = false;

@@ -27,7 +27,7 @@ export async function assignIsbn(book: Book, params: ActionParams): Promise<Acti
 
   // if no ISBN, get one.
   // TODO: Support providing your own ISBN.
-  if (book.isbn == '' && !book.wasEverPublished) {
+  if (book.isbn == '' && book.canEditCriticalMetadata()) {
     // Click 'Get a free KDP ISBN'
     await page.click('div[data-a-accordion-row-name="free"] .a-button-input', Timeouts.SEC_30)
     await page.waitForTimeout(Timeouts.SEC_1);

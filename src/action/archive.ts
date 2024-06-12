@@ -16,18 +16,13 @@ export async function archive(book: Book, params: ActionParams): Promise<ActionR
     const url = Urls.BOOKSHELF_URL;
     debug(book, verbose, 'Archiving at url: ' + url);
 
-    if (!book.wasEverPublished) {
-        debug(book, verbose, 'Archiving - not needed, has never been published');
-        // publishing not needed.
+    if (book.isLive()) {
+        debug(book, verbose, 'Cannot archive: the book is live. Unpublish it first.');
         return new ActionResult(true);
     }
-    if (book.id == '' || book.titleId == '' || book.asin == '' || book.isbn == '') {
-        error(book, 'Cannot archive , not sure what to do, this book does not seem to have basic publishing information, maybe never published or needs scraping first?');
-        return new ActionResult(false).doNotRetry();
-    }
-    if (book.pubStatus.toLowerCase() != 'draft') {
-        error(book, 'Can only archive book with pubStatus=DRAFT but got: ' + book.pubStatus);
-        return new ActionResult(false).doNotRetry();
+    if (!book.isUnpublished()) {
+        debug(book, verbose, 'Cannot archive: the book has never been published');
+        return new ActionResult(true);
     }
 
     // Open the page

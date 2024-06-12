@@ -139,10 +139,18 @@ export var Keys = {
     PUB_STATUS_DETAIL: 'pubStatusDetail',
     PUBLISH_TIME: 'publishTime', // Date and time when did we clicked 'Publish'
 
+    // DEPRECATED: it was more confusing than useful. The better field to look at is
+    // pubStatus and pubStatusDetail. The reason for this fiels is that there is 
+    // a race condition: right after publishing, the pubStatus remains 'DRAFT' for
+    // a short time. But during that time re-publishing will just fail. The complexity
+    // of maintining 'wasEverPublished' is not worth the small benefits, and it
+    // introduced many other confusing failures where 'wasEverPublished' was not
+    // getting updated correctly.
+    //
     // Set to true on the first time when we publish. After publishing
     // we cannot remove it - the record stays forever, but stops showing
     // as available.
-    WAS_EVER_PUBLISHED: 'wasEverPublished',
+    DEPRECATED___WAS_EVER_PUBLISHED: 'wasEverPublished',
 
     // Archived => 'archived'
     // Not archived or never checked => ''
@@ -176,4 +184,5 @@ export const OPTIONAL_KEYS = [
     Keys.SUBTITLE,
     Keys.SUBTITLE_PRONUNCIATION,
     Keys.TITLE_PRONUNCIATION,
+    Keys.DEPRECATED___WAS_EVER_PUBLISHED,
 ];

@@ -18,7 +18,6 @@ const _KEYS_WITH_NO_DEFAULT = [
   Keys.PUB_STATUS_DETAIL,
   Keys.PUBLISH_TIME,
   Keys.TITLE_ID,
-  Keys.WAS_EVER_PUBLISHED,
   Keys.SCRAPED_SERIES_TITLE,
   Keys.SCRAPED_IS_ARCHIVED
 ];
@@ -41,7 +40,6 @@ export class Book {
   public pubStatusDetail: string;
   public publishTime: Date | null;
   public titleId: string;
-  public wasEverPublished: boolean;
   public scrapedSeriesTitle: string;
   public scrapedIsArchived: string;
 
@@ -162,7 +160,6 @@ export class Book {
     this.pubStatusDetail = getValue(Keys.PUB_STATUS_DETAIL);
     const publishTimeStr = getValue(Keys.PUBLISH_TIME);
     this.publishTime = publishTimeStr == '' ? null : new Date(Date.parse(publishTimeStr));
-    this.wasEverPublished = getValue(Keys.WAS_EVER_PUBLISHED) == 'true';
     this.scrapedSeriesTitle = getValue(Keys.SCRAPED_SERIES_TITLE);
     this.scrapedIsArchived = getValue(Keys.SCRAPED_IS_ARCHIVED);
     if (!["undetermined", "archived", ""].includes(this.scrapedIsArchived)) {
@@ -288,19 +285,36 @@ export class Book {
       this.description != '' && (this.hasOldCategories() || this.hasNewCategories());
   }
 
-  isFullyLive() {
-    return this.wasEverPublished &&
-      this.pubStatus == 'LIVE' &&
-      this.pubStatusDetail == '' &&
-      this.scrapedSeriesTitle.toLowerCase().includes('ok') &&
-      this.scrapedIsArchived == '';
+  // Checks whether we can edit critical metdata such as title or author. Editing becomes
+  // impossible after the book is LIVE (and has not been unpublished).
+  canEditCriticalMetadata() {
+    return ['', 'DRAFT'].indexOf(this.pubStatus) >= 0 && !this.isArchived()
   }
 
-  isFullyDiscarded() {
-    return this.wasEverPublished &&
-      this.pubStatus == 'DRAFT' &&
-      this.pubStatusDetail == 'Unpublished' &&
-      this.scrapedIsArchived == 'archived';
+  isFullyLive() {
+    return this.pubStatus == 'LIVE' && this.pubStatusDetail == '' &&
+      this.scrapedSeriesTitle.toLowerCase().includes('ok') && this.scrapedIsArchived == '';
+  }
+
+  isLive() {
+    return this.pubStatus == 'LIVE'
+  }
+
+  canBePublished() {
+    return this.pubStatus == 'DRAFT' || this.pubStatus == 'LIVE' && this.pubStatusDetail == 'With unpublished changes';
+  }
+
+  isPublishingInProgress() {
+    return this.pubStatus == 'IN REVIEW' ||
+      this.pubStatus == 'LIVE' && ['Updates publishing', 'Updates in review'].indexOf(this.pubStatusDetail) >= 0;
+  }
+
+  isUnpublished() {
+    return this.pubStatus == 'DRAFT' && this.pubStatusDetail == 'Unpublished'
+  }
+
+  isArchived() {
+    return this.scrapedIsArchived == 'archived';
   }
 
   numActions() {

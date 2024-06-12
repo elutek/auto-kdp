@@ -57,7 +57,6 @@ test('create book without defaults', () => {
             Keys.SERIES_TITLE, 'test_series_title',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
             Keys.SCRAPED_IS_ARCHIVED, 'archived',
-            Keys.WAS_EVER_PUBLISHED, 'false',
         ),
         makeMap(),
         'content/dir',
@@ -114,7 +113,6 @@ test('create book without defaults', () => {
     expect(book.seriesTitle).toEqual('test_series_title');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.scrapedIsArchived).toEqual('archived');
-    expect(book.wasEverPublished).toEqual(false);
     expect(book.signature).toEqual('test_signature');
 });
 
@@ -133,7 +131,6 @@ test('create book with defaults', () => {
             Keys.PUB_STATUS, 'test_pub_status',
             Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',
             Keys.PUBLISH_TIME, '2011-10-05T21:48:00.000Z',
-            Keys.WAS_EVER_PUBLISHED, 'false',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
             Keys.SCRAPED_IS_ARCHIVED, 'archived',
         ),
@@ -232,7 +229,6 @@ test('create book with defaults', () => {
     expect(book.edition).toEqual('2');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.scrapedIsArchived).toEqual('archived');
-    expect(book.wasEverPublished).toEqual(false);
     expect(book.signature).toEqual('test_signature');
 });
 
@@ -250,7 +246,6 @@ test('detects missing key', () => {
                 Keys.PUB_STATUS, 'test_pub_status',
                 Keys.PUB_STATUS_DETAIL, 'test_pub_status_detail',
                 Keys.PUBLISH_TIME, '2011-10-05T21:48:00.000Z',
-                Keys.WAS_EVER_PUBLISHED, 'false',
                 Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
                 Keys.SCRAPED_IS_ARCHIVED, 'archived',
             ),
@@ -316,7 +311,6 @@ test('create book with resolution', () => {
             Keys.PUB_STATUS, '${prefix}pub_status',
             Keys.PUB_STATUS_DETAIL, '${prefix}pub_status_detail',
             Keys.PUBLISH_TIME, '2011-10-05T21:48:00.000Z',
-            Keys.WAS_EVER_PUBLISHED, 'false',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
             Keys.SCRAPED_IS_ARCHIVED, 'archived',
         ),
@@ -411,7 +405,6 @@ test('create book with resolution', () => {
     expect(book.seriesTitle).toEqual('test_series_title');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.scrapedIsArchived).toEqual('archived');
-    expect(book.wasEverPublished).toEqual(false);
     expect(book.signature).toEqual('test_signature');
 });
 
@@ -442,7 +435,6 @@ test('detects bad resolution', () => {
 
 function createFullyLiveBook(): Book {
     return makeOkTestBook({
-        wasEverPublished: 'true',
         pubStatus: 'LIVE',
         pubStatusDetail: '',
         scrapedIsArchived: '',
@@ -454,11 +446,6 @@ test('isFullyLive', () => {
     {
         let fullyLiveBook = createFullyLiveBook();
         expect(fullyLiveBook.isFullyLive()).toEqual(true);
-    }
-    {
-        const book = createFullyLiveBook();
-        book.wasEverPublished = false;
-        expect(book.isFullyLive()).toEqual(false);
     }
     {
         const book = createFullyLiveBook();
@@ -647,7 +634,6 @@ test('getDataToWrite', () => {
         "signature": "test_signature",
         "subtitle": "test_subtitle",
         "title": "test_title",
-        "wasEverPublished": false,
     });
 });
 
@@ -707,7 +693,6 @@ test('toString', () => {
        pubStatus = test_pub_status
        pubStatusDetail = test_pub_status_detail
        publishTime = Wed Oct 05 2011 14:48:00 GMT-0700 (Pacific Daylight Time)
-       wasEverPublished = false
        scrapedIsArchived = archived
 `.replaceAll(" ", ""));
 });
@@ -768,7 +753,6 @@ test('create book in japanese', () => {
             Keys.TITLE, 'test_title',
             Keys.TITLE_ID, 'test_id',
             Keys.TITLE_PRONUNCIATION, 'test_title_pronunciation',
-            Keys.WAS_EVER_PUBLISHED, 'false',
             Keys.AUTHOR_FIRST_NAME, 'test_author_first_name',
             Keys.AUTHOR_LAST_NAME, 'test_author_last_name',
             Keys.ILLUSTRATOR_FIRST_NAME, 'test_illustrator_first_name',

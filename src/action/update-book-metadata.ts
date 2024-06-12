@@ -38,7 +38,7 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
 
   await page.waitForTimeout(Timeouts.SEC_1); // Just in case.
 
-  if (!book.wasEverPublished) {
+  if (!book.canEditCriticalMetadata()) {
 
     // This fields can only be updated if the book
     // has never been published. After publishing, they

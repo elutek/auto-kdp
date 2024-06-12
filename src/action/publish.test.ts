@@ -27,7 +27,6 @@ test('alreadyPublished', async () => {
         verbose: true,
     };
 
-    book.wasEverPublished = true;
     book.pubStatus = 'LIVE';
     book.pubStatusDetail = '';
 
@@ -35,7 +34,7 @@ test('alreadyPublished', async () => {
     expect(actionResult.success).toBe(true);
 });
 
-test('publishingInProgressA', async () => {
+test('publishingInProgress_InReview', async () => {
     const book = makeOkTestBook();
     const browser = new OnePageFakeBrowser([]);
     const params: ActionParams = {
@@ -45,7 +44,6 @@ test('publishingInProgressA', async () => {
         verbose: true,
     };
 
-    book.wasEverPublished = true;
     book.pubStatus = 'IN REVIEW';
     book.pubStatusDetail = '';
 
@@ -53,8 +51,11 @@ test('publishingInProgressA', async () => {
     expect(actionResult.success).toBe(true);
 });
 
-test('publishingInProgressB', async () => {
+test('publishingInProgress_LiveUpdatesPublishing', async () => {
+    // Setup
     const book = makeOkTestBook();
+    book.pubStatus = 'LIVE';
+    book.pubStatusDetail = 'Updates publishing';
     const browser = new OnePageFakeBrowser([]);
     const params: ActionParams = {
         browser: browser,
@@ -62,23 +63,19 @@ test('publishingInProgressB', async () => {
         dryRun: false,
         verbose: true,
     };
-
-    book.wasEverPublished = true;
-    book.pubStatus = 'LIVE';
-    book.pubStatusDetail = 'Updates publishing';
-
+    // Publish
     const actionResult = await publish(book, params);
+    // Check results
     expect(actionResult.success).toBe(true);
 });
 
-
 test('canPublish', async () => {
-
     //
     // Setup
     //
-
     const book = makeOkTestBook();
+    book.pubStatus = 'DRAFT';
+    book.pubStatusDetail = '';
     const browser = new OnePageFakeBrowser([
         "Complete", // Metadata status
         "Complete", // Content status
@@ -94,13 +91,11 @@ test('canPublish', async () => {
     //
     // Action
     //
-
     const actionResult = await publish(book, params, /*isForce=*/false, /*skipPricing=*/true);
 
     //
     // Verify
     //
-
     expect(actionResult).not.toBe(null);
     expect(actionResult.success).toBe(true);
 
@@ -119,13 +114,11 @@ test('canPublish', async () => {
     expect(page.closed).toBe(true);
 });
 
-test('cannotPublish', async () => {
-
-    //
+test('cannotPublish_MetadataInProgress', async () => {
     // Setup
-    //
-
     const book = makeOkTestBook();
+    book.pubStatus = 'DRAFT';
+    book.pubStatusDetail = '';
     const browser = new OnePageFakeBrowser([
         "In progress", // Metadata status
         "Complete", // Content status
@@ -141,13 +134,11 @@ test('cannotPublish', async () => {
     //
     // Action
     //
-
     const actionResult = await publish(book, params);
 
     //
     // Verify
     //
-
     expect(actionResult).not.toBe(null);
     expect(actionResult.success).toBe(false);
 

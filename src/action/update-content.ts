@@ -13,7 +13,7 @@ export async function updateContent(book: Book, params: ActionParams): Promise<A
         return new ActionResult(true);
     }
 
-    if (book.wasEverPublished) {
+    if (!book.canEditCriticalMetadata()) {
         error(book, 'Cannot republish content of a published book');
         return new ActionResult(false).doNotRetry();
     }
@@ -36,7 +36,7 @@ export async function updateContent(book: Book, params: ActionParams): Promise<A
 
     // if no ISBN, get one.
     // TODO: Support providing your own ISBN.
-    if (book.isbn == '' && !book.wasEverPublished) {
+    if (book.isbn == '') {
         // Click 'Get a free KDP ISBN'
         await page.click('#free-print-isbn-btn-announce', Timeouts.MIN_3);
         await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.

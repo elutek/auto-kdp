@@ -16,13 +16,12 @@ export async function unpublish(book: Book, params: ActionParams): Promise<Actio
     const url = Urls.BOOKSHELF_URL;
     debug(book, verbose, 'Unpublishing at url: ' + url);
 
-    if (!book.wasEverPublished) {
-        debug(book, verbose, 'unpublishing - not needed, has never been published');
-        // publishing not needed.
+    if (book.canEditCriticalMetadata() || !book.isLive() || book.id == '' || book.titleId == '' || book.asin == '' || book.isbn == '') {
+        debug(book, verbose, 'Cannot unpublish: the book does not seem to have been published')
         return new ActionResult(true);
     }
-    if (book.id == '' || book.titleId == '' || book.asin == '' || book.isbn == '') {
-        debug(book, verbose, 'Cannog unpublish, not sure what to do, this book does not seem to have basic publishing information, maybe never published or needs scraping first?');
+    if (book.isUnpublished()) {
+        debug(book, verbose, 'Cannog unpublish: the book is already unpublished');
         return new ActionResult(false);
     }
 

@@ -54,7 +54,6 @@ export function makeOkTestBook({
     subtitle = 'test_subtitle',
     title = 'test_title',
     titleId = 'test_title_id',
-    wasEverPublished = 'false',
 } = {}) {
     return new Book(
         makeMap(
@@ -110,7 +109,6 @@ export function makeOkTestBook({
             Keys.SERIES_TITLE, seriesTitle,
             Keys.SCRAPED_SERIES_TITLE, scrapedSeriesTitle,
             Keys.SCRAPED_IS_ARCHIVED, scrapedIsArchived,
-            Keys.WAS_EVER_PUBLISHED, wasEverPublished,
         ),
         makeMap(),
         'content/dir',
