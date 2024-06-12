@@ -38,13 +38,20 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
 
   await page.waitForTimeout(Timeouts.SEC_1); // Just in case.
 
-  if (!book.canEditCriticalMetadata()) {
+  // This is currently only for Japanese. In that case we provide fields differently, 
+  // and need to provide pronunciation fields (in a different alphabet) as well.
+  let hasPronunciation = languageHasPronunciation(book.language)
+
+  if (book.canEditCriticalMetadata()) {
 
     // This fields can only be updated if the book
     // has never been published. After publishing, they
     // are set in stone.
     await selectValue('#data-print-book-language-native', book.language, 'language', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-title', book.title, 'title', page, book, verbose);
+    if (hasPronunciation) {
+      await updateTextFieldIfChanged('#data-print-book-title', book.title, 'title', page, book, verbose);
+    }
     await updateTextFieldIfChanged('#data-print-book-subtitle', book.subtitle, 'subtitle', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-edition-number', book.edition, 'edition', page, book, verbose);
     await updateTextFieldIfChanged('#data-print-book-primary-author-first-name', book.authorFirstName, 'author\'s first name', page, book, verbose);
@@ -223,4 +230,8 @@ async function initCategories(page: PageInterface, book: Book, verbose: boolean)
   await page.waitForTimeout(Timeouts.SEC_HALF);
   await clickSomething('.a-popover-footer #react-aui-modal-footer-1 .a-button-primary button', 'Save', page, book, verbose);
   await page.waitForTimeout(Timeouts.SEC_HALF);
+}
+
+function languageHasPronunciation(lang: string): boolean {
+  return lang == "Japanese"
 }
