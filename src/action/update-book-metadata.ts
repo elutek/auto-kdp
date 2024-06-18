@@ -40,7 +40,7 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
 
   // This is currently only for Japanese. In that case we provide fields differently, 
   // and need to provide pronunciation fields (in a different alphabet) as well.
-  let isJapanese = book.language.toLowerCase() == "japanese";
+  const isJapanese = book.language.toLowerCase() == "japanese";
 
   if (book.canEditCriticalMetadata()) {
 
@@ -55,7 +55,7 @@ export async function updateBookMetadata(book: Book, params: ActionParams): Prom
     }
     await updateTextFieldIfChanged('#data-print-book-subtitle', book.subtitle, 'subtitle', page, book, verbose);
     if (isJapanese) {
-      await updateTextFieldIfChanged('#data-print-book-subtitle-pronunciation', book.subtitlePronunciation, 'title pronunciation', page, book, verbose);
+      await updateTextFieldIfChanged('#data-print-book-subtitle-pronunciation', book.subtitlePronunciation, 'subtitle pronunciation', page, book, verbose);
     }
     await updateTextFieldIfChanged('#data-print-book-edition-number', book.edition, 'edition', page, book, verbose);
     if (isJapanese) {
