@@ -1,6 +1,6 @@
 import { ActionResult } from '../util/action-result.js';
 import { debug, error } from '../util/utils.js'
-import { Urls, clickSomething, fileExists, maybeClosePage } from './action-utils.js';
+import { Urls, clickSomething, clickSomething2, fileExists, maybeClosePage } from './action-utils.js';
 import { Book } from '../book/book.js';
 import { ActionParams } from '../util/action-params.js';
 import { Timeouts } from '../util/timeouts.js';
@@ -97,9 +97,9 @@ export async function updateContent(book: Book, params: ActionParams): Promise<A
         debug(book, verbose, 'Selecting glossy paper');
         let id = '';
         if (book.paperCoverFinish == 'glossy') {
-            id = '#a-autoid-7-announce'; // Glossy
+            id = 'button[name="GLOSSY"]'; // '#a-autoid-7-announce';
         } else if (book.paperCoverFinish == 'matte') {
-            id = '#a-autoid-6-announce'; // Matte
+            id = 'button[name="MATTE"]'; // '#a-autoid-6-announce';
         } else {
             throw new Error('Unrecognized value for paper finish: ' + book.paperCoverFinish);
         }
