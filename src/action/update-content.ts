@@ -34,6 +34,9 @@ export async function updateContent(book: Book, params: ActionParams): Promise<A
     await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
     debug(book, verbose, 'Loaded');
 
+    const isJapanese = book.language.toLowerCase() == "japanese";
+    debug(book, verbose, `isJapanese=${isJapanese}`);
+
     // if no ISBN, get one.
     // TODO: Support providing your own ISBN.
     if (book.isbn == '') {
@@ -135,33 +138,61 @@ export async function updateContent(book: Book, params: ActionParams): Promise<A
         await page.waitForTimeout(Timeouts.SEC_1);  // Just in case.
     }
 
-    // Select self-uploaded cover.
-    // We upload cover first becasue the manuscript will take a very long time.
-    {
-        debug(book, verbose, 'Selecting PDF cover option');
-        let id = '#data-print-book-publisher-cover-choice-accordion';
-        let selector = id + ' [data-a-accordion-row-name=\'UPLOAD\'] a[data-action=\'a-accordion\']';
-        await clickSomething(selector, "PDF cover option", page, book, verbose);
-        await page.waitForTimeout(Timeouts.SEC_2);  // Just in case.
+    if (isJapanese) {
+        //
+        // Only for Japanese
+        //
+        {
+            // Set "page turning direction".
+            debug(book, verbose, 'Selecting page turning direction')
+            const id = "button[name='LEFT_TO_RIGHT']"; // "#a-autoid-8-announce"
+            await clickSomething(id, 'direction', page, book, verbose);
+            await page.waitForTimeout(Timeouts.SEC_30);  // Just in case.
+        }
+        {
+            // Cover
+            debug(book, verbose, 'Uploading cover');
+            const id = "#data-print-book-publisher-cover-pdf-only-file-upload-browse-button-announce";
+            await page.waitForSelector(id, Timeouts.SEC_5);
+            await page.selectFile(id, book.coverLocalFile, Timeouts.MIN_5);
+            debug(book, verbose, 'Waiting for cover file chooser');
+            await page.waitForSelectorVisible('#data-print-book-publisher-cover-pdf-only-file-upload-success', Timeouts.MIN_20);
+            await page.waitForTimeout(Timeouts.SEC_2);
+            debug(book, verbose, 'Cover upload done');
+        }
+
+    } else {
+        //
+        // Only for non-Japanese
+        //
+        {
+            //  Select self-uploaded cover as PDF. This option is only available for non-Japanese.
+            debug(book, verbose, 'Selecting PDF cover option');
+            let id = '#data-print-book-publisher-cover-choice-accordion [data-a-accordion-row-name=\'UPLOAD\'] a[data-action=\'a-accordion\']';
+            await clickSomething(id, "PDF cover option", page, book, verbose);
+            await page.waitForTimeout(Timeouts.SEC_2);  // Just in case.
+        }
+        {
+            // NOTE: We upload cover first becasue the manuscript will take a very long time.
+            // Cover
+            debug(book, verbose, 'Uploading cover');
+            const id = '#data-print-book-publisher-cover-file-upload-browse-button-announce'
+            await page.waitForSelector(id, Timeouts.SEC_5);
+            await page.selectFile(id, book.coverLocalFile, Timeouts.MIN_5);
+            debug(book, verbose, 'Waiting for cover file chooser');
+            await page.waitForSelectorVisible('#data-print-book-publisher-cover-file-upload-success', Timeouts.MIN_20);
+            await page.waitForTimeout(Timeouts.SEC_2);
+            debug(book, verbose, 'Cover upload done');
+        }
     }
 
-    // Cover
     {
-        debug(book, verbose, 'Uploading cover');
-        await page.waitForSelector('#data-print-book-publisher-cover-file-upload-browse-button-announce', Timeouts.SEC_5);
-        await page.selectFile('#data-print-book-publisher-cover-file-upload-browse-button-announce', book.coverLocalFile, Timeouts.MIN_5);
-        debug(book, verbose, 'Waiting for cover file chooser');
-        await page.waitForSelectorVisible('#data-print-book-publisher-cover-file-upload-success', Timeouts.MIN_20);
-        await page.waitForTimeout(Timeouts.SEC_2);
-        debug(book, verbose, 'Cover upload done');
-    }
-
-    // Manuscript
-    {
+        // Manuscript
         debug(book, verbose, 'Uploading manuscript');
-        await page.waitForSelector('#data-print-book-publisher-interior-file-upload-browse-button-announce', Timeouts.SEC_5);
-        await page.selectFile('#data-print-book-publisher-interior-file-upload-browse-button-announce', book.manuscriptLocalFile, Timeouts.MIN_5);
-        debug(book, verbose, 'Waiting for manuscript file chooser');
+        const id = '#data-print-book-publisher-interior-file-upload-browse-button-announce';
+        await page.waitForSelector(id, Timeouts.SEC_5);
+        await page.selectFile(id, book.manuscriptLocalFile, Timeouts.MIN_5);
+        debug(book, verbose, 'Waiting for manuscript file chooser'); 
         await page.waitForSelectorVisible('#data-print-book-publisher-interior-file-upload-success', Timeouts.MIN_20);
     }
 

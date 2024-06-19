@@ -281,15 +281,15 @@ export class Book {
   }
 
   canBeCreated() {
-    let requirePronunciation = this.language == "Japanese";
+    let isJapanese = this.language.toLocaleLowerCase() == "japanese";
 
-    let titleOk = this.title != '' && (!requirePronunciation || this.titlePronunciation != '');
-    let subtitleOk = this.subtitle == '' || (!requirePronunciation || this.subtitlePronunciation != '') ;
+    let titleOk = this.title != '' && (!isJapanese || this.titlePronunciation != '');
+    let subtitleOk = this.subtitle == '' || (!isJapanese || this.subtitlePronunciation != '') ;
     let authorOk = this.authorFirstName != '' && this.authorLastName != '' &&
-      (!requirePronunciation || this.authorWhole != '' && this.authorWholePronunciation != '');
+      (!isJapanese || this.authorWhole != '' && this.authorWholePronunciation != '');
     let hasIllustrator = this.illustratorFirstName != '' || this.illustratorLastName != '';
     let illustratorOk = !hasIllustrator || (this.illustratorFirstName != '' && this.illustratorLastName != '' &&
-      (!requirePronunciation || this.illustratorWhole != '' && this.illustratorWholePronunciation != ''));
+      (!isJapanese || this.illustratorWhole != '' && this.illustratorWholePronunciation != ''));
     let descriptionOk = this.description != '';
     let categoriesOk = this.hasOldCategories() || this.hasNewCategories()
 
