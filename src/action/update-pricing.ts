@@ -27,6 +27,7 @@ export async function updatePricing(book: Book, params: ActionParams): Promise<A
 
   let wasUpdated = await updateAllPrices(book, page, verbose);
 
+  await page.waitForTimeout(Timeouts.SEC_5);
   await page.focus('#save-announce', Timeouts.SEC_5);
   await page.waitForTimeout(Timeouts.SEC_5);
 
