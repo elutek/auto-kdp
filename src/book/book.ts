@@ -76,6 +76,7 @@ export class Book {
   readonly priceUsd: number;
   readonly primaryMarketplace: string;
   readonly seriesTitle: string;
+  readonly seriesId: string;
   readonly title: string;
   readonly subtitle: string;
   readonly edition: string;
@@ -210,6 +211,7 @@ export class Book {
       throw new Error("Unrecognized primary marketplace: " + this.primaryMarketplace)
     }
     this.seriesTitle = getOptionalValue(Keys.SERIES_TITLE);
+    this.seriesId = getOptionalValue(Keys.SERIES_ID);
     this.title = getValue(Keys.TITLE);
     this.subtitle = getOptionalValue(Keys.SUBTITLE);
     if (this.title.length + this.subtitle.length > MAX_TITLE_AND_SUBTITLE_LENGTH) {

@@ -2,7 +2,7 @@ import { Keys } from './keys.js';
 import { Book } from './book.js';
 import { makeOkTestBook, makeMap } from '../util/test-utils.js';
 
-test('create book without defaults', () => {
+test('create book with all fields explicitly specified', () => {
     const book = new Book(
         makeMap(
             Keys.ACTION, 'test_action',
@@ -55,6 +55,7 @@ test('create book without defaults', () => {
             Keys.SUBTITLE, 'test_subtitle',
             Keys.EDITION, '2',
             Keys.SERIES_TITLE, 'test_series_title',
+            Keys.SERIES_ID, 'test_series_id',
             Keys.SCRAPED_SERIES_TITLE, 'test_scraped_series_title',
             Keys.SCRAPED_IS_ARCHIVED, 'archived',
         ),
@@ -111,6 +112,7 @@ test('create book without defaults', () => {
     expect(book.subtitle).toEqual('test_subtitle');
     expect(book.edition).toEqual('2');
     expect(book.seriesTitle).toEqual('test_series_title');
+    expect(book.seriesId).toEqual('test_series_id');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.scrapedIsArchived).toEqual('archived');
     expect(book.signature).toEqual('test_signature');
@@ -173,8 +175,7 @@ test('create book with defaults', () => {
             Keys.SIGNATURE, 'test_signature',
             Keys.TITLE, 'test_title',
             Keys.SUBTITLE, 'test_subtitle',
-            Keys.EDITION, '2',
-            Keys.SERIES_TITLE, 'test_series_title',
+            Keys.EDITION, '2'
         ),
         'content/dir',
         []);
@@ -284,8 +285,7 @@ test('detects missing key', () => {
                 Keys.PRIMARY_MARKETPLACE, 'pl',
                 Keys.SIGNATURE, 'test_signature',
                 Keys.TITLE, 'test_title',
-                Keys.SUBTITLE, 'test_subtitle',
-                Keys.SERIES_TITLE, 'test_series_title',
+                Keys.SUBTITLE, 'test_subtitle'
             ),
             'content/dir',
             []);
@@ -350,7 +350,6 @@ test('create book with resolution', () => {
             Keys.SIGNATURE, '${prefix}signature',
             Keys.TITLE, '${prefix}title',
             Keys.SUBTITLE, '${prefix}subtitle',
-            Keys.SERIES_TITLE, '${prefix}series_title',
         ),
         'content/dir',
         []);
@@ -402,7 +401,6 @@ test('create book with resolution', () => {
     expect(book.title).toEqual('test_title');
     expect(book.subtitle).toEqual('test_subtitle');
     expect(book.edition).toEqual('2');
-    expect(book.seriesTitle).toEqual('test_series_title');
     expect(book.scrapedSeriesTitle).toEqual('test_scraped_series_title');
     expect(book.scrapedIsArchived).toEqual('archived');
     expect(book.signature).toEqual('test_signature');
@@ -631,6 +629,7 @@ test('getDataToWrite', () => {
         "scrapedIsArchived": "archived",
         "scrapedSeriesTitle": "test_scraped_series_title",
         "seriesTitle": "test_series_title",
+        "seriesId": "test_series_id",
         "signature": "test_signature",
         "subtitle": "test_subtitle",
         "title": "test_title",
@@ -659,6 +658,7 @@ test('toString', () => {
        keyword6 = test_keyword6
        language = afrikaans
        seriesTitle = test_series_title
+       seriesId = test_series_id
        scrapedSeriesTitle = test_scraped_series_title
        subtitle = test_subtitle
        edition = 2 

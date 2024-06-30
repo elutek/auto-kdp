@@ -48,7 +48,6 @@ export async function setSeriesTitle(book: Book, params: ActionParams, forceRemo
     } else if (book.seriesTitle == existingSeriesTitle) {
         debug(book, verbose, `Updating series title - not needed, got ${existingSeriesTitle}`);
     } else if (book.seriesTitle != '' && existingSeriesTitle == '') {
-        debug(book, verbose, `Updating series title to ${book.seriesTitle}`);
         const result = await updateSeriesTitle(page, book, verbose);
         if (!result) {
             return new ActionResult(false);
@@ -73,8 +72,13 @@ export async function setSeriesTitle(book: Book, params: ActionParams, forceRemo
 }
 
 async function updateSeriesTitle(page: PageInterface, book: Book, verbose: boolean) {
-    if (book.seriesTitle == '') {
-        throw 'Cannot set series title - it is already empty'
+    // If seriesId is provided, use that to find the series. This is because finding by title
+    // in KDP has proven very very flaky - it randomly finds the series or not, and sometimes no matter what you
+    // do it, it will not find it. Searching by id is far more reliable.
+    const newSeriesTitle = book.seriesId != '' ? book.seriesId : book.seriesTitle;
+    debug(book, verbose, `Updating series title to ${newSeriesTitle}`);
+    if (newSeriesTitle == '') {
+        throw 'Cannot set series title: no title provided'
     }
     let id = '';
     let modalName = "#react-aui-modal-content-1";
@@ -98,7 +102,7 @@ async function updateSeriesTitle(page: PageInterface, book: Book, verbose: boole
     await page.click(id, Timeouts.SEC_5);
     await page.waitForTimeout(Timeouts.SEC_1);
 
-    let searchQuery = normalizeSearchQuery(book.seriesTitle);
+    let searchQuery = normalizeSearchQuery(newSeriesTitle);
 
     const maxAttempts = 2;
 
